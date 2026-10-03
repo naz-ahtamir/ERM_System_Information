@@ -1,0 +1,1147 @@
+"use client";
+
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { getFormConfig } from "@/data/formConfigs";
+import { SubSubElementData } from "@/types/subSubElement";
+import { exportFindingToPDF } from "@/lib/exportFindingToPDF";
+import toast from "react-hot-toast";
+
+type FindingStatus = "OPEN" | "INPG" | "CLSD";
+type PanelMode = "empty" | "detail" | "new" | "edit";
+type FilterStatus = "" | "OPEN" | "INPG" | "CLSD";
+
+const STATUS_STYLE: Record<string, { bg: string; text: string; dot: string }> = {
+  OPEN: { bg: "bg-red-50",    text: "text-red-700",   dot: "bg-red-500"    },
+  INPG: { bg: "bg-amber-50",  text: "text-amber-700", dot: "bg-amber-500" },
+  CLSD: { bg: "bg-green-50",  text: "text-green-700", dot: "bg-green-500" },
+};
+
+const LEVEL_STYLE: Record<string, { bg: string; text: string }> = {
+  Low:      { bg: "bg-green-50",  text: "text-green-700"  },
+  Medium:   { bg: "bg-blue-50",   text: "text-blue-700"   },
+  High:     { bg: "bg-amber-50",  text: "text-amber-700"  },
+  Critical: { bg: "bg-red-50",    text: "text-red-700"    },
+};
+
+function StatusBadge({ status }: { status: string }) {
+  const s = STATUS_STYLE[status] ?? STATUS_STYLE.INPG;
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${s.bg} ${s.text}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+      {status}
+    </span>
+  );
+}
+
+function LevelBadge({ level }: { level: string }) {
+  const l = LEVEL_STYLE[level] ?? LEVEL_STYLE.Low;
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${l.bg} ${l.text}`}>
+      {level}
+    </span>
+  );
+}
+
+function getPhotoUrl(record: SubSubElementData): string | null {
+  const fileObj = record.files?.find((f: any) => f.fieldName === "dokumentasiHazard");
+  if (fileObj?.fileUrl) return fileObj.fileUrl;
+  if (record.data?.dokumentasiHazard) return record.data.dokumentasiHazard;
+  return null;
+}
+
+function getPerbaikanUrl(record: SubSubElementData): string | null {
+  const fileObj = record.files?.find((f: any) => f.fieldName === "dokumentasiPerbaikan");
+  if (fileObj?.fileUrl) return fileObj.fileUrl;
+  if (record.data?.dokumentasiPerbaikan) return record.data.dokumentasiPerbaikan;
+  return null;
+}
+
+export default function InspeksiKetidaksesuaianPage() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+  const formConfig = getFormConfig("7.1.1-inspeksi-ketidaksesuaian");
+
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) router.push("/login");
+  }, [status, router]);
+
+  const isAdmin      = user?.role === "admin";
+  const isSupervisor = user?.role === "supervisor" || isAdmin;
+
+  const [records, setRecords]             = useState<SubSubElementData[]>([]);
+  const [filtered, setFiltered]           = useState<SubSubElementData[]>([]);
+  const [isLoadingList, setIsLoadingList] = useState(false);
+
+  const [panelMode, setPanelMode]           = useState<PanelMode>("empty");
+  const [selectedRecord, setSelectedRecord] = useState<SubSubElementData | null>(null);
+  const [activeIdx, setActiveIdx]           = useState(-1);
+
+  const [formData, setFormData]     = useState<Record<string, any>>({});
+  const [files, setFiles]           = useState<Record<string, File>>({});
+  const [isSaving, setIsSaving]     = useState(false);
+  const [formError, setFormError]   = useState<string | null>(null);
+  const [chosenStatus, setChosenStatus] = useState<FindingStatus>("INPG");
+
+  
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("");
+
+  const [isApproving, setIsApproving] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [showRejectionDialog, setShowRejectionDialog] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+
+  const [isExporting, setIsExporting] = useState(false);
+
+  const firstField = useRef<HTMLInputElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  // ── Computed untuk detail panel ──
+  const detailPhotoUrl    = selectedRecord ? getPhotoUrl(selectedRecord)    : null;
+  const detailPerbaikanUrl = selectedRecord ? getPerbaikanUrl(selectedRecord) : null;
+
+  // ── Fetch ──
+  const fetchRecords = useCallback(async () => {
+    if (!session) return;
+    setIsLoadingList(true);
+    try {
+      const res = await fetch(
+        `/api/smk3-data?subSubElementId=7.1.1-inspeksi-ketidaksesuaian`
+      );
+      if (!res.ok) throw new Error();
+      setRecords(await res.json());
+    } catch {
+      // silent
+    } finally {
+      setIsLoadingList(false);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (isAuthenticated) fetchRecords();
+  }, [status, fetchRecords]);
+
+  // ── Filter ──
+  useEffect(() => {
+    let r = [...records];
+    if (filterStatus) r = r.filter(x => x.findingStatus === filterStatus);
+    setFiltered(r);
+  }, [records, filterStatus]);
+
+
+  // ── Keyboard ──
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const inInput = ["INPUT", "TEXTAREA", "SELECT"].includes(
+        (e.target as HTMLElement).tagName
+      );
+      if (e.key === "n" && !inInput) { e.preventDefault(); openNewPanel(); }
+      
+      if (e.key === "Escape") {
+        if (document.activeElement === searchRef.current) searchRef.current?.blur();
+        else closePanels();
+      }
+      if (e.key === "ArrowDown" && !inInput) {
+        e.preventDefault();
+        const next = Math.min(activeIdx + 1, filtered.length - 1);
+        if (next >= 0) selectRecord(filtered[next], next);
+      }
+      if (e.key === "ArrowUp" && !inInput) {
+        e.preventDefault();
+        const prev = Math.max(activeIdx - 1, 0);
+        if (prev >= 0) selectRecord(filtered[prev], prev);
+      }
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        if (panelMode === "new" || panelMode === "edit") handleSave();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [activeIdx, filtered, panelMode, formData, files, chosenStatus]);
+
+  // ── Panel helpers ──
+  const closePanels = () => {
+    setPanelMode("empty");
+    setSelectedRecord(null);
+    setActiveIdx(-1);
+    setFormData({});
+    setFiles({});
+    setFormError(null);
+    setChosenStatus("INPG");
+  };
+
+  const openNewPanel = () => {
+    setPanelMode("new");
+    setSelectedRecord(null);
+    setActiveIdx(-1);
+    setFormError(null);
+    setChosenStatus("INPG");
+    setFormData({
+      safetyOfficer: session?.user
+        ? `${session.user.name} - ${(session.user as any).idKaryawan ?? ""}`
+        : "",
+    });
+    setFiles({});
+    setTimeout(() => firstField.current?.focus(), 50);
+  };
+
+  const openEditPanel = (record: SubSubElementData) => {
+    setPanelMode("edit");
+    setSelectedRecord(record);
+    setFormData(record.data ?? {});
+    setChosenStatus((record.findingStatus as FindingStatus) ?? "INPG");
+    setFiles({});
+    setFormError(null);
+    setTimeout(() => firstField.current?.focus(), 50);
+  };
+
+  const selectRecord = (record: SubSubElementData, idx: number) => {
+    setPanelMode("detail");
+    setSelectedRecord(record);
+    setActiveIdx(idx);
+    setFormData({});
+    setFiles({});
+    setFormError(null);
+  };
+
+  // ── CRUD ──
+  const handleSave = async () => {
+    setFormError(null);
+    if (!formData.tanggalInspeksi) {
+      setFormError("Tanggal Inspeksi wajib diisi");
+      return;
+    }
+    if (!formData.safetyOfficer) {
+      setFormError("Safety Officer wajib diisi");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const fd = new FormData();
+      fd.append("subSubElementId", "7.1.1-inspeksi-ketidaksesuaian");
+      fd.append(
+        "title",
+        formData.deskripsiKetidaksesuaian ||
+        formData.lokasiUtama ||
+        "Inspeksi Ketidaksesuaian"
+      );
+      fd.append("findingStatus", chosenStatus);
+      if (panelMode === "edit" && selectedRecord?.id) {
+        fd.append("id", selectedRecord.id);
+      }
+      for (const [key, value] of Object.entries(formData)) {
+        if (value !== undefined && value !== null && !(value instanceof File)) {
+          fd.append(key, String(value));
+        }
+      }
+      for (const [key, file] of Object.entries(files)) {
+        fd.append(key, file);
+      }
+      const method = panelMode === "edit" ? "PUT" : "POST";
+      const res = await fetch("/api/smk3-data", { method, body: fd });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Gagal menyimpan");
+      }
+      await fetchRecords();
+      closePanels();
+    } catch (err: any) {
+      setFormError(err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleClsd = async (id: string) => {
+    if (!confirm("Tutup temuan ini sebagai CLSD?")) return;
+    try {
+      const res = await fetch("/api/smk3-data", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action: "approve" }),
+      });
+      if (!res.ok) throw new Error("Gagal menutup temuan");
+      await fetchRecords();
+      closePanels();
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Hapus temuan ini secara permanen?")) return;
+    try {
+      const res = await fetch(`/api/smk3-data?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Gagal menghapus");
+      await fetchRecords();
+      closePanels();
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  const handleApprove = async (id: string) => {
+    if (!session?.user) return;
+    if (!confirm("Setujui temuan ini sebagai INPG?")) return;
+    
+    setIsApproving(true);
+    try {
+      const res = await fetch("/api/smk3-data/" + id + "/status", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          findingStatus: "INPG",
+          approvedBy: (session.user as any).name,
+          approvedById: (session.user as any).id,
+        }),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Gagal menyetujui temuan");
+      await fetchRecords();
+      closePanels();
+      // Show success toast
+      const evt = new CustomEvent("toast", {
+        detail: { message: "Temuan berhasil disetujui", type: "success" },
+      });
+      window.dispatchEvent(evt);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!rejectingId || !rejectionReason.trim()) {
+      alert("Alasan penolakan wajib diisi");
+      return;
+    }
+    
+    setIsApproving(true);
+    try {
+      // Create rejection notification
+      const res = await fetch("/api/smk3-data/" + rejectingId + "/status", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          findingStatus: "OPEN",
+          rejectionReason: rejectionReason,
+        }),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Gagal menolak temuan");
+      await fetchRecords();
+      closePanels();
+      setShowRejectionDialog(false);
+      setRejectionReason("");
+      setRejectingId(null);
+      // Show success toast
+      const evt = new CustomEvent("toast", {
+        detail: { message: "Temuan berhasil ditolak", type: "success" },
+      });
+      window.dispatchEvent(evt);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
+  const openRejectionDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectionReason("");
+    setShowRejectionDialog(true);
+  };
+
+  const closeRejectionDialog = () => {
+    setShowRejectionDialog(false);
+    setRejectionReason("");
+    setRejectingId(null);
+  };
+
+  const handleExportPDF = async () => {
+    if (!selectedRecord) return;
+    
+    setIsExporting(true);
+    try {
+      // Prepare finding data for PDF export
+      const findingData = {
+        id: selectedRecord.id,
+        title: selectedRecord.title || selectedRecord.data?.lokasiUtama || "Finding Report",
+        findingStatus: selectedRecord.findingStatus as "OPEN" | "INPG" | "CLSD",
+        data: selectedRecord.data || {},
+        files: selectedRecord.files || [],
+        createdAt: selectedRecord.createdAt,
+        createdBy: selectedRecord.createdBy,
+        approvedBy: selectedRecord.approvedBy || undefined,
+        approvedAt: selectedRecord.approvedAt || undefined,
+      };
+
+      await exportFindingToPDF(findingData as any);
+      toast.success("PDF berhasil diunduh");
+    } catch (error: any) {
+      console.error("Error exporting PDF:", error);
+      toast.error(error.message || "Gagal membuat file PDF");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // ── Form field renderer ──
+  const renderFormField = (field: any, idx: number) => {
+    if (field.name === "statusPerbaikan") return null;
+    if (field.showWhen) {
+      if (formData[field.showWhen.field] !== field.showWhen.value) return null;
+    }
+    const value    = formData[field.name] ?? "";
+    const readOnly = field.name === "safetyOfficer";
+    const cls      = "w-full px-3 py-2.5 md:py-2 text-sm md:text-base border border-[#d4cfc9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f15a22] focus:border-transparent bg-white";
+
+    return (
+      <div key={field.name}>
+        <label className="block text-xs md:text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide mb-1.5 md:mb-1.5">
+          {field.label}
+          {field.required && <span className="text-[#f15a22] ml-0.5">*</span>}
+          {field.labelCn && (
+            <span className="ml-1 font-normal text-[#c5c0bb] normal-case tracking-normal text-[10px] md:text-[11px]">
+              {field.labelCn}
+            </span>
+          )}
+        </label>
+
+        {field.type === "textarea" ? (
+          <textarea
+            value={value}
+            onChange={e => setFormData(p => ({ ...p, [field.name]: e.target.value }))}
+            placeholder={field.placeholder}
+            rows={field.rows || 3}
+            readOnly={readOnly}
+            className={`${cls} resize-y ${readOnly ? "bg-[#faf9f7] cursor-not-allowed" : ""}`}
+          />
+        ) : field.type === "select" ? (
+          <select
+            value={value}
+            onChange={e => setFormData(p => ({ ...p, [field.name]: e.target.value }))}
+            disabled={readOnly}
+            className={cls}
+          >
+            
+            {field.options?.map((opt: any) => {
+              const val = typeof opt === "string" ? opt : opt.value;
+              const lbl = typeof opt === "string" ? opt : opt.label;
+              return <option key={val} value={val}>{lbl}</option>;
+            })}
+          </select>
+        ) : field.type === "file" ? (
+          <div>
+            <input
+              type="file"
+              accept={field.accept}
+              onChange={e => {
+                const f = e.target.files?.[0];
+                if (f) {
+                  setFiles(p => ({ ...p, [field.name]: f }));
+                  if (f.type.startsWith("image/")) {
+                    const reader = new FileReader();
+                    reader.onload = ev =>
+                      setFormData(p => ({
+                        ...p,
+                        [`${field.name}_preview`]: ev.target?.result as string,
+                      }));
+                    reader.readAsDataURL(f);
+                  }
+                }
+              }}
+              className={`${cls} file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#f15a22] file:text-white hover:file:bg-[#d14a1a]`}
+            />
+            {field.note && (
+              <p className="text-[10px] md:text-[11px] text-[#6b6560] mt-1">{field.note}</p>
+            )}
+            {formData[`${field.name}_preview`] && (
+              <div className="mt-2 rounded-lg overflow-hidden border border-[#d4cfc9]">
+                <img
+                  src={formData[`${field.name}_preview`]}
+                  alt="Preview"
+                  className="w-full h-48 md:h-40 object-contain"
+                />
+              </div>
+            )}
+          </div>
+        ) : (
+          <input
+            ref={idx === 0 ? firstField : undefined}
+            type={field.type}
+            value={value}
+            onChange={e => setFormData(p => ({ ...p, [field.name]: e.target.value }))}
+            placeholder={field.placeholder}
+            readOnly={readOnly}
+            className={`${cls} ${readOnly ? "bg-[#faf9f7] cursor-not-allowed" : ""}`}
+          />
+        )}
+      </div>
+    );
+  };
+
+  // ── Loading ──
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#f15a22] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // ── Render ──
+  return (
+    <>
+      {/* Page Header */}
+      <div className="bg-[#231f20] pt-[calc(72px+48px)] pb-10 px-5 md:px-10 border-b-4 border-[#f15a22]">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="flex items-center gap-2 mb-5 flex-wrap">
+            <Link href="/smk3" className="text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+              </svg>
+            </Link>
+            {[
+              { label: "SMK3",     href: "/smk3" },
+              { label: "Elemen 7", href: "/smk3/pemantauan" },
+              { label: "7.1",      href: "/smk3/pemantauan/7-1" },
+              { label: "7.1.1",    href: "/smk3/pemantauan/7-1/7-1-1" },
+            ].map((b, i) => (
+              <span key={i} className="flex items-center gap-2">
+                <Link
+                  href={b.href}
+                  className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#c5c0bb] hover:text-[#f15a22] transition-colors"
+                >
+                  {b.label}
+                </Link>
+                <span className="text-[#3a3535]">/</span>
+              </span>
+            ))}
+            <span className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22]">
+              Inspeksi Ketidaksesuaian
+            </span>
+          </div>
+
+          <div className="flex items-start gap-4">
+            <div className="bg-[#f7941d] px-4 py-2 text-white font-barlow-condensed font-extrabold text-lg flex-shrink-0">
+              7.1.1.1
+            </div>
+            <div>
+              <h1 className="font-barlow-condensed font-extrabold text-white uppercase leading-none text-[clamp(22px,4vw,40px)] mb-2">
+                Inspeksi Ketidaksesuaian
+              </h1>
+              <p className="text-[#c5c0bb] text-sm">
+                Pemeriksaan dan dokumentasi ketidaksesuaian terhadap standar K3
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Layout */}
+      <div className="bg-[#faf9f7] min-h-screen">
+        <div className="max-w-screen-2xl mx-auto p-2 md:p-4 lg:p-6">
+          <div
+            className="flex flex-col md:flex-row gap-2 md:gap-4"
+            style={{ minHeight: "500px", maxHeight: "calc(100vh - 200px)" }}
+          >
+
+            {/* ══ LEFT PANEL �?100% mobile, 40% desktop ══ */}
+            <div
+              className="flex flex-col bg-white rounded-xl border border-[#d4cfc9] overflow-hidden w-full md:w-[40%]"
+            >
+    {/* Toolbar */}
+              <div className="flex items-center gap-2 px-2 md:px-3 py-2 md:py-2.5 border-b border-[#d4cfc9] flex-shrink-0">
+
+                
+
+                {(["", "INPG", "CLSD"] as FilterStatus[]).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setFilterStatus(s)}
+                    className={`text-[11px] md:text-xs font-semibold px-2 py-1 md:px-2.5 md:py-1 rounded-full border transition-colors whitespace-nowrap ${
+                      filterStatus === s
+                        ? "bg-[#f15a22] text-white border-[#f15a22]"
+                        : "bg-white text-[#6b6560] border-[#d4cfc9] hover:border-[#f15a22] hover:text-[#f15a22]"
+                    }`}
+                  >
+                    {s || "Semua"}
+                  </button>
+                ))}
+
+                <button
+                  onClick={openNewPanel}
+                  className="flex items-center gap-1 px-2 md:px-3 py-1 md:py-1.5 bg-[#f15a22] text-white text-xs md:text-xs font-bold uppercase rounded-lg hover:bg-[#d14a1a] transition-colors flex-shrink-0"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M12 5v14M5 12h14"/>
+                  </svg>
+                  <span className="hidden xl:inline">Tambah</span>
+                </button>
+              </div>
+
+              {/* Summary */}
+              <div className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1.5 md:py-1.5 border-b border-[#d4cfc9] bg-[#faf9f7] flex-shrink-0 text-[10px] md:text-[11px] text-[#6b6560]">
+                <span>{filtered.length} temuan</span>
+                {(["", "INPG", "CLSD"] as FilterStatus[]).map(s => {
+                  const cnt = filtered.filter(r => r.findingStatus === s).length;
+                  if (!cnt) return null;
+                  const st = STATUS_STYLE[s];
+                  return (
+                    <span
+                      key={s}
+                      className={`flex items-center gap-1 px-1.5 md:px-2 py-0.5 md:py-0.5 rounded-full ${st.bg} ${st.text} font-semibold`}
+                    >
+                      <span className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full ${st.dot}`} />
+                      {cnt} {s}
+                    </span>
+                  );
+                })}
+              </div>
+
+              {/* Record list */}
+              <div className="overflow-y-auto flex-1">
+                {isLoadingList ? (
+                  <div className="flex items-center justify-center h-32">
+                    <div className="w-6 h-6 border-2 border-[#f15a22] border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : filtered.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-40 gap-2 text-[#c5c0bb]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <p className="text-sm">Tidak ada temuan</p>
+                    <button
+                      onClick={openNewPanel}
+                      className="text-xs text-[#f15a22] underline"
+                    >
+                      Tambah temuan baru
+                    </button>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-[#f2f0ee]">
+                    {filtered.map((record, idx) => {
+                      const isActive = selectedRecord?.id === record.id;
+                      const photoUrl = getPhotoUrl(record);
+                      return (
+                        <div
+                          key={record.id}
+                          onClick={() => selectRecord(record, idx)}
+                          className={`flex items-stretch cursor-pointer transition-colors ${
+                            isActive
+                              ? "bg-orange-50 border-l-2 border-l-[#f15a22]"
+                              : "hover:bg-[#faf9f7] border-l-2 border-l-transparent"
+                          }`}
+                        >
+                          {/* Foto */}
+                          <div className="flex-shrink-0 w-full md:w-[222px] h-[88px] md:h-[111px] bg-[#f2f0ee] overflow-hidden">
+                            {photoUrl ? (
+                              <img
+                                src={photoUrl}
+                                alt="Foto hazard"
+                                className="w-full h-full object-contain"
+                                onError={e => {
+                                  (e.target as HTMLImageElement).style.display = "none";
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+                                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                                  <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0 px-3 py-2.5 flex flex-col justify-between">
+                            {/* Status dan Level Badge */}
+                            <div className="flex items-center gap-1.5 flex-wrap uppercase">
+                              <StatusBadge status={record.findingStatus || "INPG"} />
+                              {record.data?.levelHazard && (
+                                <LevelBadge level={record.data.levelHazard} />
+                              )}
+                            </div>
+
+                            <p className="text-xs font-semibold text-[#231f20] truncate mt-1">
+                              {record.data?.lokasiUtama || "�?}
+                            </p>
+                            <p className="text-[11px] text-[#6b6560] truncate">
+                              {record.data?.safetyOfficer || record.createdBy}
+                            </p>
+                            <p className="text-[11px] text-[#c5c0bb]">
+                              {record.data?.tanggalInspeksi
+                                ? new Date(record.data.tanggalInspeksi).toLocaleDateString("id-ID", {
+                                    day: "2-digit", month: "short", year: "numeric",
+                                  })
+                                : new Date(record.createdAt).toLocaleDateString("id-ID", {
+                                    day: "2-digit", month: "short", year: "numeric",
+                                  })}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              
+            </div>
+
+            {/* ══ RIGHT PANEL �?100% mobile, 60% desktop ══ */}
+            <div className="flex flex-col bg-white rounded-xl border border-[#d4cfc9] overflow-hidden flex-1 min-w-0 w-full md:w-[60%]">
+
+              {/* Empty */}
+              {panelMode === "empty" && (
+                <div className="flex flex-col items-center justify-center flex-1 gap-3 text-center px-8">
+                  <div className="w-14 h-14 rounded-full bg-[#faf9f7] border border-[#d4cfc9] flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </div>
+                  <p className="text-sm text-[#6b6560]">
+                    Pilih temuan dari daftar untuk melihat detail
+                  </p>
+                  <p className="text-xs text-[#c5c0bb]">
+                    atau tekan{" "}
+                    <kbd className="bg-[#faf9f7] border border-[#d4cfc9] rounded px-1.5 py-0.5 text-[10px]">
+                      N
+                    </kbd>{" "}
+                    untuk tambah baru
+                  </p>
+                </div>
+              )}
+
+              {/* Detail */}
+              {panelMode === "detail" && selectedRecord && (
+                <>
+                  {/* Header */}
+                  <div className="flex flex-col md:flex-row md:items-center gap-3 px-3 md:px-5 py-3 border-b border-[#d4cfc9] flex-shrink-0">
+                    <div className="flex items-center gap-2 flex-1 flex-wrap">
+                      <StatusBadge status={selectedRecord.findingStatus || "INPG"} />
+                      {selectedRecord.data?.levelHazard && (
+                        <LevelBadge level={selectedRecord.data.levelHazard} />
+                      )}
+                      <span className="text-xs text-[#6b6560] truncate">
+                        {selectedRecord.createdBy} ·{" "}
+                        {new Date(selectedRecord.createdAt).toLocaleDateString("id-ID")}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap">
+                      <button
+                        onClick={handleExportPDF}
+                        disabled={isExporting}
+                        title="Export to PDF"
+                        className="flex items-center gap-1 px-3 py-2 md:py-1.5 text-xs font-semibold bg-[#f15a22] text-white rounded-lg hover:bg-[#d14a1a] transition-colors disabled:opacity-50"
+                      >
+                        {isExporting ? (
+                          <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                          </svg>
+                        )}
+                        Export PDF
+                      </button>
+
+                      {selectedRecord.findingStatus === "INPG" &&
+                        (isAdmin ||
+                          selectedRecord.createdById ===
+                            (session?.user as any)?.idKaryawan) && (
+                          <button
+                            onClick={() => openEditPanel(selectedRecord)}
+                            className="flex items-center gap-1 px-3 py-2 md:py-1.5 text-xs font-semibold bg-[#f15a22] text-white rounded-lg hover:bg-[#d14a1a] transition-colors"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                            Edit
+                          </button>
+                        )}
+
+                      {isSupervisor && selectedRecord.findingStatus === "OPEN" && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(selectedRecord.id!)}
+                            disabled={isApproving}
+                            className="flex items-center gap-1 px-3 py-2 md:py-1.5 text-xs font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                          >
+                            {isApproving ? (
+                              <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <polyline points="20 6 9 17 4 12"/>
+                              </svg>
+                            )}
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => openRejectionDialog(selectedRecord.id!)}
+                            disabled={isApproving}
+                            className="flex items-center gap-1 px-3 py-2 md:py-1.5 text-xs font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <circle cx="12" cy="12" r="10"/>
+                              <path d="M12 8v4M12 16h.01"/>
+                            </svg>
+                            Reject
+                          </button>
+                        </>
+                      )}
+
+                      {isSupervisor && selectedRecord.findingStatus === "INPG" && (
+                        <button
+                          onClick={() => handleClsd(selectedRecord.id!)}
+                          className="flex items-center gap-1 px-3 py-2 md:py-1.5 text-xs font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          Tutup (CLSD)
+                        </button>
+                      )}
+
+                      {isAdmin && (
+                        <button
+                          onClick={() => handleDelete(selectedRecord.id!)}
+                          title="Hapus"
+                          className="p-1.5 text-[#c5c0bb] hover:text-red-500 transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                            <path d="M10 11v6M14 11v6"/>
+                            <path d="M9 6V4h6v2"/>
+                          </svg>
+                        </button>
+                      )}
+
+                      <button
+                        onClick={closePanels}
+                        className="p-1.5 text-[#c5c0bb] hover:text-[#231f20] transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M18 6 6 18M6 6l12 12"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Body */}
+                  <div className="overflow-y-auto flex-1 px-3 md:px-5 py-4 md:py-5">
+
+                    {/* Field data - single column di mobile, 2 kolom desktop */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-6 gap-y-3 md:gap-y-4 mb-5">
+                      {formConfig.fields
+                        .filter(
+                          f =>
+                            f.name !== "statusPerbaikan" &&
+                            f.name !== "dokumentasiHazard" &&
+                            f.name !== "dokumentasiPerbaikan"
+                        )
+                        .filter(f => {
+                          if (!f.showWhen) return true;
+                          return (
+                            selectedRecord.data?.[f.showWhen.field] ===
+                            f.showWhen.value
+                          );
+                        })
+                        .map(f => {
+                          const val = selectedRecord.data?.[f.name];
+                          if (!val) return null;
+                          const isWide =
+                            f.type === "textarea" ||
+                            f.name === "deskripsiKetidaksesuaian" ||
+                            f.name === "rekomendasiPerbaikan" ||
+                            f.name === "keteranganTambahan";
+                          return (
+                            <div
+                              key={f.name}
+                              className={isWide ? "col-span-1 md:col-span-2" : "col-span-1"}
+                            >
+                              <p className="text-[10px] font-semibold text-[#c5c0bb] uppercase tracking-wide mb-1">
+                                {f.label}
+                                {f.labelCn && (
+                                  <span className="ml-1 font-normal normal-case tracking-normal">
+                                    {f.labelCn}
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-sm text-[#231f20] leading-relaxed">
+                                {f.type === "select" && f.options
+                                  ? (() => {
+                                      const opt = f.options.find(o => 
+                                        typeof o === "string" ? o === val : o.value === val
+                                      );
+                                      return opt && typeof opt !== "string" 
+                                        ? opt.label 
+                                        : opt || String(val);
+                                    })()
+                                  : String(val)}
+                              </p>
+                            </div>
+                          );
+                        })}
+                    </div>
+
+                    {/* Foto Before-After (Vertikal mobile, Sejajar desktop) */}
+                    {(detailPhotoUrl || detailPerbaikanUrl) && (
+                      <div className="pt-5 border-t border-[#f2f0ee]">
+                        <p className="text-[10px] font-semibold text-[#c5c0bb] uppercase tracking-wide mb-3">
+                          Dokumentasi Foto
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Foto Temuan (Before) */}
+                          <div>
+                            <p className="text-xs md:text-[11px] font-semibold text-[#6b6560] mb-2">
+                              Foto Temuan (Before)
+                            </p>
+                            {detailPhotoUrl ? (
+                              <div className="rounded-lg overflow-hidden border border-[#d4cfc9] bg-[#f2f0ee]">
+                                <img
+                                  src={detailPhotoUrl}
+                                  alt="Dokumentasi hazard"
+                                  className="w-full h-48 md:h-64 object-contain"
+                                />
+                              </div>
+                            ) : (
+                              <div className="rounded-lg border-2 border-dashed border-[#d4cfc9] bg-[#faf9f7] h-48 md:h-64 flex items-center justify-center">
+                                <p className="text-xs text-[#c5c0bb]">Tidak ada foto</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Foto Perbaikan (After) */}
+                          <div>
+                            <p className="text-xs md:text-[11px] font-semibold text-[#6b6560] mb-2">
+                              Foto Perbaikan (After)
+                            </p>
+                            {detailPerbaikanUrl ? (
+                              <div className="rounded-lg overflow-hidden border border-green-500 bg-[#f2f0ee]">
+                                <img
+                                  src={detailPerbaikanUrl}
+                                  alt="Dokumentasi perbaikan"
+                                  className="w-full h-48 md:h-64 object-contain"
+                                />
+                              </div>
+                            ) : (
+                              <div className="rounded-lg border-2 border-dashed border-[#d4cfc9] bg-[#faf9f7] h-48 md:h-64 flex items-center justify-center">
+                                <p className="text-xs text-[#c5c0bb]">Belum ada perbaikan</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* File lain (non-gambar) */}
+                    {selectedRecord.files
+                      ?.filter(
+                        (f: any) =>
+                          f.fieldName !== "dokumentasiHazard" &&
+                          f.fieldName !== "dokumentasiPerbaikan"
+                      )
+                      .map((f: any) => (
+                        <div key={f.fieldName} className="mt-3">
+                          <a
+                            href={f.fileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-2 text-xs text-[#f15a22] hover:underline"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                              <polyline points="7 10 12 15 17 10"/>
+                              <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            {f.fileName}
+                          </a>
+                        </div>
+                      ))}
+                  </div>
+                </>
+              )}
+
+              {/* New / Edit form */}
+              {(panelMode === "new" || panelMode === "edit") && (
+                <>
+                  {/* Form header */}
+                  <div className="flex flex-col md:flex-row md:items-center gap-3 px-3 md:px-5 py-3 border-b border-[#d4cfc9] flex-shrink-0">
+                    <span className="text-sm font-semibold text-[#231f20] flex-1">
+                      {panelMode === "edit" ? "Edit Temuan" : "Tambah Temuan Baru"}
+                    </span>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {/* Status picker */}
+                      <div className="flex items-center gap-1 bg-[#faf9f7] border border-[#d4cfc9] rounded-lg p-0.5">
+                        {(["INPG", "CLSD"] as FindingStatus[]).map(s => (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => setChosenStatus(s)}
+                            className={`px-3 py-2 md:py-1 rounded text-xs font-bold uppercase transition-colors ${
+                              chosenStatus === s
+                                ? s === "INPG"
+                                  ? "bg-amber-500 text-white"
+                                  : "bg-green-600 text-white"
+                                : "text-[#6b6560] hover:text-[#231f20]"
+                            }`}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="flex items-center justify-center gap-1.5 px-4 py-2.5 md:py-1.5 bg-[#f15a22] text-white text-xs font-bold uppercase rounded-lg hover:bg-[#d14a1a] transition-colors disabled:opacity-50"
+                      >
+                        {isSaving ? (
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                          </svg>
+                        )}
+                        Simpan
+                        <span className="hidden md:inline opacity-60 font-normal">[Ctrl+S]</span>
+                      </button>
+
+                      <button
+                        onClick={closePanels}
+                        className="p-2.5 md:p-1.5 text-[#c5c0bb] hover:text-[#231f20] transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M18 6 6 18M6 6l12 12"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Status banner */}
+                  <div
+                    className={`mx-3 md:mx-5 mt-3 px-3 py-2.5 md:py-2 rounded-lg text-xs flex items-start gap-2 flex-shrink-0 ${
+                      chosenStatus === "INPG"
+                        ? "bg-amber-50 border border-amber-200 text-amber-700"
+                        : "bg-green-50 border border-green-200 text-green-700"
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 mt-0.5">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="12" y1="8" x2="12" y2="12"/>
+                      <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    {chosenStatus === "INPG"
+                      ? "Status INPG �?temuan belum diperbaiki, disimpan untuk tindak lanjut."
+                      : "Status CLSD �?perbaikan sudah dilakukan, temuan langsung ditutup."}
+                  </div>
+
+                  {/* Error */}
+                  {formError && (
+                    <div className="mx-3 md:mx-5 mt-2 px-3 py-2.5 md:py-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-center gap-2 flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                      </svg>
+                      {formError}
+                    </div>
+                  )}
+
+                  {/* Form fields */}
+                  <div className="overflow-y-auto flex-1 px-3 md:px-5 py-4 space-y-5 md:space-y-4">
+                    {formConfig.fields.map((field, idx) =>
+                      renderFormField(field, idx)
+                    )}
+                    <div className="h-4" />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Rejection Reason Dialog */}
+      {showRejectionDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#d4cfc9]">
+              <h3 className="text-lg font-semibold text-[#231f20]">Tolak Temuan</h3>
+              <button
+                onClick={closeRejectionDialog}
+                className="p-1 text-[#c5c0bb] hover:text-[#231f20] transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-4">
+              <label className="block text-sm font-semibold text-[#6b6560] mb-2">
+                Alasan Penolakan <span className="text-[#f15a22]">*</span>
+              </label>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Jelaskan alasan penolakan temuan ini..."
+                rows={4}
+                className="w-full px-3 py-2 border border-[#d4cfc9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f15a22] focus:border-transparent text-sm"
+                autoFocus
+              />
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#d4cfc9]">
+              <button
+                onClick={closeRejectionDialog}
+                disabled={isApproving}
+                className="px-4 py-2 text-sm font-semibold text-[#6b6560] bg-[#f2f0ee] rounded-lg hover:bg-[#e8e6e4] transition-colors disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleReject}
+                disabled={isApproving || !rejectionReason.trim()}
+                className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {isApproving ? (
+                  <>
+                    <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Menolak...
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    Tolak Temuan
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

@@ -1,0 +1,80 @@
+import type { CrudPageConfig } from '@/components/CrudPage';
+
+export const config: CrudPageConfig = {
+  categoryId: 'sc-safety-activities',
+  title: 'Safety Activities',
+  description: 'Rekaman kegiatan K3 harian/periodik seperti safety talk, inspeksi, simulasi, dan aktivitas K3 lainnya.',
+  parentLabel: 'Documentation & Records',
+  fields: [
+    {
+      key: 'namaAktivitas',
+      label: 'Nama Aktivitas',
+      type: 'text',
+      required: true,
+      placeholder: 'Contoh: Safety Talk Mingguan',
+      showInTable: true,
+    },
+    {
+      key: 'jenisAktivitas',
+      label: 'Jenis Aktivitas',
+      type: 'select',
+      required: true,
+      showInTable: true,
+      options: [
+        { label: 'Safety Talk', value: 'Safety Talk' },
+        { label: 'Safety Inspection', value: 'Safety Inspection' },
+        { label: 'Safety Meeting', value: 'Safety Meeting' },
+        { label: 'Emergency Drill', value: 'Emergency Drill' },
+        { label: 'Safety Patrol', value: 'Safety Patrol' },
+        { label: 'Safety Audit', value: 'Safety Audit' },
+        { label: 'Lainnya', value: 'Lainnya' },
+      ],
+    },
+    {
+      key: 'tanggalAktivitas',
+      label: 'Tanggal Aktivitas',
+      type: 'date',
+      required: true,
+      showInTable: true,
+    },
+    {
+      key: 'lokasi',
+      label: 'Lokasi',
+      type: 'text',
+      required: true,
+      placeholder: 'Lokasi pelaksanaan aktivitas',
+    },
+    {
+      key: 'penanggungjawab',
+      label: 'Penanggung Jawab',
+      type: 'text',
+      required: true,
+      placeholder: 'Nama penanggung jawab aktivitas',
+    },
+    {
+      key: 'jumlahPeserta',
+      label: 'Jumlah Peserta',
+      type: 'number',
+      placeholder: 'Jumlah orang yang hadir',
+    },
+    {
+      key: 'statusAktivitas',
+      label: 'Status',
+      type: 'select',
+      required: true,
+      showInTable: true,
+      options: [
+        { label: 'Selesai', value: 'Selesai' },
+        { label: 'Dalam Proses', value: 'Dalam Proses' },
+        { label: 'Dijadwalkan', value: 'Dijadwalkan' },
+        { label: 'Dibatalkan', value: 'Dibatalkan' },
+      ],
+    },
+    {
+      key: 'deskripsi',
+      label: 'Deskripsi / Catatan',
+      type: 'textarea',
+      placeholder: 'Ringkasan kegiatan, topik yang dibahas, atau catatan penting',
+    },
+  ],
+};

@@ -1,0 +1,97 @@
+import type { CrudPageConfig } from '@/components/CrudPage';
+
+export const config: CrudPageConfig = {
+  categoryId: 'ap-emergency-drill',
+  title: 'Emergency Drill',
+  description: 'Simulasi dan latihan tanggap darurat: perencanaan, pelaksanaan, evaluasi hasil drill, dan tindak lanjut perbaikan.',
+  parentLabel: 'Emergency Preparedness',
+  fields: [
+    {
+      key: 'namaDrill',
+      label: 'Nama / Tema Drill',
+      type: 'text',
+      required: true,
+      showInTable: true,
+      placeholder: 'Contoh: Fire Drill Q1 2026',
+    },
+    {
+      key: 'jenisDrill',
+      label: 'Jenis Drill',
+      type: 'select',
+      required: true,
+      showInTable: true,
+      options: [
+        { label: 'Fire Drill', value: 'Fire Drill' },
+        { label: 'Evakuasi Gempa Bumi', value: 'Evakuasi Gempa Bumi' },
+        { label: 'Tumpahan B3', value: 'Tumpahan B3' },
+        { label: 'Kecelakaan Kerja Besar', value: 'Kecelakaan Kerja Besar' },
+        { label: 'Kebocoran Gas', value: 'Kebocoran Gas' },
+        { label: 'Medical Emergency', value: 'Medical Emergency' },
+        { label: 'Drill Gabungan', value: 'Drill Gabungan' },
+      ],
+    },
+    {
+      key: 'tanggalDrill',
+      label: 'Tanggal Pelaksanaan',
+      type: 'date',
+      required: true,
+      showInTable: true,
+    },
+    {
+      key: 'lokasiDrill',
+      label: 'Lokasi',
+      type: 'text',
+      required: true,
+      placeholder: 'Area / gedung tempat drill',
+    },
+    {
+      key: 'penanggungJawab',
+      label: 'Penanggung Jawab',
+      type: 'text',
+      placeholder: 'Nama PIC drill',
+    },
+    {
+      key: 'jumlahPeserta',
+      label: 'Jumlah Peserta',
+      type: 'number',
+      placeholder: '0',
+    },
+    {
+      key: 'durasiMenit',
+      label: 'Durasi (menit)',
+      type: 'number',
+      placeholder: '0',
+    },
+    {
+      key: 'skenarioDrill',
+      label: 'Skenario Drill',
+      type: 'textarea',
+      placeholder: 'Uraikan skenario yang dilatihkan...',
+    },
+    {
+      key: 'hasilEvaluasi',
+      label: 'Hasil Evaluasi',
+      type: 'textarea',
+      showInTable: false,
+      placeholder: 'Temuan, kekurangan, dan penilaian hasil drill...',
+    },
+    {
+      key: 'tindakLanjut',
+      label: 'Tindak Lanjut',
+      type: 'textarea',
+      placeholder: 'Rencana perbaikan dan corrective action...',
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      type: 'select',
+      required: true,
+      showInTable: true,
+      options: [
+        { label: 'Direncanakan', value: 'Direncanakan' },
+        { label: 'Selesai', value: 'Selesai' },
+        { label: 'Dibatalkan', value: 'Dibatalkan' },
+      ],
+    },
+  ],
+};

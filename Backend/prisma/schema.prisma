@@ -1,0 +1,648 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Center {
+  id          String       @id @default(uuid())
+  name        String
+  code        String       @unique
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  departments Department[]
+  users       User[]
+
+  @@map("centers")
+}
+
+model Division {
+  id           String     @id @default(uuid())
+  name         String
+  departmentId String     @map("department_id")
+  picId        String     @map("pic_id")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  department   Department @relation(fields: [departmentId], references: [id])
+  pic          User       @relation("DivisionPIC", fields: [picId], references: [id])
+  users        User[]     @relation("UserDivision")
+
+  @@map("divisions")
+}
+
+model User {
+  id                           String                 @id @default(uuid())
+  idKaryawan                   String                 @unique @map("id_karyawan")
+  nama                         String
+  jabatan                      String?
+  departemen                   String?
+  divisi                       String?
+  pusat                        String?
+  perusahaan                   String?
+  password                     String
+  role                         Role                   @default(user)
+  approved                     Boolean                @default(true)
+  supervisorId                 String?                @map("supervisor_id")
+  tanggalLahir                 DateTime?              @map("tanggal_lahir")
+  tempatLahir                  String?                @map("tempat_lahir")
+  agama                        String?
+  jenisKelamin                 String?                @map("jenis_kelamin")
+  pendidikan                   String?
+  namaSekolah                  String?                @map("nama_sekolah")
+  jurusan                      String?
+  tanggalMulaiKerja            DateTime?              @map("tanggal_mulai_kerja")
+  createdAt                    DateTime               @default(now()) @map("created_at")
+  updatedAt                    DateTime               @updatedAt @map("updated_at")
+  email                        String?
+  centerId                     String?                @map("center_id")
+  departmentId                 String?                @map("department_id")
+  divisionId                   String?                @map("division_id")
+  auditLogs                    AuditLog[]
+  documentsCreated             Document[]             @relation("DocumentCreatedBy")
+  drillsCreated                EmergencyDrill[]       @relation("DrillCreatedBy")
+  drillsUpdated                EmergencyDrill[]       @relation("DrillUpdatedBy")
+  approvals                    Finding[]              @relation("FindingApprover")
+  findings                     Finding[]              @relation("FindingCreator")
+  pics                         Finding[]              @relation("FindingPIC")
+  inductionParticipants        InductionParticipant[] @relation("InductionUserParticipant")
+  inductionSessionsPIC         InductionSession[]     @relation("InductionPIC")
+  investigationLogs            InvestigationLog[]     @relation("InvestigationLogUser")
+  investigationsAsApprover     Investigation[]        @relation("InvestigationApprover")
+  investigationsAsInvestigator Investigation[]        @relation("Investigator")
+  investigationsAsPelapor      Investigation[]        @relation("Pelapor")
+  k3PoliciesCreated            K3Policy[]             @relation("K3PolicyCreatedBy")
+  k3PoliciesUpdated            K3Policy[]             @relation("K3PolicyUpdatedBy")
+  notifications                Notification[]
+  objekK3Created               ObjekK3[]              @relation("ObjekK3CreatedBy")
+  objekK3Updated               ObjekK3[]              @relation("ObjekK3UpdatedBy")
+  supervisor                   User?                  @relation("SupervisorBawahan", fields: [supervisorId], references: [id])
+  bawahan                      User[]                 @relation("SupervisorBawahan")
+  centerData                   Center?                @relation(fields: [centerId], references: [id])
+  departmentData               Department?            @relation("UserDepartment", fields: [departmentId], references: [id])
+  divisionData                 Division?              @relation("UserDivision", fields: [divisionId], references: [id])
+  divisionPIC                  Division[]             @relation("DivisionPIC")
+
+  @@map("users")
+}
+
+model Finding {
+  id               String          @id @default(uuid())
+  subElementId     String          @map("sub_element_id")
+  title            String
+  findingStatus    FindingStatus   @default(INPG) @map("finding_status")
+  data             Json            @default("{}")
+  createdById      String          @map("created_by_id")
+  createdByName    String          @map("created_by_name")
+  approvedById     String?         @map("approved_by_id")
+  approvedByName   String?         @map("approved_by_name")
+  approvedAt       DateTime?       @map("approved_at")
+  approvalNote     String?         @map("approval_note")
+  closedAt         DateTime?       @map("closed_at")
+  closedById       String?         @map("closed_by_id")
+  closedByName     String?         @map("closed_by_name")
+  deletedAt        DateTime?       @map("deleted_at")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+  approvalStatus   ApprovalStatus? @map("approval_status")
+  followUpDeadline DateTime?       @map("follow_up_deadline")
+  followUpNote     String?         @map("follow_up_note")
+  picId            String?         @map("pic_id")
+  auditLogs        AuditLog[]
+  files            FindingFile[]
+  approvedBy       User?           @relation("FindingApprover", fields: [approvedById], references: [id])
+  createdBy        User            @relation("FindingCreator", fields: [createdById], references: [id])
+  pic              User?           @relation("FindingPIC", fields: [picId], references: [id])
+  investigations   Investigation[]
+  notifications    Notification[]
+
+  @@map("findings")
+}
+
+model FindingFile {
+  id         String   @id @default(uuid())
+  findingId  String   @map("finding_id")
+  fieldName  String   @map("field_name")
+  fileName   String   @map("file_name")
+  fileUrl    String   @map("file_url")
+  fileSize   Int      @map("file_size")
+  mimeType   String?  @map("mime_type")
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  finding    Finding  @relation(fields: [findingId], references: [id], onDelete: Cascade)
+
+  @@map("finding_files")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false) @map("is_read")
+  findingId String?          @map("finding_id")
+  objekK3Id String?          @map("objek_k3_id")
+  createdAt DateTime         @default(now()) @map("created_at")
+  finding   Finding?         @relation(fields: [findingId], references: [id])
+  objekK3   ObjekK3?         @relation(fields: [objekK3Id], references: [id])
+  user      User             @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model AuditLog {
+  id        String      @id @default(uuid())
+  tableName String      @map("table_name")
+  recordId  String      @map("record_id")
+  action    AuditAction
+  changes   Json?
+  userId    String      @map("user_id")
+  findingId String?     @map("finding_id")
+  timestamp DateTime    @default(now())
+  finding   Finding?    @relation(fields: [findingId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model Department {
+  id              String           @id @default(uuid())
+  name            String
+  code            String           @unique
+  centerId        String?          @map("center_id")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  center          Center?          @relation(fields: [centerId], references: [id])
+  divisions       Division[]
+  documents       Document[]
+  emergencyDrills EmergencyDrill[]
+  objekK3         ObjekK3[]
+  users           User[]           @relation("UserDepartment")
+
+  @@map("departments")
+}
+
+model Document {
+  id               String           @id @default(uuid())
+  departemenId     String           @map("departemen_id")
+  jenisDokumen     JenisDokumen     @map("jenis_dokumen")
+  namaDokumen      String           @map("nama_dokumen")
+  nomorDokumen     String           @map("nomor_dokumen")
+  revisi           String?          @default("00")
+  tanggalTerbit    DateTime         @map("tanggal_terbit")
+  statusDokumen    StatusDokumen    @map("status_dokumen")
+  statusDistribusi StatusDistribusi @map("status_distribusi")
+  statusValidasi   StatusValidasi   @map("status_validasi")
+  parentId         String?          @map("parent_id")
+  fileUrl          String?          @map("file_url")
+  createdById      String           @map("created_by_id")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  createdBy        User             @relation("DocumentCreatedBy", fields: [createdById], references: [id])
+  departemen       Department       @relation(fields: [departemenId], references: [id])
+  parent           Document?        @relation("DocumentHierarchy", fields: [parentId], references: [id])
+  children         Document[]       @relation("DocumentHierarchy")
+
+  @@map("documents")
+}
+
+model K3Policy {
+  id               String   @id @default(uuid())
+  jenisKebijakan   String   @map("jenis_kebijakan")
+  judulKebijakan   String   @map("judul_kebijakan")
+  tanggalPenetapan DateTime @map("tanggal_penetapan")
+  penandatangan    String
+  jabatan          String
+  statusDokumen    String   @map("status_dokumen")
+  statusDistribusi String?  @map("status_distribusi")
+  statusValidasi   String?  @map("status_validasi")
+  fileUrl          String?  @map("file_url")
+  createdById      String   @map("created_by_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedById      String?  @map("updated_by_id")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  createdBy        User     @relation("K3PolicyCreatedBy", fields: [createdById], references: [id])
+  updatedBy        User?    @relation("K3PolicyUpdatedBy", fields: [updatedById], references: [id])
+
+  @@map("k3_policies")
+}
+
+model ObjekK3 {
+  id                      String               @id @default(cuid())
+  perusahaan              Perusahaan
+  kategori                KategoriObjek
+  namaAlat                String               @map("nama_alat")
+  noSeri                  String               @map("no_seri")
+  jumlah                  Int
+  departemenId            String               @map("departemen_id")
+  lokasi                  String
+  kapasitas               Float?
+  satuan                  String?
+  tahunPemasangan         Int?                 @map("tahun_pemasangan")
+  kondisiPemasangan       String?              @map("kondisi_pemasangan")
+  pengesahanGambar        String?              @map("pengesahan_gambar")
+  tanggalPengujianPertama DateTime?            @map("tanggal_pengujian_pertama")
+  tanggalPengujianBerkala DateTime?            @map("tanggal_pengujian_berkala")
+  statusKelayakan         StatusKelayakan?     @map("status_kelayakan")
+  statusRiksaUji          StatusRiksaUji?      @map("status_riksa_uji")
+  noSuket                 String?              @map("no_suket")
+  tanggalRiksaUjiTerakhir DateTime?            @map("tanggal_riksa_uji_terakhir")
+  tanggalBerlaku          DateTime?            @map("tanggal_berlaku")
+  sisaHari                Int?                 @map("sisa_hari")
+  statusAman              StatusAman?          @map("status_aman")
+  jadwalRiksaUji          DateTime?            @map("jadwal_riksa_uji")
+  lhu                     String?
+  fileLHU                 String?              @map("file_lhu")
+  lhuAda                  String?              @map("lhu_ada")
+  noLHU                   String?              @map("no_lhu")
+  fotoAlat                String?              @map("foto_alat")
+  fotoTagging             String?              @map("foto_tagging")
+  sertifikat              String?
+  laporanPemeriksaan      String?              @map("laporan_pemeriksaan")
+  catatan                 String?
+  createdById             String               @map("created_by_id")
+  createdAt               DateTime             @default(now()) @map("created_at")
+  updatedById             String?              @map("updated_by_id")
+  updatedAt               DateTime             @updatedAt @map("updated_at")
+  createdBy               User                 @relation("ObjekK3CreatedBy", fields: [createdById], references: [id])
+  departemen              Department           @relation(fields: [departemenId], references: [id])
+  updatedBy               User?                @relation("ObjekK3UpdatedBy", fields: [updatedById], references: [id])
+  riwayatPemeriksaan      RiwayatPemeriksaan[]
+  notifications           Notification[]
+
+  @@map("objek_k3")
+}
+
+model RiwayatPemeriksaan {
+  id          String   @id @default(cuid())
+  objekK3Id   String   @map("objek_k3_id")
+  tanggal     DateTime
+  hasil       String
+  catatan     String?
+  fileLaporan String?  @map("file_laporan")
+  createdAt   DateTime @default(now()) @map("created_at")
+  objekK3     ObjekK3  @relation(fields: [objekK3Id], references: [id], onDelete: Cascade)
+
+  @@map("riwayat_pemeriksaan")
+}
+
+model EmergencyDrill {
+  id                 String      @id @default(cuid())
+  planDate           DateTime    @map("plan_date")
+  drillType          DrillType   @map("drill_type")
+  scenario           String
+  departmentId       String      @map("department_id")
+  division           String
+  picPlan            String      @map("pic_plan")
+  notesPlan          String?     @map("notes_plan")
+  actualDate         DateTime?   @map("actual_date")
+  location           String?
+  totalTKA           Int?        @map("total_tka")
+  totalTKI           Int?        @map("total_tki")
+  totalStaff         Int?        @map("total_staff")
+  participationRate  Float?      @map("participation_rate")
+  duration           String?
+  picActual          String?     @map("pic_actual")
+  notesActual        String?     @map("notes_actual")
+  photoDocumentation String?     @map("photo_documentation")
+  attendanceList     String?     @map("attendance_list")
+  drillReport        String?     @map("drill_report")
+  status             DrillStatus @default(NOT_COMPLETED)
+  createdById        String      @map("created_by_id")
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedById        String?     @map("updated_by_id")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
+  createdBy          User        @relation("DrillCreatedBy", fields: [createdById], references: [id])
+  department         Department  @relation(fields: [departmentId], references: [id])
+  updatedBy          User?       @relation("DrillUpdatedBy", fields: [updatedById], references: [id])
+
+  @@map("emergency_drills")
+}
+
+model Investigation {
+  id                   String              @id @default(cuid())
+  tanggalKejadian      DateTime            @map("tanggal_kejadian")
+  waktuKejadian        String              @map("waktu_kejadian")
+  lokasi               String
+  area                 String
+  deskripsiKejadian    String              @map("deskripsi_kejadian")
+  jenisKecelakaan      JenisKecelakaan     @map("jenis_kecelakaan")
+  jumlahKorban         Int                 @default(0) @map("jumlah_korban")
+  daftarKorban         Json?               @map("daftar_korban")
+  saksi                String?
+  kerugianMaterial     String?             @map("kerugian_material")
+  fotoBukti            String?             @map("foto_bukti")
+  investigatorId       String?             @map("investigator_id")
+  tanggalInvestigasi   DateTime?           @map("tanggal_investigasi")
+  rootCause            String?             @map("root_cause")
+  temuanInvestigasi    String?             @map("temuan_investigasi")
+  rekomendasiPerbaikan String?             @map("rekomendasi_perbaikan")
+  lampiranLaporan      String?             @map("lampiran_laporan")
+  catatanTambahan      String?             @map("catatan_tambahan")
+  approvedById         String?             @map("approved_by_id")
+  approvedAt           DateTime?           @map("approved_at")
+  signatureApproval    String?             @map("signature_approval")
+  victimSignedAt       DateTime?           @map("victim_signed_at")
+  victimSignature      String?             @map("victim_signature")
+  supervisorSignedAt   DateTime?           @map("supervisor_signed_at")
+  supervisorSignature  String?             @map("supervisor_signature")
+  supervisorNote       String?             @map("supervisor_note")
+  status               InvestigationStatus @default(DRAFT)
+  findingId            String?             @map("finding_id")
+  pelaporId            String              @map("pelapor_id")
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @updatedAt @map("updated_at")
+  logs                 InvestigationLog[]
+  approvedBy           User?               @relation("InvestigationApprover", fields: [approvedById], references: [id])
+  finding              Finding?            @relation(fields: [findingId], references: [id])
+  investigator         User?               @relation("Investigator", fields: [investigatorId], references: [id])
+  pelapor              User                @relation("Pelapor", fields: [pelaporId], references: [id])
+
+  @@map("investigations")
+}
+
+model InvestigationLog {
+  id              String        @id @default(cuid())
+  investigationId String        @map("investigation_id")
+  userId          String        @map("user_id")
+  action          String
+  description     String
+  timestamp       DateTime      @default(now())
+  investigation   Investigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  user            User          @relation("InvestigationLogUser", fields: [userId], references: [id])
+
+  @@map("investigation_logs")
+}
+
+model InductionSession {
+  id           String                 @id @default(cuid())
+  kodeSesi     String                 @unique @map("kode_sesi")
+  qrCode       String?                @map("qr_code")
+  tanggal      DateTime
+  lokasi       String
+  topik        String?
+  deskripsi    String?
+  picId        String?                @map("pic_id")
+  status       String                 @default("INPG")
+  createdAt    DateTime               @default(now()) @map("created_at")
+  updatedAt    DateTime               @updatedAt @map("updated_at")
+  media        InductionMedia[]
+  participants InductionParticipant[]
+  pic          User?                  @relation("InductionPIC", fields: [picId], references: [id])
+
+  @@map("induction_sessions")
+}
+
+model InductionParticipant {
+  id           String           @id @default(cuid())
+  sessionId    String           @map("session_id")
+  userId       String?          @map("user_id")
+  nama         String
+  perusahaan   String?
+  identitas    String?
+  noTelp       String?          @map("no_telp")
+  email        String?
+  jabatan      String?
+  jenisKelamin String?          @map("jenis_kelamin")
+  fotoUrl      String?          @map("foto_url")
+  tipe         String           @default("EXTERNAL")
+  scanTime     DateTime?        @map("scan_time")
+  scanMethod   String?          @map("scan_method")
+  statusHadir  String           @default("REGISTERED") @map("status_hadir")
+  cardCode     String?          @map("card_code")
+  cardUrl      String?          @map("card_url")
+  cardIssuedAt DateTime?        @map("card_issued_at")
+  session      InductionSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user         User?            @relation("InductionUserParticipant", fields: [userId], references: [id])
+
+  @@unique([sessionId, identitas])
+  @@unique([sessionId, userId])
+  @@map("induction_participants")
+}
+
+model InductionMedia {
+  id         String           @id @default(cuid())
+  sessionId  String           @map("session_id")
+  type       String
+  fileUrl    String           @map("file_url")
+  fileName   String?          @map("file_name")
+  fileSize   Int?             @map("file_size")
+  mimeType   String?          @map("mime_type")
+  uploadedBy String?          @map("uploaded_by")
+  uploadedAt DateTime         @default(now()) @map("uploaded_at")
+  session    InductionSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("induction_media")
+}
+
+enum Role {
+  admin
+  supervisor
+  user
+}
+
+enum FindingStatus {
+  INPG
+  CLSD
+}
+
+enum NotificationType {
+  finding_submitted
+  approval_required
+  finding_approved
+  finding_rejected
+  deadline_reminder
+  license_expiring_soon
+  license_expired
+  pica_deadline_overdue
+  pica_tacc_reminder
+}
+
+enum ApprovalStatus {
+  ACC
+  TACC
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum JenisDokumen {
+  MANUAL
+  SOP
+  INSTRUKSI_KERJA
+  FORMULIR
+}
+
+enum StatusDokumen {
+  ASLI
+  SALINAN
+  ASLI_REVISI    @map("ASLI-REVISI")
+  SALINAN_REVISI @map("SALINAN-REVISI")
+}
+
+enum StatusDistribusi {
+  TERKENDALI
+  TIDAK_TERKENDALI
+}
+
+enum StatusValidasi {
+  BERLAKU
+  TIDAK_BERLAKU
+  PEMUSNAHAN
+}
+
+enum Perusahaan {
+  QMB
+  ESG
+  MEIMING
+  GEN
+  QINGMEI
+  GNM
+}
+
+enum KategoriObjek {
+  PESAWAT_UAP_DAN_BEJANA_TEKAN
+  PESAWAT_ANGKAT_ANGKUT
+  PESAWAT_TENAGA_PRODUKSI
+  INSTALASI_LISTRIK
+  INSTALASI_PENYALUR_PETIR
+  INSTALASI_ELEVATOR
+  INSTALASI_PROTEKSI_KEBAKARAN
+}
+
+enum StatusKelayakan {
+  LAYAK
+  TIDAK_LAYAK
+  PERLU_PERBAIKAN
+}
+
+enum StatusRiksaUji {
+  SUDAH
+  BELUM
+  DALAM_PROSES
+}
+
+enum StatusAman {
+  AMAN
+  PROSES_RIKSA_UJI
+  PROSES_PERPANJANG
+  BELUM_ADA_PLAN
+}
+
+enum DrillType {
+  FIRE
+  EARTHQUAKE
+  CHEMICAL_SPILL
+  EVACUATION
+  FIRST_AID
+  OTHER
+}
+
+enum DrillStatus {
+  COMPLETED
+  NOT_COMPLETED
+}
+
+enum InvestigationStatus {
+  DRAFT
+  UNDER_INVESTIGATION
+  PENDING_APPROVAL
+  APPROVED
+  VICTIM_SIGNED
+  COMPLETED
+  REJECTED
+}
+
+enum JenisKecelakaan {
+  LUKA_RINGAN
+  LUKA_BERAT
+  MENINGGAL
+  KERUSAKAN
+  NEAR_MISS
+}
+
+// ── PICA — Problem Identification & Corrective Action ─────────────────────
+
+model Pica {
+  id                      String          @id @default(cuid())
+  temuanMasalah           String          @map("temuan_masalah")
+  kriteriaId              String          @map("kriteria_id")
+  kriteriaDeskripsi       String?         @map("kriteria_deskripsi")
+  kategori                KategoriPica    @default(MINOR)
+  lokasiDivisiId          String          @map("lokasi_divisi_id")
+  lokasiDivisiNama        String?         @map("lokasi_divisi_nama")
+  dokumentasiTemuanTeks   String?         @map("dokumentasi_temuan_teks")
+  tanggalTemuan           DateTime        @map("tanggal_temuan")
+  jenisTemuan             JenisTemuan     @default(KONDISI_TIDAK_AMAN) @map("jenis_temuan")
+  hierarkiPengendalian    String[]        @map("hirarki_pengendalian")
+  rekomendasiPerbaikan    String          @map("rekomendasi_perbaikan")
+  picId                   String          @map("pic_id")
+  picNama                 String          @map("pic_nama")
+  divisiId                String          @map("divisi_id")
+  batasAkhir              DateTime        @map("batas_akhir")
+  statusPerbaikan         StatusPerbaikanPica @default(OPEN) @map("status_perbaikan")
+  tanggalPerbaikan        DateTime?       @map("tanggal_perbaikan")
+  catatanTACC             String?         @map("catatan_tacc")
+  createdBy               String          @map("created_by")
+  createdById             String?         @map("created_by_id")
+  createdAt               DateTime        @default(now()) @map("created_at")
+  updatedAt               DateTime        @updatedAt @map("updated_at")
+
+  files                   PicaFile[]
+  riwayatApproval         PicaApproval[]
+
+  @@map("pica")
+}
+
+model PicaFile {
+  id         String   @id @default(cuid())
+  picaId     String   @map("pica_id")
+  fieldName  String   @map("field_name")
+  fileName   String   @map("file_name")
+  fileUrl    String   @map("file_url")
+  fileSize   Int      @map("file_size")
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  pica       Pica     @relation(fields: [picaId], references: [id], onDelete: Cascade)
+
+  @@map("pica_files")
+}
+
+model PicaApproval {
+  id         String              @id @default(cuid())
+  picaId     String              @map("pica_id")
+  tanggal    DateTime
+  oleh       String
+  action     ApprovalActionPica
+  keterangan String?
+  pica       Pica                @relation(fields: [picaId], references: [id], onDelete: Cascade)
+
+  @@map("pica_approvals")
+}
+
+enum KategoriPica {
+  KRITIKAL
+  MAYOR
+  MINOR
+}
+
+enum JenisTemuan {
+  KONDISI_TIDAK_AMAN  @map("Kondisi Tidak Aman")
+  TINDAKAN_TIDAK_AMAN @map("Tindakan Tidak Aman")
+  HAMPIR_CELAKA       @map("Hampir Celaka")
+  KETIDAKSESUAIAN     @map("Ketidaksesuaian")
+}
+
+enum StatusPerbaikanPica {
+  OPEN
+  IN_PROGRESS
+  CLSD
+}
+
+enum ApprovalActionPica {
+  ACC
+  TACC
+}

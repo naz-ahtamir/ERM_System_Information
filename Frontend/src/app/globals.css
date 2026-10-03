@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+@import "./fonts.css";
+
+:root {
+  --background: #faf9f7;
+  --foreground: #231f20;
+  --orange-primary: #f15a22;
+  --orange-secondary: #f7941d;
+  --dark: #231f20;
+  --white: #ffffff;
+  --off-white: #faf9f7;
+  --light-grey: #f2f0ee;
+  --mid-grey: #c5c0bb;
+  --text-muted: #6b6560;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-montserrat: var(--font-montserrat);
+  --font-barlow: var(--font-montserrat);
+  --font-barlow-condensed: var(--font-montserrat);
+  --color-orange-primary: var(--orange-primary);
+  --color-orange-secondary: var(--orange-secondary);
+  --color-dark: var(--dark);
+  --color-white: var(--white);
+  --color-off-white: var(--off-white);
+  --color-light-grey: var(--light-grey);
+  --color-mid-grey: var(--mid-grey);
+  --color-text-muted: var(--text-muted);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+/* Custom font families */
+.font-montserrat,
+.font-barlow,
+.font-barlow-condensed {
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+/* Custom animations */
+@keyframes scrollPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(0.6);
+  }
+}
+
+.animate-scroll-pulse {
+  animation: scrollPulse 1.8s ease-in-out infinite;
+}
+
+/* Custom nav underline effect */
+.nav-underline {
+  position: relative;
+}
+
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 0.875rem;
+  right: 0.875rem;
+  height: 2px;
+  background: var(--orange-primary);
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+.nav-underline:hover::after,
+.nav-underline.active::after {
+  transform: scaleX(1);
+}
+
+.nav-underline.active {
+  color: var(--orange-primary);
+}
+
+/* Hero video styles */
+.hero-video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Program card hover effects */
+.program-card-hover {
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.btn-transition {
+  transition: all 0.2s;
+}
+
+/* Stat indicator dot */
+.stat-dot {
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+/* Custom clip-path for dashboard cards */
+.clip-path-polygon {
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+/* Vertical align super for dashboard numbers */
+.vertical-align-super {
+  vertical-align: super;
+  font-size: 0.4em;
+}
+
+
+/* Toast notification animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+.animate-slide-out {
+  animation: slideOut 0.3s ease-in-out;
+}
+
+/* Marquee animation for highlights strip */
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}

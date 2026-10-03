@@ -1,0 +1,7 @@
+[install]
+lockfile = "bun.lockb"
+
+[install.scopes]
+"next" = "https://registry.npmjs.org/"
+"react" = "https://registry.npmjs.org/"
+"react-dom" = "https://registry.npmjs.org/"

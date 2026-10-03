@@ -1,0 +1,49 @@
+{
+  "name": "nextjs-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 bun run next dev",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 TSC_COMPILE_ON_ERROR=true bun run next build",
+    "build:check": "bun run tsc --noEmit && bun run next build",
+    "start": "bun run next start",
+    "lint": "bun run eslint",
+    "create-admin": "bun run scripts/createAdmin.ts",
+    "import-karyawan": "bun run scripts/importKaryawan.ts"
+  },
+  "dependencies": {
+    "@auth/core": "^0.34.3",
+    "@hookform/resolvers": "^5.4.0",
+    "@types/jspdf": "^2.0.0",
+    "@types/react-signature-canvas": "^1.0.7",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "mongoose": "^9.6.3",
+    "next": "16.2.6",
+    "next-auth": "^4.24.14",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.82.0",
+    "react-hot-toast": "^2.6.0",
+    "react-signature-canvas": "^1.1.0-alpha.2",
+    "xlsx": "^0.18.5",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/node": "^20",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "cross-env": "^10.1.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
