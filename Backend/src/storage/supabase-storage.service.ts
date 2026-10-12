@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { extname } from 'path';
+import * as sharp from 'sharp';
 
 export type StorageBucket =
   | 'findings'
@@ -12,6 +13,16 @@ export type StorageBucket =
   | 'investigation'
   | 'emergency-drill'
   | 'smk3';
+
+// ── Tipe MIME gambar yang akan dikompresi ────────────────────────────────────
+const IMAGE_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/bmp',
+  'image/tiff',
+]);
 
 @Injectable()
 export class SupabaseStorageService {
@@ -33,13 +44,42 @@ export class SupabaseStorageService {
   }
 
   /**
+   * Kompresi gambar menggunakan sharp.
+   * - Resize: max lebar/tinggi 1920px (tidak diperbesar jika lebih kecil)
+   * - Format: JPEG quality 80 (ukuran akhir biasanya 100–400 KB)
+   * - Non-gambar: dikembalikan as-is
+   */
+  private async compressIfImage(
+    buffer: Buffer,
+    mimetype: string,
+  ): Promise<{ buffer: Buffer; mimetype: string; ext: string }> {
+    if (!IMAGE_MIME_TYPES.has(mimetype)) {
+      return { buffer, mimetype, ext: '' }; // bukan gambar, lewati
+    }
+
+    try {
+      const compressed = await (sharp as any)(buffer)
+        .rotate()                                      // auto-rotate berdasarkan EXIF
+        .resize({ width: 1920, height: 1920, fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 80, progressive: true })
+        .toBuffer();
+
+      const originalKB  = Math.round(buffer.length / 1024);
+      const compressedKB = Math.round(compressed.length / 1024);
+      this.logger.log(`Compressed image: ${originalKB} KB → ${compressedKB} KB`);
+
+      return { buffer: compressed, mimetype: 'image/jpeg', ext: '.jpg' };
+    } catch (err) {
+      // Jika kompresi gagal (misal format tidak didukung), upload file asli
+      this.logger.warn(`Image compression failed, uploading original: ${err}`);
+      return { buffer, mimetype, ext: '' };
+    }
+  }
+
+  /**
    * Upload a file buffer to Supabase Storage.
+   * Gambar otomatis dikompres ke JPEG max 1920px / quality 80 sebelum upload.
    * Returns the permanent public URL.
-   *
-   * @param buffer     - file buffer (from multer memoryStorage)
-   * @param originalname - original filename (used to get extension)
-   * @param mimetype   - MIME type of the file
-   * @param folder     - storage sub-folder (e.g. 'findings', 'k3-policy')
    */
   async upload(
     buffer: Buffer,
@@ -47,15 +87,20 @@ export class SupabaseStorageService {
     mimetype: string,
     folder: StorageBucket | string,
   ): Promise<string> {
-    const ext      = extname(originalname).toLowerCase();
+    // Kompresi gambar sebelum upload
+    const { buffer: finalBuffer, mimetype: finalMime, ext: newExt } =
+      await this.compressIfImage(buffer, mimetype);
+
+    // Gunakan ekstensi baru (.jpg) jika gambar dikonversi, atau ekstensi asli
+    const ext      = newExt || extname(originalname).toLowerCase();
     const unique   = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     const filename = `${unique}${ext}`;
     const path     = `${folder}/${filename}`;
 
     const { error } = await this.client.storage
       .from(this.bucket)
-      .upload(path, buffer, {
-        contentType: mimetype,
+      .upload(path, finalBuffer, {
+        contentType: finalMime,
         upsert: false,
       });
 

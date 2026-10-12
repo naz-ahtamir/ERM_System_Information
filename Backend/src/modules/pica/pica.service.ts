@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SupabaseStorageService } from '../../storage/supabase-storage.service';
+import { NotificationsService } from '../../notifications/notifications.service';
 import { CreatePicaDto } from './dto/create-pica.dto';
 import { UpdatePicaDto } from './dto/update-pica.dto';
 import { StatusPerbaikanPica, Prisma, ApprovalActionPica, KategoriPica, JenisTemuan } from '@prisma/client';
@@ -20,6 +21,7 @@ const INCLUDE = {
 
 export interface PicaFilters {
   divisiId?: string;
+  picId?: string;       // filter khusus PIC — hanya lihat record miliknya
   status?: string;
   kategori?: string;
   search?: string;
@@ -32,12 +34,32 @@ export class PicaService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storage: SupabaseStorageService,
+    private readonly notifications: NotificationsService,
   ) {}
+
+  // ── Helper: ambil semua admin + supervisor untuk notifikasi ───────────────
+  private async getAdminSupervisorIds(): Promise<string[]> {
+    const users = await this.prisma.user.findMany({
+      where: { role: { in: ['admin', 'supervisor'] as any[] }, approved: true },
+      select: { id: true },
+    });
+    return users.map(u => u.id);
+  }
+
+  // ── Helper: singkat teks temuan untuk notifikasi ─────────────────────────
+  private short(text: string, max = 60): string {
+    return text.length > max ? text.slice(0, max) + '…' : text;
+  }
 
   // ── GET all ────────────────────────────────────────────────────────────────
 
   async findAll(filters: PicaFilters = {}) {
     const where: Prisma.PicaWhereInput = {};
+
+    if (filters.picId) {
+      // PIC hanya melihat record yang di-assign ke dia
+      where.picId = filters.picId;
+    }
 
     if (filters.divisiId) {
       where.OR = [
@@ -137,6 +159,38 @@ export class PicaService {
       },
       include: INCLUDE,
     });
+
+    // ── Notifikasi: PICA baru dibuat → kirim ke PIC + semua admin/supervisor ──
+    const adminIds = await this.getAdminSupervisorIds();
+    const recipientIds = new Set<string>(adminIds);
+
+    // Tambahkan PIC jika valid (bukan 'TBD')
+    if (dto.picId && dto.picId !== 'TBD') {
+      const picUser = await this.prisma.user.findUnique({
+        where: { id: dto.picId },
+        select: { id: true },
+      });
+      if (picUser) recipientIds.add(picUser.id);
+    }
+
+    const divisiNama = dto.lokasiDivisiNama || dto.lokasiDivisiId || '—';
+    const batasLabel = new Date(dto.batasAkhir).toLocaleDateString('id-ID', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    });
+
+    for (const userId of recipientIds) {
+      const isPic = userId === dto.picId;
+      await this.notifications.create({
+        userId,
+        type: 'approval_required' as any,
+        title: '📋 Temuan PICA Baru',
+        message: isPic
+          ? `Anda ditunjuk sebagai PIC untuk temuan PICA di ${divisiNama}: "${this.short(dto.temuanMasalah)}". Batas perbaikan: ${batasLabel}.`
+          : `Temuan PICA baru dibuat di ${divisiNama} oleh ${dto.createdBy ?? 'Admin'}: "${this.short(dto.temuanMasalah)}". PIC: ${dto.picNama}.`,
+        isRead: false,
+        picaId: record.id,
+      });
+    }
 
     return this.toRecord(record);
   }
@@ -256,6 +310,20 @@ export class PicaService {
         data: { statusPerbaikan: StatusPerbaikanPica.IN_PROGRESS },
         include: INCLUDE,
       });
+
+      // ── Notifikasi: PIC sudah submit bukti → kirim ke admin/supervisor ──────
+      const adminIds = await this.getAdminSupervisorIds();
+      for (const userId of adminIds) {
+        await this.notifications.create({
+          userId,
+          type: 'approval_required' as any,
+          title: '📤 Bukti Perbaikan PICA Disubmit',
+          message: `${oleh ?? 'PIC'} telah mengupload bukti perbaikan untuk PICA: "${this.short(record.temuanMasalah)}". Silakan review dan berikan keputusan (ACC/TACC).`,
+          isRead: false,
+          picaId: id,
+        });
+      }
+
       return this.toRecord(updated);
     }
 
@@ -281,6 +349,24 @@ export class PicaService {
         },
         include: INCLUDE,
       });
+
+      // ── Notifikasi ACC → kirim ke PIC ─────────────────────────────────────
+      if (record.picId && record.picId !== 'TBD') {
+        const picUser = await this.prisma.user.findUnique({
+          where: { id: record.picId }, select: { id: true },
+        });
+        if (picUser) {
+          await this.notifications.create({
+            userId: picUser.id,
+            type: 'finding_approved' as any,
+            title: '✅ Perbaikan PICA Disetujui (ACC)',
+            message: `Perbaikan PICA "${this.short(record.temuanMasalah)}" telah disetujui (ACC) oleh ${oleh ?? 'Admin'}. Temuan dinyatakan selesai.`,
+            isRead: false,
+            picaId: id,
+          });
+        }
+      }
+
       return this.toRecord(updated);
     }
 
@@ -308,6 +394,24 @@ export class PicaService {
         },
         include: INCLUDE,
       });
+
+      // ── Notifikasi TACC → kirim ke PIC (real-time, bukan hanya daily reminder) ──
+      if (record.picId && record.picId !== 'TBD') {
+        const picUser = await this.prisma.user.findUnique({
+          where: { id: record.picId }, select: { id: true },
+        });
+        if (picUser) {
+          await this.notifications.create({
+            userId: picUser.id,
+            type: 'finding_rejected' as any,
+            title: '❌ Perbaikan PICA Ditolak (TACC)',
+            message: `Perbaikan PICA "${this.short(record.temuanMasalah)}" ditolak (TACC) oleh ${oleh ?? 'Admin'}. Alasan: ${keterangan}. Harap upload ulang bukti perbaikan.`,
+            isRead: false,
+            picaId: id,
+          });
+        }
+      }
+
       return this.toRecord(updated);
     }
 
@@ -338,6 +442,23 @@ export class PicaService {
       include: INCLUDE,
     });
     return this.toRecord(updated);
+  }
+
+  // ── DELETE FILE (single file attachment) ──────────────────────────────────
+
+  async deleteFile(picaId: string, fileId: string) {
+    const file = await this.prisma.picaFile.findFirst({
+      where: { id: fileId, picaId },
+    });
+    if (!file) throw new NotFoundException(`File ${fileId} tidak ditemukan di PICA ${picaId}`);
+
+    // Hapus dari storage
+    await this.storage.delete(file.fileUrl).catch(() => {});
+
+    // Hapus dari database
+    await this.prisma.picaFile.delete({ where: { id: fileId } });
+
+    return { message: 'File berhasil dihapus' };
   }
 
   // ── DELETE ─────────────────────────────────────────────────────────────────
@@ -388,6 +509,7 @@ export class PicaService {
       dokumentasiTemuanFiles: (pica.files ?? [])
         .filter((f: any) => f.fieldName === 'dokumentasiTemuan')
         .map((f: any) => ({
+          id: f.id,
           fieldName: f.fieldName,
           fileName: f.fileName,
           fileUrl: f.fileUrl,
@@ -408,6 +530,7 @@ export class PicaService {
       dokumentasiPerbaikanFiles: (pica.files ?? [])
         .filter((f: any) => f.fieldName === 'dokumentasiPerbaikan')
         .map((f: any) => ({
+          id: f.id,
           fieldName: f.fieldName,
           fileName: f.fileName,
           fileUrl: f.fileUrl,

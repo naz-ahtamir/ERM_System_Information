@@ -83,6 +83,7 @@ export class PicaSchedulerService implements OnApplicationBootstrap {
               title: '🚨 PICA Deadline Terlewat',
               message: `Temuan PICA "${pica.temuanMasalah.slice(0, 60)}${pica.temuanMasalah.length > 60 ? '…' : ''}" sudah melewati batas akhir perbaikan ${daysOverdue} hari yang lalu. Segera tindak lanjuti!`,
               isRead: false,
+              picaId: pica.id,
             },
           });
           overdueCount++;
@@ -104,6 +105,7 @@ export class PicaSchedulerService implements OnApplicationBootstrap {
               title: '🔄 PICA Revisi Diperlukan (TACC)',
               message: `Perbaikan PICA "${pica.temuanMasalah.slice(0, 60)}${pica.temuanMasalah.length > 60 ? '…' : ''}" ditolak. Alasan: ${pica.catatanTACC}. Harap upload ulang bukti perbaikan.`,
               isRead: false,
+              picaId: pica.id,
             },
           });
           taccCount++;
@@ -161,10 +163,16 @@ export class PicaSchedulerService implements OnApplicationBootstrap {
       where: {
         userId,
         type: type as any,
-        message: { contains: picaId },
         createdAt: {
           gte: new Date(`${todayKey}T00:00:00.000Z`),
           lt:  new Date(`${todayKey}T23:59:59.999Z`),
+        },
+        // Deduplikasi: cek apakah message mengandung singkatan temuan PICA
+        // (message selalu mengandung temuanMasalah, tapi gunakan picaId via title lebih aman)
+        title: {
+          contains: type === 'pica_deadline_overdue'
+            ? 'Deadline Terlewat'
+            : 'Revisi Diperlukan',
         },
       },
     });

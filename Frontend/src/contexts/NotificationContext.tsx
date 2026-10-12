@@ -20,11 +20,14 @@ export interface Notification {
     | 'finding_rejected'
     | 'deadline_reminder'
     | 'license_expiring_soon'
-    | 'license_expired';
+    | 'license_expired'
+    | 'pica_deadline_overdue'
+    | 'pica_tacc_reminder';
   title: string;
   message: string;
   findingId?: string | null;
   objekK3Id?: string | null;
+  picaId?: string | null;
   isRead: boolean;
   createdAt: string;
   finding?: {
@@ -39,6 +42,11 @@ export interface Notification {
     noSeri: string;
     tanggalBerlaku: string;
     statusRiksaUji: string;
+  } | null;
+  pica?: {
+    id: string;
+    temuanMasalah: string;
+    statusPerbaikan: string;
   } | null;
 }
 

@@ -251,6 +251,9 @@ export class AuthService {
         approved:         true,
         createdAt:        true,
         updatedAt:        true,
+        centerId:         true,
+        departmentId:     true,
+        divisionId:       true,
       },
     });
 

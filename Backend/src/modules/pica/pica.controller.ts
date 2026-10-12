@@ -52,13 +52,14 @@ export class PicaController {
   @ApiOperation({ summary: 'Get all PICA records (with optional filters)' })
   findAll(
     @Query('divisiId')       divisiId?: string,
+    @Query('picId')          picId?: string,
     @Query('status')         status?: string,
     @Query('kategori')       kategori?: string,
     @Query('search')         search?: string,
     @Query('tanggalDari')    tanggalDari?: string,
     @Query('tanggalSampai')  tanggalSampai?: string,
   ) {
-    return this.service.findAll({ divisiId, status, kategori, search, tanggalDari, tanggalSampai });
+    return this.service.findAll({ divisiId, picId, status, kategori, search, tanggalDari, tanggalSampai });
   }
 
   // ── GET one ───────────────────────────────────────────────────────────────
@@ -221,6 +222,18 @@ export class PicaController {
     if (!body.status) throw new BadRequestException('status diperlukan');
     const data = await this.service.updateStatus(id, body.status, body.keterangan);
     return { message: 'Status berhasil diperbarui', data };
+  }
+
+  // ── DELETE FILE ───────────────────────────────────────────────────────────
+
+  @Delete(':id/files/:fileId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Hapus satu file attachment dari record PICA' })
+  deleteFile(
+    @Param('id') id: string,
+    @Param('fileId') fileId: string,
+  ) {
+    return this.service.deleteFile(id, fileId);
   }
 
   // ── DELETE ────────────────────────────────────────────────────────────────

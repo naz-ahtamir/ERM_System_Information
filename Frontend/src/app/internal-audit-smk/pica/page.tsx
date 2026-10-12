@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSearchParams } from 'next/navigation';
 import {
   picaApi,
   formatTanggalPica,
@@ -20,7 +21,7 @@ import {
   HIRARKI_OPTIONS,
   KATEGORI_OPTIONS,
 } from '@/types/pica';
-import { KRITERIA_SMK3, DIVISI_LIST } from '@/data/picaData';
+import { KRITERIA_SMK3 } from '@/data/picaData';
 import toast from 'react-hot-toast';
 
 // ── Input style constants ─────────────────────────────────────────────────────
@@ -74,8 +75,23 @@ function FileUploadArea({
   accept?: string; placeholder?: string; subtext?: string;
 }) {
   const ref = useRef<HTMLInputElement>(null);
+
+  // Buat object URL untuk preview gambar (di-revoke saat unmount)
+  const [previews, setPreviews] = useState<string[]>([]);
+  useEffect(() => {
+    const urls = files.map((f) =>
+      isImageFile(f.name) ? URL.createObjectURL(f) : ''
+    );
+    setPreviews(urls);
+    return () => { urls.forEach((u) => { if (u) URL.revokeObjectURL(u); }); };
+  }, [files]);
+
+  const imageFiles = files.filter((f) => isImageFile(f.name));
+  const otherFiles = files.filter((f) => !isImageFile(f.name));
+
   return (
     <>
+      {/* Drop zone */}
       <div
         className="border-2 border-dashed border-[#c5c0bb] rounded-xl p-4 text-center hover:border-[#f15a22] transition-colors cursor-pointer"
         onClick={() => ref.current?.click()}
@@ -88,23 +104,71 @@ function FileUploadArea({
         <input ref={ref} type="file" className="hidden" multiple accept={accept}
           onChange={(e) => { if (e.target.files) { onAdd(Array.from(e.target.files)); e.target.value = ''; } }} />
       </div>
+
       {files.length > 0 && (
-        <div className="mt-2 space-y-1.5">
-          {files.map((file, i) => (
-            <div key={i} className="flex items-center gap-2 bg-[#faf9f7] rounded-lg px-3 py-2">
-              <svg className="w-4 h-4 text-[#a09b96] flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-              </svg>
-              <span className="text-[12px] text-[#231f20] flex-1 truncate">{file.name}</span>
-              <span className="text-[11px] text-[#a09b96]">{(file.size / 1024).toFixed(0)} KB</span>
-              <button type="button" onClick={() => onRemove(i)} className="text-red-400 hover:text-red-600 flex-shrink-0">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
+        <>
+          {/* ── Thumbnail grid untuk gambar baru ── */}
+          {imageFiles.length > 0 && (
+            <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {imageFiles.map((file) => {
+                const originalIdx = files.indexOf(file);
+                const previewUrl = previews[originalIdx] || '';
+                return (
+                  <div key={originalIdx} className="relative group aspect-square rounded-xl overflow-hidden border border-[#e5e0db] shadow-sm">
+                    {previewUrl && (
+                      <img
+                        src={previewUrl}
+                        alt={file.name}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                    {/* Overlay info + hapus */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => onRemove(originalIdx)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md"
+                        title="Hapus"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                      </button>
+                    </div>
+                    {/* Label di bawah */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 py-1.5">
+                      <p className="text-white text-[10px] truncate leading-snug">{file.name}</p>
+                      <p className="text-white/70 text-[9px]">{(file.size / 1024).toFixed(0)} KB</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
+          )}
+
+          {/* ── Daftar file non-gambar ── */}
+          {otherFiles.length > 0 && (
+            <div className={`space-y-1.5 ${imageFiles.length > 0 ? 'mt-2' : 'mt-2'}`}>
+              {otherFiles.map((file) => {
+                const originalIdx = files.indexOf(file);
+                return (
+                  <div key={originalIdx} className="flex items-center gap-2 bg-[#faf9f7] rounded-lg px-3 py-2">
+                    <svg className="w-4 h-4 text-blue-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <span className="text-[12px] text-[#231f20] flex-1 truncate">{file.name}</span>
+                    <span className="text-[11px] text-[#a09b96]">{(file.size / 1024).toFixed(0)} KB</span>
+                    <button type="button" onClick={() => onRemove(originalIdx)} className="text-red-400 hover:text-red-600 flex-shrink-0">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
     </>
   );
@@ -254,28 +318,223 @@ function FileLightbox({
   );
 }
 
+// ── FileListWithDelete — seperti FileList tapi tiap file punya tombol hapus ──
+
+function FileListWithDelete({
+  files,
+  deletingIds,
+  onDelete,
+}: {
+  files: { id?: string; fileName: string; fileUrl: string; fileSize: number }[];
+  deletingIds: Set<string>;
+  onDelete: (fileId: string) => void;
+}) {
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
+  if (!files?.length) return null;
+
+  const imageFiles = files.filter((f) => isImageFile(f.fileName));
+  const otherFiles = files.filter((f) => !isImageFile(f.fileName));
+
+  // Normalize files to include id for lightbox compatibility
+  const lightboxFiles = files.map((f) => ({
+    fileName: f.fileName,
+    fileUrl: f.fileUrl,
+    fileSize: f.fileSize,
+  }));
+
+  return (
+    <>
+      {/* ── Thumbnail grid untuk file gambar ── */}
+      {imageFiles.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+          {imageFiles.map((f) => {
+            const originalIdx = files.indexOf(f);
+            const fileId = f.id ?? '';
+            const isDeleting = fileId ? deletingIds.has(fileId) : false;
+            return (
+              <div
+                key={originalIdx}
+                className={`relative group aspect-square rounded-xl overflow-hidden border shadow-sm transition-all ${
+                  isDeleting ? 'opacity-40 border-red-300' : 'border-[#e5e0db] hover:border-[#f15a22]'
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setLightboxIdx(originalIdx)}
+                  className="absolute inset-0 w-full h-full focus:outline-none"
+                  title={f.fileName}
+                >
+                  <img
+                    src={f.fileUrl}
+                    alt={f.fileName}
+                    className="w-full h-full object-cover"
+                  />
+                  {/* View overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 drop-shadow transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </div>
+                  {/* Nama file */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 py-1.5 translate-y-full group-hover:translate-y-0 transition-transform">
+                    <p className="text-white text-[10px] truncate leading-snug">{f.fileName}</p>
+                    <p className="text-white/70 text-[9px]">{formatFileSize(f.fileSize)}</p>
+                  </div>
+                </button>
+                {/* Tombol hapus */}
+                {fileId && (
+                  <button
+                    type="button"
+                    onClick={() => onDelete(fileId)}
+                    disabled={isDeleting}
+                    className="absolute top-1.5 right-1.5 z-10 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-all"
+                    title="Hapus file ini"
+                  >
+                    {isDeleting ? (
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    )}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Daftar file non-gambar ── */}
+      {otherFiles.length > 0 && (
+        <div className={`space-y-1.5 ${imageFiles.length > 0 ? 'mt-2' : 'mt-2'}`}>
+          {otherFiles.map((f) => {
+            const originalIdx = files.indexOf(f);
+            const fileId = f.id ?? '';
+            const isDeleting = fileId ? deletingIds.has(fileId) : false;
+            return (
+              <div
+                key={originalIdx}
+                className={`flex items-center gap-2.5 rounded-xl px-3 py-2 border transition-all ${
+                  isDeleting ? 'opacity-40 bg-red-50 border-red-200' : 'bg-[#faf9f7] border-[#e5e0db]'
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setLightboxIdx(originalIdx)}
+                  className="flex items-center gap-2.5 flex-1 min-w-0 text-left"
+                >
+                  <svg className="w-4 h-4 text-blue-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  <span className="text-[12px] text-[#6b6560] truncate flex-1">{f.fileName}</span>
+                  <span className="text-[10px] text-[#a09b96] flex-shrink-0">{formatFileSize(f.fileSize)}</span>
+                </button>
+                {fileId && (
+                  <button
+                    type="button"
+                    onClick={() => onDelete(fileId)}
+                    disabled={isDeleting}
+                    className="flex-shrink-0 text-red-400 hover:text-red-600 disabled:opacity-40 p-0.5 transition-colors"
+                    title="Hapus file ini"
+                  >
+                    {isDeleting ? (
+                      <div className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="m19 6-.867 14.142A2 2 0 0 1 16.138 22H7.862a2 2 0 0 1-1.995-1.858L5 6"/>
+                        <path d="M10 11v6M14 11v6"/>
+                      </svg>
+                    )}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {lightboxIdx !== null && (
+        <FileLightbox
+          files={lightboxFiles}
+          initialIndex={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+        />
+      )}
+    </>
+  );
+}
+
 function FileList({ files }: { files: { fileName: string; fileUrl: string; fileSize: number }[] }) {
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
   if (!files?.length) return null;
+
+  const imageFiles = files.filter((f) => isImageFile(f.fileName));
+  const otherFiles = files.filter((f) => !isImageFile(f.fileName));
+
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-        {files.map((f, i) => (
-          <button key={i} onClick={() => setLightboxIdx(i)}
-            className="flex items-center gap-2.5 bg-[#faf9f7] hover:bg-orange-50 border border-[#e5e0db] hover:border-orange-200 rounded-xl px-3 py-2 transition-colors group text-left w-full">
-            {isImageFile(f.fileName)
-              ? <svg className="w-4 h-4 text-green-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              : <svg className="w-4 h-4 text-blue-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            }
-            <span className="text-[12px] text-[#6b6560] group-hover:text-[#f15a22] truncate flex-1 transition-colors">{f.fileName}</span>
-            <span className="text-[10px] text-[#a09b96] flex-shrink-0">{formatFileSize(f.fileSize)}</span>
-            <svg className="w-3 h-3 text-[#c5c0bb] group-hover:text-[#f15a22] flex-shrink-0 transition-colors ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        ))}
-      </div>
+      {/* ── Embed thumbnail grid untuk file gambar ── */}
+      {imageFiles.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+          {imageFiles.map((f) => {
+            const originalIdx = files.indexOf(f);
+            return (
+              <button
+                key={originalIdx}
+                onClick={() => setLightboxIdx(originalIdx)}
+                className="relative group aspect-square rounded-xl overflow-hidden border border-[#e5e0db] hover:border-[#f15a22] transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30"
+                title={f.fileName}
+              >
+                <img
+                  src={f.fileUrl}
+                  alt={f.fileName}
+                  className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                />
+                {/* Overlay saat hover */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 drop-shadow transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </div>
+                {/* Label nama file di bawah */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 py-1.5 translate-y-full group-hover:translate-y-0 transition-transform">
+                  <p className="text-white text-[10px] truncate leading-snug">{f.fileName}</p>
+                  <p className="text-white/70 text-[9px]">{formatFileSize(f.fileSize)}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Daftar file non-gambar ── */}
+      {otherFiles.length > 0 && (
+        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 ${imageFiles.length > 0 ? 'mt-2' : 'mt-2'}`}>
+          {otherFiles.map((f) => {
+            const originalIdx = files.indexOf(f);
+            return (
+              <button key={originalIdx} onClick={() => setLightboxIdx(originalIdx)}
+                className="flex items-center gap-2.5 bg-[#faf9f7] hover:bg-orange-50 border border-[#e5e0db] hover:border-orange-200 rounded-xl px-3 py-2 transition-colors group text-left w-full">
+                <svg className="w-4 h-4 text-blue-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <span className="text-[12px] text-[#6b6560] group-hover:text-[#f15a22] truncate flex-1 transition-colors">{f.fileName}</span>
+                <span className="text-[10px] text-[#a09b96] flex-shrink-0">{formatFileSize(f.fileSize)}</span>
+                <svg className="w-3 h-3 text-[#c5c0bb] group-hover:text-[#f15a22] flex-shrink-0 transition-colors ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {lightboxIdx !== null && (
         <FileLightbox
@@ -371,6 +630,23 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
   const isEdit = !!record;
   const [saving, setSaving] = useState(false);
 
+  // ── Divisi list dari API ────────────────────────────────────────────────
+  const [divisiList, setDivisiList]       = useState<any[]>([]);
+  const [divisiLoading, setDivisiLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setDivisiLoading(true);
+    const token = localStorage.getItem('smk3_token');
+    fetch('/api/divisions', {
+      headers: { Authorization: token ? `Bearer ${token}` : '' },
+    })
+      .then((r) => r.json())
+      .then((data) => setDivisiList(Array.isArray(data) ? data : []))
+      .catch(() => setDivisiList([]))
+      .finally(() => setDivisiLoading(false));
+  }, [isOpen]);
+
   const [temuanMasalah,        setTemuanMasalah]        = useState('');
   const [kriteriaId,           setKriteriaId]           = useState('');
   const [kriteriaSearch,       setKriteriaSearch]       = useState('');
@@ -415,7 +691,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
     }
   }, [isOpen, record]);
 
-  const selectedDivisi   = DIVISI_LIST.find((d) => d.id === lokasiDivisiId);
+  const selectedDivisi   = divisiList.find((d) => d.id === lokasiDivisiId);
   const selectedKriteria = KRITERIA_SMK3.find((k) => k.id === kriteriaId);
   const filteredKriteria = kriteriaSearch.trim()
     ? KRITERIA_SMK3.filter((k) =>
@@ -431,8 +707,8 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
     if (!temuanMasalah.trim()) { toast.error('Temuan masalah wajib diisi'); return; }
     setSaving(true);
     try {
-      const picNama  = selectedDivisi?.namaPIC || picNamaManual || user?.nama || 'TBD';
-      const picId    = selectedDivisi?.idPIC   || picIdManual   || user?.id   || 'TBD';
+      const picNama  = selectedDivisi?.pic?.nama || picNamaManual || user?.nama || 'TBD';
+      const picId    = selectedDivisi?.pic?.id   || picIdManual   || user?.id   || 'TBD';
       const divisiId = lokasiDivisiId || user?.departemen || 'TBD';
 
       const fd = new FormData();
@@ -441,7 +717,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
       fd.append('kriteriaDeskripsi',     selectedKriteria?.deskripsi || '');
       fd.append('kategori',              kategori      || 'MINOR');
       fd.append('lokasiDivisiId',        lokasiDivisiId || divisiId);
-      fd.append('lokasiDivisiNama',      selectedDivisi?.namaDivisi || '');
+      fd.append('lokasiDivisiNama',      selectedDivisi?.name || '');
       fd.append('dokumentasiTemuanTeks', dokTeks);
       fd.append('tanggalTemuan',         tanggalTemuan);
       fd.append('jenisTemuan',           jenisTemuan || 'Kondisi Tidak Aman');
@@ -593,14 +869,25 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
             </Field>
 
             <Field label="Lokasi Temuan (Divisi)" required hint="PIC akan otomatis terisi sesuai divisi">
-              <select className={inputCls} value={lokasiDivisiId} onChange={(e) => setLokasiDivisiId(e.target.value)}>
-                <option value="">-- Pilih Divisi --</option>
-                {DIVISI_LIST.map((d) => <option key={d.id} value={d.id}>{d.namaDivisi}</option>)}
+              <select className={inputCls} value={lokasiDivisiId} onChange={(e) => setLokasiDivisiId(e.target.value)}
+                disabled={divisiLoading}>
+                <option value="">
+                  {divisiLoading ? 'Memuat divisi...' : `-- Pilih Divisi (${divisiList.length}) --`}
+                </option>
+                {divisiList.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
               </select>
               {selectedDivisi && (
                 <div className="mt-2 p-3 bg-blue-50 rounded-xl border border-blue-100 text-[12px]">
-                  <div className="font-semibold text-blue-800">{selectedDivisi.namaDivisi}</div>
-                  <div className="text-blue-600 mt-0.5">PIC: <strong>{selectedDivisi.namaPIC}</strong><span className="ml-2 text-blue-400">ID: {selectedDivisi.idPIC}</span></div>
+                  <div className="font-semibold text-blue-800">{selectedDivisi.name}</div>
+                  <div className="text-blue-600 mt-0.5">
+                    PIC: <strong>{selectedDivisi.pic?.nama ?? '—'}</strong>
+                    <span className="ml-2 text-blue-400">ID: {selectedDivisi.pic?.idKaryawan ?? '—'}</span>
+                  </div>
+                  {selectedDivisi.department?.name && (
+                    <div className="text-blue-400 mt-0.5">Departemen: {selectedDivisi.department.name}</div>
+                  )}
                 </div>
               )}
               {!lokasiDivisiId && (
@@ -713,26 +1000,54 @@ interface SubmitPerbaikanModalProps {
 }
 
 function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: SubmitPerbaikanModalProps) {
-  const [saving,    setSaving]    = useState(false);
-  const [hirarki,   setHirarki]   = useState<HiraruchiPengendalian[]>([]);
-  const [rekomendasi, setRekomendasi] = useState('');
-  const [files,     setFiles]     = useState<File[]>([]);
+  const [saving,       setSaving]       = useState(false);
+  const [hirarki,      setHirarki]      = useState<HiraruchiPengendalian[]>([]);
+  const [rekomendasi,  setRekomendasi]  = useState('');
+  const [files,        setFiles]        = useState<File[]>([]);
+  // IDs file lama yang sedang dihapus (loading indicator per-file)
+  const [deletingIds,  setDeletingIds]  = useState<Set<string>>(new Set());
+  // Local copy file perbaikan lama agar UI langsung update setelah hapus
+  const [existingFiles, setExistingFiles] = useState<typeof record.dokumentasiPerbaikanFiles>([]);
 
   useEffect(() => {
     if (isOpen) {
       setHirarki(record.hierarkiPengendalian as HiraruchiPengendalian[]);
       setRekomendasi(record.rekomendasiPerbaikan || '');
       setFiles([]);
+      setDeletingIds(new Set());
+      setExistingFiles(record.dokumentasiPerbaikanFiles);
     }
   }, [isOpen, record]);
 
   const toggleHirarki = (h: HiraruchiPengendalian) =>
     setHirarki((prev) => prev.includes(h) ? prev.filter((x) => x !== h) : [...prev, h]);
 
+  // Hapus satu file lama
+  const handleDeleteFile = async (fileId: string) => {
+    if (!confirm('Hapus file ini? Tindakan ini tidak bisa dibatalkan.')) return;
+    setDeletingIds((prev) => new Set(prev).add(fileId));
+    try {
+      await picaApi.deleteFile(record.id, fileId);
+      setExistingFiles((prev) => prev.filter((f) => (f as any).id !== fileId));
+      toast.success('File berhasil dihapus');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Gagal menghapus file');
+    } finally {
+      setDeletingIds((prev) => { const s = new Set(prev); s.delete(fileId); return s; });
+    }
+  };
+
   const handleSubmit = async () => {
     if (hirarki.length === 0)   { toast.error('Pilih minimal 1 hirarki pengendalian'); return; }
     if (!rekomendasi.trim())     { toast.error('Keterangan perbaikan wajib diisi'); return; }
-    if (files.length === 0)      { toast.error('Upload minimal 1 file bukti perbaikan'); return; }
+    if (files.length === 0 && existingFiles.length === 0) {
+      toast.error('Upload minimal 1 file bukti perbaikan'); return;
+    }
+    if (files.length === 0 && existingFiles.length > 0) {
+      // Boleh submit dengan file lama yang tersisa (sudah upload sebelumnya, tinggal revisi keterangan)
+    } else if (files.length === 0) {
+      toast.error('Upload minimal 1 file bukti perbaikan'); return;
+    }
 
     setSaving(true);
     try {
@@ -743,13 +1058,22 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
       fd.append('rekomendasiPerbaikan', rekomendasi);
       await picaApi.update(record.id, fd, false);
 
-      // Submit bukti
-      const buktifd = new FormData();
-      files.forEach((f) => buktifd.append('dokumentasiPerbaikan', f));
-      await picaApi.action({
-        id: record.id, action: 'submit_perbaikan',
-        formData: buktifd, oleh: user?.nama || 'User', keterangan: rekomendasi,
-      });
+      // Submit bukti (hanya jika ada file baru)
+      if (files.length > 0) {
+        const buktifd = new FormData();
+        files.forEach((f) => buktifd.append('dokumentasiPerbaikan', f));
+        await picaApi.action({
+          id: record.id, action: 'submit_perbaikan',
+          formData: buktifd, oleh: user?.nama || 'User', keterangan: rekomendasi,
+        });
+      } else {
+        // Tidak ada file baru tapi ada file lama → tetap submit action untuk ubah status
+        const emptyFd = new FormData();
+        await picaApi.action({
+          id: record.id, action: 'submit_perbaikan',
+          formData: emptyFd, oleh: user?.nama || 'User', keterangan: rekomendasi,
+        });
+      }
 
       toast.success('Bukti perbaikan disubmit! Status berubah ke INPG.');
       onSuccess();
@@ -763,15 +1087,25 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
 
   if (!isOpen) return null;
 
+  // Label kategori + warna
+  const { label: kategoriLabel, bg: kategoriBg, text: kategoriText } =
+    KATEGORI_TEMUAN_LABELS[record.kategori] ?? { label: record.kategori, bg: 'bg-gray-100', text: 'text-gray-700' };
+
+  const sisa      = sisaHariDeadline(record.batasAkhir);
+  const isTacc    = !!record.catatanTACC;
+
   return (
     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col">
 
+        {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">PICA</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Submit Tindakan Perbaikan</h2>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Submit Tindakan Perbaikan</p>
+            <h2 className="font-bold text-[15px] text-[#231f20]">
+              {isTacc ? '🔄 Revisi Perbaikan (TACC)' : '📤 Upload Bukti Perbaikan'}
+            </h2>
           </div>
           <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -780,9 +1114,9 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
           </button>
         </div>
 
-        {/* TACC banner */}
-        {record.catatanTACC && (
-          <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2">
+        {/* ── TACC banner ── */}
+        {isTacc && (
+          <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2 flex-shrink-0">
             <svg className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
@@ -793,64 +1127,181 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-          {/* Info temuan (read-only) */}
-          <div className="p-3 bg-white rounded-xl border border-[#e5e0db] text-[12px]">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-1">Temuan</p>
-            <p className="text-[#231f20] font-medium">{record.temuanMasalah}</p>
-            <div className="flex gap-3 mt-1.5 text-[#6b6560]">
-              <span>PIC: <strong>{record.picNama}</strong></span>
-              <span>Deadline: <strong className={sisaHariColor(sisaHariDeadline(record.batasAkhir))}>{record.batasAkhir}</strong></span>
+        {/* ── Body ── */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+          {/* ═══ BAGIAN 1: Rincian Temuan (read-only) ═══ */}
+          <FormSection title="Rincian Temuan" icon={iconInfo}>
+            <div className="space-y-3">
+
+              {/* Temuan masalah */}
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-1">Temuan Masalah</p>
+                <p className="text-[13px] text-[#231f20] font-medium leading-snug">{record.temuanMasalah}</p>
+              </div>
+
+              {/* Grid: Tanggal, Jenis, Kategori, Lokasi */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Tanggal Temuan</p>
+                  <p className="text-[12px] text-[#231f20] font-medium">{formatTanggalPica(record.tanggalTemuan)}</p>
+                </div>
+                <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Jenis Temuan</p>
+                  <p className="text-[12px] text-[#231f20] font-medium">{record.jenisTemuan || '—'}</p>
+                </div>
+                <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Tingkat Keparahan</p>
+                  <span className={`inline-block text-[11px] font-bold px-2 py-0.5 rounded-lg ${kategoriBg} ${kategoriText}`}>
+                    {kategoriLabel}
+                  </span>
+                </div>
+                <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Batas Akhir</p>
+                  <p className={`text-[12px] font-bold ${sisaHariColor(sisa)}`}>
+                    {formatTanggalPica(record.batasAkhir)}
+                  </p>
+                  {sisa !== null && (
+                    <p className={`text-[10px] ${sisaHariColor(sisa)}`}>
+                      {sisa < 0 ? `Terlambat ${Math.abs(sisa)} hari` : `Sisa ${sisa} hari`}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Lokasi + PIC */}
+              <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db] grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Lokasi / Divisi</p>
+                  <p className="text-[12px] text-[#231f20] font-medium">{record.lokasiDivisiNama || record.lokasiDivisiId || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">PIC</p>
+                  <p className="text-[12px] text-[#231f20] font-medium">{record.picNama || '—'}</p>
+                </div>
+              </div>
+
+              {/* Kriteria */}
+              {record.kriteriaId && record.kriteriaId !== 'TBD' && (
+                <div className="bg-orange-50 rounded-xl p-3 border border-orange-100">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-orange-500 mb-0.5">Kriteria SMK3</p>
+                  <div className="flex items-start gap-2">
+                    <span className="flex-shrink-0 inline-block bg-[#f15a22] text-white font-mono font-bold text-[11px] px-2 py-0.5 rounded mt-0.5">{record.kriteriaId}</span>
+                    {record.kriteriaDeskripsi && (
+                      <p className="text-[12px] text-[#6b6560] leading-snug">{record.kriteriaDeskripsi}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Dokumentasi temuan (teks + file) */}
+              {(record.dokumentasiTemuanTeks || record.dokumentasiTemuanFiles.length > 0) && (
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-1.5">Dokumentasi Temuan</p>
+                  {record.dokumentasiTemuanTeks && (
+                    <p className="text-[12px] text-[#6b6560] mb-2 leading-relaxed">{record.dokumentasiTemuanTeks}</p>
+                  )}
+                  {record.dokumentasiTemuanFiles.length > 0 && (
+                    <FileList files={record.dokumentasiTemuanFiles} />
+                  )}
+                </div>
+              )}
             </div>
-          </div>
+          </FormSection>
 
-          <Field label="Hirarki Pengendalian" required hint="Pilih satu atau lebih">
-            <div className="flex flex-wrap gap-2">
-              {HIRARKI_OPTIONS.map((h) => {
-                const selected = hirarki.includes(h);
-                return (
-                  <button key={h} type="button" onClick={() => toggleHirarki(h)}
-                    className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold border transition-all ${
-                      selected ? 'bg-[#f15a22] text-white border-[#f15a22]' : 'bg-white text-[#6b6560] border-[#e5e0db] hover:border-[#f15a22]'
-                    }`}>
-                    {selected && <span className="mr-1">✓</span>}{h}
-                  </button>
-                );
-              })}
-            </div>
-          </Field>
+          {/* ═══ BAGIAN 2: Tindakan Perbaikan (dapat diisi user) ═══ */}
+          <FormSection title="Tindakan Perbaikan" icon={iconPerbaikan}
+            badge={<span className="ml-auto text-[11px] text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full font-medium">Lengkapi & Submit</span>}>
 
-          <Field label="Keterangan Tindakan Perbaikan" required>
-            <textarea className={textareaCls} rows={3}
-              placeholder="Tuliskan tindakan perbaikan yang sudah dilakukan..."
-              value={rekomendasi} onChange={(e) => setRekomendasi(e.target.value)} />
-          </Field>
+            <Field label="Hirarki Pengendalian" required hint="Pilih satu atau lebih">
+              <div className="flex flex-wrap gap-2">
+                {HIRARKI_OPTIONS.map((h) => {
+                  const selected = hirarki.includes(h);
+                  return (
+                    <button key={h} type="button" onClick={() => toggleHirarki(h)}
+                      className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold border transition-all ${
+                        selected ? 'bg-[#f15a22] text-white border-[#f15a22] shadow-sm' : 'bg-white text-[#6b6560] border-[#e5e0db] hover:border-[#f15a22] hover:text-[#f15a22]'
+                      }`}>
+                      {selected && <span className="mr-1">✓</span>}{h}
+                    </button>
+                  );
+                })}
+              </div>
+            </Field>
 
-          <Field label="Bukti Perbaikan" required hint="Upload minimal 1 file sebagai bukti">
-            <FileUploadArea files={files}
-              onAdd={(f) => setFiles((p) => [...p, ...f])}
-              onRemove={(i) => setFiles((p) => p.filter((_, j) => j !== i))}
-              placeholder="Upload foto, laporan, atau dokumen bukti"
-              subtext="Foto, PDF, dokumen — tanpa batas ukuran" />
-            {record.dokumentasiPerbaikanFiles.length > 0 && (
-              <div className="mt-2">
-                <p className="text-[11px] text-[#a09b96] mb-1">File sebelumnya ({record.dokumentasiPerbaikanFiles.length}):</p>
-                <FileList files={record.dokumentasiPerbaikanFiles} />
+            <Field label="Keterangan Tindakan Perbaikan" required>
+              <textarea className={textareaCls} rows={3}
+                placeholder="Tuliskan tindakan perbaikan yang sudah dilakukan..."
+                value={rekomendasi} onChange={(e) => setRekomendasi(e.target.value)} />
+            </Field>
+
+            {/* File lama dengan tombol hapus */}
+            {existingFiles.length > 0 && (
+              <div>
+                <p className="text-[13px] font-semibold text-[#231f20] mb-1.5 flex items-center gap-1.5">
+                  File Perbaikan Sebelumnya
+                  <span className="text-[11px] font-normal text-[#a09b96]">({existingFiles.length} file — hover untuk hapus)</span>
+                </p>
+                <FileListWithDelete
+                  files={existingFiles.map((f) => ({ ...(f as any), id: (f as any).id }))}
+                  deletingIds={deletingIds}
+                  onDelete={handleDeleteFile}
+                />
               </div>
             )}
-          </Field>
+
+            {/* Upload file baru */}
+            <Field
+              label={existingFiles.length > 0 ? 'Tambah File Bukti Baru' : 'Bukti Perbaikan'}
+              required={existingFiles.length === 0}
+              optional={existingFiles.length > 0}
+              hint={existingFiles.length > 0 ? 'Opsional — tambahkan file baru jika perlu' : 'Upload minimal 1 file sebagai bukti'}
+            >
+              <FileUploadArea files={files}
+                onAdd={(f) => setFiles((p) => [...p, ...f])}
+                onRemove={(i) => setFiles((p) => p.filter((_, j) => j !== i))}
+                placeholder="Upload foto, laporan, atau dokumen bukti"
+                subtext="Foto, PDF, dokumen — tanpa batas ukuran" />
+              {files.length > 0 && (
+                <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-2">
+                  <svg className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <p className="text-[12px] text-blue-700">
+                    <strong>{files.length} file baru</strong> akan diupload bersama dengan file yang sudah ada.
+                  </p>
+                </div>
+              )}
+            </Field>
+          </FormSection>
+
+          {/* ═══ BAGIAN 3: Riwayat (jika ada) ═══ */}
+          {record.riwayatApproval.length > 0 && (
+            <FormSection title="Riwayat Review" icon={iconHistory}>
+              <RiwayatTimeline riwayat={record.riwayatApproval} />
+            </FormSection>
+          )}
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
-          <button onClick={onClose} disabled={saving}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors disabled:opacity-50">
-            Batal
-          </button>
-          <button onClick={handleSubmit} disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
-            {saving && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
-            {saving ? 'Mengupload...' : 'Submit Perbaikan → INPG'}
-          </button>
+        {/* ── Footer ── */}
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+          <p className="text-[11px] text-[#a09b96]">
+            {existingFiles.length > 0
+              ? `${existingFiles.length} file lama tersisa${files.length > 0 ? ` + ${files.length} file baru` : ''}`
+              : files.length > 0 ? `${files.length} file baru siap diupload` : 'Belum ada file'
+            }
+          </p>
+          <div className="flex items-center gap-3">
+            <button onClick={onClose} disabled={saving}
+              className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors disabled:opacity-50">
+              Batal
+            </button>
+            <button onClick={handleSubmit} disabled={saving || (existingFiles.length === 0 && files.length === 0)}
+              className="flex items-center gap-2 px-5 py-2 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+              {saving && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+              {saving ? 'Mengupload...' : isTacc ? '🔄 Submit Revisi → INPG' : '📤 Submit Perbaikan → INPG'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1039,6 +1490,180 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// MODAL: Export PICA (date range picker + format selector)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface PicaExportModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  records: PicaRecord[];
+  onExportCSV:  (data: PicaRecord[]) => void;
+  onExportHTML: (data: PicaRecord[], dateLabel: string) => Promise<void>;
+  onExportPDF:  (data: PicaRecord[], dateLabel: string) => Promise<void>;
+}
+
+function PicaExportModal({ isOpen, onClose, records, onExportCSV, onExportHTML, onExportPDF }: PicaExportModalProps) {
+  const [dateFrom,      setDateFrom]      = useState('');
+  const [dateTo,        setDateTo]        = useState('');
+  const [exportFormat,  setExportFormat]  = useState<'html' | 'csv' | 'pdf'>('html');
+  const [exporting,     setExporting]     = useState(false);
+
+  if (!isOpen) return null;
+
+  function formatDateId(iso: string) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function filterByDate(recs: PicaRecord[]): PicaRecord[] {
+    let result = [...recs];
+    if (dateFrom) result = result.filter((r) => new Date(r.tanggalTemuan) >= new Date(dateFrom));
+    if (dateTo) {
+      const to = new Date(dateTo); to.setHours(23, 59, 59, 999);
+      result = result.filter((r) => new Date(r.tanggalTemuan) <= to);
+    }
+    return result;
+  }
+
+  const handleExport = async () => {
+    const filtered = filterByDate(records);
+    if (filtered.length === 0) {
+      alert('Tidak ada record dalam rentang tanggal yang dipilih.');
+      return;
+    }
+    const dateLabel = dateFrom && dateTo
+      ? `Periode: ${formatDateId(dateFrom)} — ${formatDateId(dateTo)}`
+      : `Dicetak: ${formatDateId(new Date().toISOString())}`;
+
+    setExporting(true);
+    try {
+      if (exportFormat === 'csv')  { onExportCSV(filtered); onClose(); }
+      if (exportFormat === 'html') { await onExportHTML(filtered, dateLabel); onClose(); }
+      if (exportFormat === 'pdf')  { await onExportPDF(filtered, dateLabel); onClose(); }
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const previewCount = filterByDate(records).length;
+
+  return (
+    <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db]">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Export Data</p>
+            <h2 className="font-bold text-[15px] text-[#231f20]">Download PICA</h2>
+          </div>
+          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          <p className="text-[13px] text-[#6b6560]">
+            Kosongkan tanggal untuk export semua record.
+          </p>
+
+          {/* Format selector */}
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-2">Format Export</label>
+            <div className="grid grid-cols-3 gap-2">
+              {/* HTML */}
+              <button type="button" onClick={() => setExportFormat('html')}
+                className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all ${exportFormat === 'html' ? 'border-[#f15a22] bg-orange-50' : 'border-[#e5e0db] hover:border-[#f15a22]/40'}`}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'html' ? '#f15a22' : '#a09b96'} strokeWidth="2">
+                  <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                </svg>
+                <span className={`font-bold text-[11px] ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#6b6560]'}`}>HTML</span>
+                <span className={`text-[9px] text-center leading-tight ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#a09b96]'}`}>Tabel + Foto</span>
+              </button>
+              {/* PDF */}
+              <button type="button" onClick={() => setExportFormat('pdf')}
+                className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all ${exportFormat === 'pdf' ? 'border-red-500 bg-red-50' : 'border-[#e5e0db] hover:border-red-300'}`}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'pdf' ? '#dc2626' : '#a09b96'} strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <span className={`font-bold text-[11px] ${exportFormat === 'pdf' ? 'text-red-700' : 'text-[#6b6560]'}`}>PDF</span>
+                <span className={`text-[9px] text-center leading-tight ${exportFormat === 'pdf' ? 'text-red-600' : 'text-[#a09b96]'}`}>Print / Save</span>
+              </button>
+              {/* CSV */}
+              <button type="button" onClick={() => setExportFormat('csv')}
+                className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all ${exportFormat === 'csv' ? 'border-green-500 bg-green-50' : 'border-[#e5e0db] hover:border-green-300'}`}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'csv' ? '#16a34a' : '#a09b96'} strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                  <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>
+                </svg>
+                <span className={`font-bold text-[11px] ${exportFormat === 'csv' ? 'text-green-700' : 'text-[#6b6560]'}`}>CSV</span>
+                <span className={`text-[9px] text-center leading-tight ${exportFormat === 'csv' ? 'text-green-600' : 'text-[#a09b96]'}`}>Data saja</span>
+              </button>
+            </div>
+            <p className="text-[11px] text-[#a09b96] mt-1.5">
+              {exportFormat === 'html' && 'File .html berisi tabel lengkap + foto before/after embedded. Buka di browser untuk lihat atau print.'}
+              {exportFormat === 'pdf'  && 'Buka tab baru dengan tabel A3 landscape, klik "Print" untuk simpan sebagai PDF.'}
+              {exportFormat === 'csv'  && 'Data semua field + URL foto. Buka di Excel / Google Sheets.'}
+            </p>
+          </div>
+
+          {/* Date range */}
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Dari Tanggal Temuan</label>
+            <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Sampai Tanggal Temuan</label>
+            <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+          </div>
+
+          {/* Preview count */}
+          <div className="px-3 py-2 bg-[#faf9f7] rounded-xl border border-[#e5e0db]">
+            <p className="text-[12px] text-[#6b6560]">
+              Record yang akan diexport:{' '}
+              <strong className="text-[#231f20]">{previewCount}</strong>
+              {' '}dari{' '}
+              <strong className="text-[#231f20]">{records.length}</strong> total
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db]">
+          <button onClick={onClose} disabled={exporting}
+            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+            Batal
+          </button>
+          <button onClick={handleExport} disabled={exporting || previewCount === 0}
+            className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${
+              exportFormat === 'csv' ? 'bg-green-600 hover:bg-green-700' :
+              exportFormat === 'pdf' ? 'bg-red-600 hover:bg-red-700' :
+              'bg-[#f15a22] hover:bg-[#d44d1a]'
+            }`}>
+            {exporting ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            )}
+            {exporting ? 'Mengekspor...' :
+              exportFormat === 'csv' ? 'Download CSV' :
+              exportFormat === 'pdf' ? 'Export PDF' :
+              'Export HTML + Foto'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // MAIN PAGE
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -1047,6 +1672,7 @@ type FilterTab = 'ALL' | 'OPEN' | 'INPG' | 'CLSD' | 'TACC';
 export default function PicaListPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin' || user?.role === 'supervisor';
+  const searchParams = useSearchParams();
 
   const [records,    setRecords]    = useState<PicaRecord[]>([]);
   const [loading,    setLoading]    = useState(true);
@@ -1063,7 +1689,9 @@ export default function PicaListPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const filters = !isAdmin && user?.departemen ? { divisiId: user.departemen } : undefined;
+      const filters = !isAdmin && user?.divisionId
+        ? { divisiId: user.divisionId }
+        : undefined;
       const data = await picaApi.getAll(filters);
       setRecords(data);
     } catch {
@@ -1071,9 +1699,33 @@ export default function PicaListPage() {
     } finally {
       setLoading(false);
     }
-  }, [isAdmin, user?.departemen]);
+  }, [isAdmin, user?.divisionId]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  // ── Auto-open modal jika ada ?id= di URL (dari klik notifikasi) ──
+  useEffect(() => {
+    const targetId = searchParams.get('id');
+    if (!targetId || loading || records.length === 0) return;
+
+    const target = records.find((r) => r.id === targetId);
+    if (!target) return;
+
+    // Buka modal yang sesuai berdasarkan status dan role
+    if (isAdmin && target.statusPerbaikan === 'INPG') {
+      setApprovalRecord(target);
+    } else if (!isAdmin && target.statusPerbaikan === 'OPEN') {
+      setSubmitRecord(target);
+    } else if (isAdmin && target.statusPerbaikan === 'OPEN') {
+      setEditRecord(target);
+    }
+
+    // Scroll ke baris record di tabel
+    setTimeout(() => {
+      const el = document.getElementById(`pica-row-${targetId}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }, [searchParams, records, loading, isAdmin]);
 
   // ── Filter & search ──
   const filtered = records.filter((r) => {
@@ -1111,25 +1763,483 @@ export default function PicaListPage() {
     }
   };
 
-  // ── Export helpers ──
-  function exportToCSV() {
-    const header = ['ID','Tanggal Temuan','Temuan Masalah','Kategori','Lokasi / Divisi','PIC','Batas Akhir','Status','Dibuat Oleh'];
-    const rows = filtered.map((r) => [
-      r.id, r.tanggalTemuan,
-      `"${r.temuanMasalah.replace(/"/g, '""')}"`,
-      KATEGORI_TEMUAN_LABELS[r.kategori]?.label ?? r.kategori,
-      `"${(r.lokasiDivisiNama || r.lokasiDivisiId).replace(/"/g, '""')}"`,
-      r.picNama, r.batasAkhir,
-      STATUS_PERBAIKAN_LABELS[r.statusPerbaikan]?.label ?? r.statusPerbaikan,
-      r.createdBy,
-    ]);
+  // ── Export state ──
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+
+  // ── Helper: escape CSV cell ──
+  function csvCell(val: string | number | null | undefined): string {
+    const s = String(val ?? '');
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+      return `"${s.replace(/"/g, '""')}"`;
+    }
+    return s;
+  }
+
+  // ── Helper: fetch gambar sebagai base64 ──
+  async function fetchImageAsBase64(url: string): Promise<string | null> {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const blob = await res.blob();
+      return await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  // ── Export CSV (lengkap) ──
+  function exportToCSV(data: PicaRecord[]) {
+    const header = [
+      'No', 'Tanggal Temuan', 'Jenis Temuan', 'Kategori',
+      'Kriteria ID', 'Kriteria Deskripsi',
+      'Temuan Masalah', 'Dokumentasi Teks',
+      'Lokasi / Divisi', 'PIC', 'Batas Akhir', 'Status',
+      'Hirarki Pengendalian', 'Rekomendasi Perbaikan',
+      'Foto Before (1)', 'Foto Before (2)', 'Foto Before (3)',
+      'Foto After (1)', 'Foto After (2)', 'Foto After (3)',
+      'Tanggal Perbaikan', 'TACC Catatan',
+      'Dibuat Oleh', 'Tanggal Dibuat',
+    ];
+
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+
+    const rows = data.map((r, idx) => {
+      const beforeFiles = r.dokumentasiTemuanFiles ?? [];
+      const afterFiles  = r.dokumentasiPerbaikanFiles ?? [];
+
+      const beforeUrls = beforeFiles.slice(0, 3).map((f) =>
+        f.fileUrl.startsWith('http') ? f.fileUrl : `${baseUrl}${f.fileUrl}`
+      );
+      const afterUrls = afterFiles.slice(0, 3).map((f) =>
+        f.fileUrl.startsWith('http') ? f.fileUrl : `${baseUrl}${f.fileUrl}`
+      );
+
+      return [
+        csvCell(idx + 1),
+        csvCell(r.tanggalTemuan),
+        csvCell(r.jenisTemuan),
+        csvCell(KATEGORI_TEMUAN_LABELS[r.kategori]?.label ?? r.kategori),
+        csvCell(r.kriteriaId),
+        csvCell(r.kriteriaDeskripsi),
+        csvCell(r.temuanMasalah),
+        csvCell(r.dokumentasiTemuanTeks),
+        csvCell(r.lokasiDivisiNama || r.lokasiDivisiId),
+        csvCell(r.picNama),
+        csvCell(r.batasAkhir),
+        csvCell(STATUS_PERBAIKAN_LABELS[r.statusPerbaikan]?.label ?? r.statusPerbaikan),
+        csvCell((r.hierarkiPengendalian ?? []).join('; ')),
+        csvCell(r.rekomendasiPerbaikan),
+        csvCell(beforeUrls[0] ?? ''),
+        csvCell(beforeUrls[1] ?? ''),
+        csvCell(beforeUrls[2] ?? ''),
+        csvCell(afterUrls[0] ?? ''),
+        csvCell(afterUrls[1] ?? ''),
+        csvCell(afterUrls[2] ?? ''),
+        csvCell(r.tanggalPerbaikan ?? ''),
+        csvCell(r.catatanTACC ?? ''),
+        csvCell(r.createdBy),
+        csvCell(r.createdAt),
+      ];
+    });
+
     const csv = '\uFEFF' + [header.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `PICA_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+    a.href = url;
+    a.download = `PICA_Export_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
     URL.revokeObjectURL(url);
-    toast.success('Export berhasil');
+    toast.success(`Export CSV berhasil (${data.length} record)`);
+  }
+
+  // ── Export HTML — format tabel seperti CrudPage non-conformity ──
+  async function exportToHTML(data: PicaRecord[], dateLabel: string) {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const tanggalExport = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Pre-fetch semua foto ke base64 (embed inline agar bisa dibuka offline)
+    const allPhotoUrls = new Set<string>();
+    data.forEach((r) => {
+      [...(r.dokumentasiTemuanFiles ?? []), ...(r.dokumentasiPerbaikanFiles ?? [])].forEach((f) => {
+        if (/\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(f.fileName)) {
+          const url = f.fileUrl.startsWith('http') ? f.fileUrl : `${baseUrl}${f.fileUrl}`;
+          allPhotoUrls.add(url);
+        }
+      });
+    });
+
+    const base64Cache = new Map<string, string | null>();
+    await Promise.all(Array.from(allPhotoUrls).map(async (url) => {
+      base64Cache.set(url, await fetchImageAsBase64(url));
+    }));
+
+    // ── Styles ──
+    const thStyle    = `padding:8px 10px;border:1px solid #d1d5db;background:#231f20;color:#fff;font-size:11px;font-weight:700;text-align:left;white-space:nowrap;`;
+    const thPhotoSt  = `padding:8px 10px;border:1px solid #d1d5db;background:#f15a22;color:#fff;font-size:11px;font-weight:700;text-align:center;white-space:nowrap;min-width:160px;`;
+    const tdBase     = `padding:7px 10px;border:1px solid #e5e7eb;font-size:11px;vertical-align:top;`;
+
+    // ── Header kolom tabel ──
+    const headerCols = [
+      `<th style="${thStyle}width:32px;">#</th>`,
+      `<th style="${thStyle}min-width:60px;">Tgl Temuan</th>`,
+      `<th style="${thStyle}min-width:110px;">Jenis Temuan</th>`,
+      `<th style="${thStyle}min-width:90px;">Kategori</th>`,
+      `<th style="${thStyle}min-width:80px;">Kriteria</th>`,
+      `<th style="${thStyle}min-width:220px;">Temuan Masalah</th>`,
+      `<th style="${thStyle}min-width:130px;">Lokasi / Divisi</th>`,
+      `<th style="${thStyle}min-width:110px;">PIC</th>`,
+      `<th style="${thStyle}min-width:80px;">Deadline</th>`,
+      `<th style="${thStyle}min-width:100px;">Status</th>`,
+      `<th style="${thStyle}min-width:160px;">Hirarki</th>`,
+      `<th style="${thStyle}min-width:200px;">Rekomendasi Perbaikan</th>`,
+      `<th style="${thStyle}min-width:80px;">Tgl Selesai</th>`,
+      `<th style="${thStyle}min-width:100px;">Dibuat Oleh</th>`,
+      `<th style="${thPhotoSt}min-width:160px;">📸 Foto Before<br/>(Temuan)</th>`,
+      `<th style="${thPhotoSt}min-width:160px;">✅ Foto After<br/>(Perbaikan)</th>`,
+    ].join('');
+
+    // ── Helper render foto cell ──
+    const renderPhotoCell = (files: PicaRecord['dokumentasiTemuanFiles'], emptyLabel: string) => {
+      const tdSt = `${tdBase}text-align:center;vertical-align:middle;background:#fafafa;`;
+      if (!files || files.length === 0) {
+        return `<td style="${tdSt}color:#9ca3af;font-size:10px;">—<br/><span>${emptyLabel}</span></td>`;
+      }
+      const imgs = files.filter((f) => /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(f.fileName));
+      if (imgs.length === 0) {
+        // Dokumen non-gambar
+        const links = files.map((f) => {
+          const href = f.fileUrl.startsWith('http') ? f.fileUrl : `${baseUrl}${f.fileUrl}`;
+          return `<a href="${href}" target="_blank" style="font-size:10px;color:#f15a22;display:block;">📄 ${f.fileName}</a>`;
+        }).join('');
+        return `<td style="${tdSt}">${links}</td>`;
+      }
+      // Ambil foto pertama saja untuk kolom tabel (agar rapi)
+      const f = imgs[0];
+      const href = f.fileUrl.startsWith('http') ? f.fileUrl : `${baseUrl}${f.fileUrl}`;
+      const b64 = base64Cache.get(href);
+      const src = b64 ?? href;
+      const extra = imgs.length > 1 ? `<div style="font-size:9px;color:#9ca3af;margin-top:3px;">+${imgs.length - 1} foto lainnya</div>` : '';
+      return `<td style="${tdSt}">
+        <img src="${src}" alt="foto"
+          style="max-width:140px;max-height:110px;object-fit:cover;border-radius:5px;border:1px solid #d1d5db;display:block;margin:0 auto;" />
+        ${extra}
+      </td>`;
+    };
+
+    // ── Baris data ──
+    const rowsHtml = data.map((r, idx) => {
+      const isTacc       = r.statusPerbaikan === 'OPEN' && !!r.catatanTACC;
+      const kategoriInfo = KATEGORI_TEMUAN_LABELS[r.kategori] ?? { label: r.kategori };
+      const statusInfo   = STATUS_PERBAIKAN_LABELS[r.statusPerbaikan] ?? { label: r.statusPerbaikan };
+
+      const kategoriColor =
+        r.kategori === 'KRITIKAL' ? '#dc2626' :
+        r.kategori === 'MAYOR'    ? '#ea580c' : '#ca8a04';
+      const statusColor =
+        r.statusPerbaikan === 'CLSD' ? '#16a34a' :
+        r.statusPerbaikan === 'INPG' ? '#d97706' : '#2563eb';
+
+      const rowBg = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
+      const td = `${tdBase}background:${rowBg};`;
+
+      const hirarkiTags = (r.hierarkiPengendalian ?? [])
+        .map((h) => `<span style="display:inline-block;background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;border-radius:10px;padding:1px 6px;font-size:10px;margin:1px 2px;">${h}</span>`)
+        .join('');
+
+      return `<tr>
+        <td style="${td}text-align:center;color:#9ca3af;">${idx + 1}</td>
+        <td style="${td}white-space:nowrap;">${new Date(r.tanggalTemuan).toLocaleDateString('id-ID')}</td>
+        <td style="${td}">${r.jenisTemuan || '—'}</td>
+        <td style="${td}text-align:center;">
+          <span style="display:inline-block;padding:2px 8px;border-radius:12px;background:${kategoriColor}20;color:${kategoriColor};font-weight:700;font-size:10px;">${kategoriInfo.label}</span>
+        </td>
+        <td style="${td}font-size:10px;font-family:monospace;">${r.kriteriaId !== 'TBD' ? r.kriteriaId : '—'}</td>
+        <td style="${td}font-weight:600;max-width:240px;">${r.temuanMasalah}</td>
+        <td style="${td}">${r.lokasiDivisiNama || r.lokasiDivisiId || '—'}</td>
+        <td style="${td}">${r.picNama || '—'}</td>
+        <td style="${td}white-space:nowrap;">${new Date(r.batasAkhir).toLocaleDateString('id-ID')}</td>
+        <td style="${td}text-align:center;">
+          <span style="display:inline-block;padding:2px 8px;border-radius:12px;background:${statusColor}20;color:${statusColor};font-weight:700;font-size:10px;white-space:nowrap;">${isTacc ? 'OPEN (TACC)' : statusInfo.label}</span>
+        </td>
+        <td style="${td}">${hirarkiTags}</td>
+        <td style="${td}max-width:220px;">${r.rekomendasiPerbaikan || '—'}</td>
+        <td style="${td}white-space:nowrap;">${r.tanggalPerbaikan ? new Date(r.tanggalPerbaikan).toLocaleDateString('id-ID') : '—'}</td>
+        <td style="${td}">${r.createdBy || '—'}</td>
+        ${renderPhotoCell(r.dokumentasiTemuanFiles, 'Belum ada foto')}
+        ${renderPhotoCell(r.dokumentasiPerbaikanFiles, 'Belum ada bukti')}
+      </tr>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <title>PICA Export — ${tanggalExport}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 12px; color: #1f2937; padding: 16px; }
+    @media print {
+      body { padding: 4mm; font-size: 10px; }
+      .no-print { display: none !important; }
+      @page { margin: 8mm; size: A3 landscape; }
+      table { page-break-inside: auto; }
+      tr { page-break-inside: avoid; page-break-after: auto; }
+      img { max-width: 120px !important; max-height: 90px !important; }
+    }
+    .header { background: #231f20; color: white; padding: 16px 20px; margin-bottom: 14px; border-radius: 6px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+    .header h1 { font-size: 18px; margin-bottom: 3px; }
+    .header p { font-size: 11px; color: #9ca3af; }
+    .stats { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 14px; text-align: center; min-width: 90px; }
+    .stat-num { font-size: 20px; font-weight: 700; color: #f15a22; }
+    .stat-label { font-size: 10px; color: #6b7280; }
+    .print-btn { background: #f15a22; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+    .print-btn:hover { background: #d44d1a; }
+    .table-wrap { overflow-x: auto; border-radius: 6px; border: 1px solid #d1d5db; }
+    table { border-collapse: collapse; width: 100%; min-width: 1400px; }
+    thead th { position: sticky; top: 0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>PICA — Problem Identification &amp; Corrective Action</h1>
+      <p>${dateLabel}</p>
+    </div>
+    <div style="text-align:right;">
+      <p style="font-size:13px;font-weight:700;color:#f15a22;">${data.length} Record</p>
+      <p style="font-size:10px;color:#9ca3af;">SMK3 Safety System</p>
+    </div>
+  </div>
+  <div class="stats no-print">
+    <div class="stat"><div class="stat-num">${data.length}</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num">${data.filter((r) => r.statusPerbaikan === 'OPEN').length}</div><div class="stat-label">OPEN</div></div>
+    <div class="stat"><div class="stat-num">${data.filter((r) => r.statusPerbaikan === 'INPG').length}</div><div class="stat-label">INPG</div></div>
+    <div class="stat"><div class="stat-num">${data.filter((r) => r.statusPerbaikan === 'CLSD').length}</div><div class="stat-label">CLSD</div></div>
+  </div>
+  <button class="print-btn no-print" onclick="window.print()">🖨️ Print / Save as PDF (A3 Landscape)</button>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>${headerCols}</tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+  </div>
+  <script>
+    document.querySelectorAll('img').forEach(img => {
+      img.onerror = function() {
+        this.style.display = 'none';
+        const p = document.createElement('p');
+        p.style.cssText = 'font-size:9px;color:#9ca3af;text-align:center;margin-top:2px;';
+        p.textContent = 'Foto tidak dapat dimuat';
+        if (this.parentNode) this.parentNode.appendChild(p);
+      };
+    });
+  </script>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `PICA_Export_${new Date().toISOString().slice(0, 10)}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Export HTML berhasil (${data.length} record)`);
+  }
+
+  // ── Export PDF — buka window baru, tabel sama dengan HTML, auto-print A3 landscape ──
+  async function exportToPDF(data: PicaRecord[], dateLabel: string) {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const tanggalExport = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Pre-fetch foto ke base64 untuk embed
+    const allPhotoUrls = new Set<string>();
+    data.forEach((r) => {
+      [...(r.dokumentasiTemuanFiles ?? []), ...(r.dokumentasiPerbaikanFiles ?? [])].forEach((f) => {
+        if (/\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(f.fileName)) {
+          const url = f.fileUrl.startsWith('http') ? f.fileUrl : `${baseUrl}${f.fileUrl}`;
+          allPhotoUrls.add(url);
+        }
+      });
+    });
+
+    const base64Cache = new Map<string, string | null>();
+    await Promise.all(Array.from(allPhotoUrls).map(async (url) => {
+      base64Cache.set(url, await fetchImageAsBase64(url));
+    }));
+
+    const thStyle   = `padding:6px 8px;border:1px solid #d1d5db;background:#231f20;color:#fff;font-size:10px;font-weight:700;text-align:left;white-space:nowrap;`;
+    const thPhotoSt = `padding:6px 8px;border:1px solid #d1d5db;background:#f15a22;color:#fff;font-size:10px;font-weight:700;text-align:center;white-space:nowrap;min-width:130px;`;
+    const tdBase    = `padding:6px 8px;border:1px solid #e5e7eb;font-size:10px;vertical-align:top;`;
+
+    const headerCols = [
+      `<th style="${thStyle}width:28px;">#</th>`,
+      `<th style="${thStyle}min-width:55px;">Tgl Temuan</th>`,
+      `<th style="${thStyle}min-width:90px;">Jenis</th>`,
+      `<th style="${thStyle}min-width:75px;">Kategori</th>`,
+      `<th style="${thStyle}min-width:65px;">Kriteria</th>`,
+      `<th style="${thStyle}min-width:200px;">Temuan Masalah</th>`,
+      `<th style="${thStyle}min-width:120px;">Lokasi / Divisi</th>`,
+      `<th style="${thStyle}min-width:100px;">PIC</th>`,
+      `<th style="${thStyle}min-width:70px;">Deadline</th>`,
+      `<th style="${thStyle}min-width:90px;">Status</th>`,
+      `<th style="${thStyle}min-width:150px;">Hirarki</th>`,
+      `<th style="${thStyle}min-width:180px;">Rekomendasi</th>`,
+      `<th style="${thStyle}min-width:70px;">Tgl Selesai</th>`,
+      `<th style="${thStyle}min-width:90px;">Dibuat Oleh</th>`,
+      `<th style="${thPhotoSt}min-width:130px;">📸 Before</th>`,
+      `<th style="${thPhotoSt}min-width:130px;">✅ After</th>`,
+    ].join('');
+
+    const renderPhotoCell = (files: PicaRecord['dokumentasiTemuanFiles'], emptyLabel: string) => {
+      const tdSt = `${tdBase}text-align:center;vertical-align:middle;background:#fafafa;`;
+      if (!files || files.length === 0) {
+        return `<td style="${tdSt}color:#9ca3af;font-size:9px;">—</td>`;
+      }
+      const imgs = files.filter((f) => /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(f.fileName));
+      if (imgs.length === 0) {
+        return `<td style="${tdSt}font-size:9px;color:#2563eb;">📄 file</td>`;
+      }
+      const f = imgs[0];
+      const href = f.fileUrl.startsWith('http') ? f.fileUrl : `${baseUrl}${f.fileUrl}`;
+      const b64 = base64Cache.get(href);
+      const src = b64 ?? href;
+      const extra = imgs.length > 1 ? `<div style="font-size:8px;color:#9ca3af;">+${imgs.length - 1}</div>` : '';
+      return `<td style="${tdSt}">
+        <img src="${src}" alt="foto"
+          style="max-width:120px;max-height:90px;object-fit:cover;border-radius:4px;border:1px solid #d1d5db;display:block;margin:0 auto;" />
+        ${extra}
+      </td>`;
+    };
+
+    const rowsHtml = data.map((r, idx) => {
+      const isTacc       = r.statusPerbaikan === 'OPEN' && !!r.catatanTACC;
+      const kategoriInfo = KATEGORI_TEMUAN_LABELS[r.kategori] ?? { label: r.kategori };
+      const statusInfo   = STATUS_PERBAIKAN_LABELS[r.statusPerbaikan] ?? { label: r.statusPerbaikan };
+
+      const kategoriColor =
+        r.kategori === 'KRITIKAL' ? '#dc2626' :
+        r.kategori === 'MAYOR'    ? '#ea580c' : '#ca8a04';
+      const statusColor =
+        r.statusPerbaikan === 'CLSD' ? '#16a34a' :
+        r.statusPerbaikan === 'INPG' ? '#d97706' : '#2563eb';
+
+      const rowBg = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
+      const td = `${tdBase}background:${rowBg};`;
+
+      const hirarkiTags = (r.hierarkiPengendalian ?? [])
+        .map((h) => `<span style="display:inline-block;background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;border-radius:8px;padding:1px 5px;font-size:9px;margin:1px;">${h}</span>`)
+        .join('');
+
+      return `<tr>
+        <td style="${td}text-align:center;color:#9ca3af;">${idx + 1}</td>
+        <td style="${td}white-space:nowrap;">${new Date(r.tanggalTemuan).toLocaleDateString('id-ID')}</td>
+        <td style="${td}">${r.jenisTemuan || '—'}</td>
+        <td style="${td}text-align:center;">
+          <span style="display:inline-block;padding:1px 6px;border-radius:10px;background:${kategoriColor}20;color:${kategoriColor};font-weight:700;font-size:9px;">${kategoriInfo.label}</span>
+        </td>
+        <td style="${td}font-size:9px;font-family:monospace;">${r.kriteriaId !== 'TBD' ? r.kriteriaId : '—'}</td>
+        <td style="${td}font-weight:600;max-width:220px;">${r.temuanMasalah}</td>
+        <td style="${td}">${r.lokasiDivisiNama || r.lokasiDivisiId || '—'}</td>
+        <td style="${td}">${r.picNama || '—'}</td>
+        <td style="${td}white-space:nowrap;">${new Date(r.batasAkhir).toLocaleDateString('id-ID')}</td>
+        <td style="${td}text-align:center;">
+          <span style="display:inline-block;padding:1px 6px;border-radius:10px;background:${statusColor}20;color:${statusColor};font-weight:700;font-size:9px;white-space:nowrap;">${isTacc ? 'OPEN (TACC)' : statusInfo.label}</span>
+        </td>
+        <td style="${td}">${hirarkiTags}</td>
+        <td style="${td}max-width:200px;">${r.rekomendasiPerbaikan || '—'}</td>
+        <td style="${td}white-space:nowrap;">${r.tanggalPerbaikan ? new Date(r.tanggalPerbaikan).toLocaleDateString('id-ID') : '—'}</td>
+        <td style="${td}">${r.createdBy || '—'}</td>
+        ${renderPhotoCell(r.dokumentasiTemuanFiles, 'Belum ada foto')}
+        ${renderPhotoCell(r.dokumentasiPerbaikanFiles, 'Belum ada bukti')}
+      </tr>`;
+    }).join('');
+
+    const printHtml = `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <title>PICA — ${tanggalExport}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 10px; color: #1f2937; padding: 8px; }
+    @page { margin: 8mm; size: A3 landscape; }
+    @media print {
+      body { padding: 0; }
+      .no-print { display: none !important; }
+      table { page-break-inside: auto; }
+      tr { page-break-inside: avoid; }
+      img { max-width: 110px !important; max-height: 85px !important; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    .header { background: #231f20; color: white; padding: 12px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .header h1 { font-size: 14px; margin-bottom: 2px; }
+    .header p { font-size: 10px; color: #9ca3af; }
+    .stats { display: flex; gap: 8px; margin-bottom: 10px; }
+    .stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 4px; padding: 5px 10px; text-align: center; }
+    .stat-num { font-size: 16px; font-weight: 700; color: #f15a22; }
+    .stat-label { font-size: 9px; color: #6b7280; }
+    .print-btn { background: #f15a22; color: white; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+    .table-wrap { overflow-x: auto; border: 1px solid #d1d5db; border-radius: 4px; }
+    table { border-collapse: collapse; width: 100%; }
+    thead th { position: sticky; top: 0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>PICA — Problem Identification &amp; Corrective Action</h1>
+      <p>${dateLabel}</p>
+    </div>
+    <div style="text-align:right;">
+      <p style="font-size:12px;font-weight:700;color:#f15a22;">${data.length} Record</p>
+      <p style="font-size:9px;color:#9ca3af;">Internal Audit SMK3 — HAAMI System</p>
+    </div>
+  </div>
+  <div class="stats no-print">
+    <div class="stat"><div class="stat-num">${data.length}</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num">${data.filter((r) => r.statusPerbaikan === 'OPEN').length}</div><div class="stat-label">OPEN</div></div>
+    <div class="stat"><div class="stat-num">${data.filter((r) => r.statusPerbaikan === 'INPG').length}</div><div class="stat-label">INPG</div></div>
+    <div class="stat"><div class="stat-num">${data.filter((r) => r.statusPerbaikan === 'CLSD').length}</div><div class="stat-label">CLSD</div></div>
+  </div>
+  <button class="print-btn no-print" onclick="window.print()">🖨️ Print / Save as PDF (A3 Landscape)</button>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>${headerCols}</tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+  </div>
+  <script>
+    document.querySelectorAll('img').forEach(img => {
+      img.onerror = function() {
+        this.style.display = 'none';
+        const p = document.createElement('p');
+        p.style.cssText = 'font-size:8px;color:#9ca3af;text-align:center;';
+        p.textContent = '—';
+        if (this.parentNode) this.parentNode.appendChild(p);
+      };
+    });
+  </script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (!win) {
+      toast.error('Popup diblokir browser. Izinkan popup dan coba lagi.');
+      return;
+    }
+    win.document.write(printHtml);
+    win.document.close();
+    win.focus();
+    win.onload = () => { setTimeout(() => win.print(), 800); };
+    toast.success(`Membuka dialog print PDF (${data.length} record)…`);
   }
 
   const tabs: { key: FilterTab; label: string; count: number; color: string; activeColor: string }[] = [
@@ -1179,9 +2289,12 @@ export default function PicaListPage() {
             )}
           </div>
 
-          {/* Export */}
-          <button onClick={exportToCSV} disabled={filtered.length === 0}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#c5c0bb] text-[#231f20] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed">
+          {/* Export Button → buka modal */}
+          <button
+            onClick={() => setExportModalOpen(true)}
+            disabled={records.length === 0}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#c5c0bb] text-[#231f20] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
+          >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -1415,6 +2528,16 @@ export default function PicaListPage() {
           user={user}
         />
       )}
+
+      {/* ── Export Modal ── */}
+      <PicaExportModal
+        isOpen={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        records={records}
+        onExportCSV={exportToCSV}
+        onExportHTML={exportToHTML}
+        onExportPDF={exportToPDF}
+      />
     </div>
   );
 }

@@ -11,8 +11,9 @@ export interface User {
   nama: string;
   role: 'admin' | 'supervisor' | 'user';
   departemen?: string;
-  email?: string; // Optional, karena backend tidak pakai email
-  name?: string;  // Alias untuk nama
+  divisionId?: string | null;   // UUID FK ke tabel divisions
+  email?: string;
+  name?: string;    // Alias untuk nama
   department?: string; // Alias untuk departemen
 }
 
@@ -79,10 +80,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Decode and set user from token
+      // Decode and set user from token (data dasar dari JWT)
       try {
         const decoded = decodeJWT(token);
         if (decoded) {
+          // Set user sementara dari JWT (tanpa divisionId)
           setUser({
             id: decoded.id || decoded.sub,
             idKaryawan: decoded.idKaryawan,
@@ -93,6 +95,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             departemen: decoded.departemen,
             department: decoded.departemen, // Alias for compatibility
           });
+
+          // Fetch /api/auth/me untuk dapat divisionId dan data terkini
+          fetch('/api/auth/me', {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+              if (data?.id) {
+                setUser(prev => prev ? {
+                  ...prev,
+                  divisionId: data.divisionId ?? null,
+                } : prev);
+              }
+            })
+            .catch(() => {}); // silent — user tetap bisa login tanpa divisionId
         } else {
           clearToken();
         }
@@ -170,6 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         departemen: response.user.departemen,
         department: response.user.departemen, // Alias
         email: response.user.email || `${response.user.idKaryawan}@smk3.local`, // Fallback
+        divisionId: response.user.divisionId ?? null,
       };
       
       console.log('🔵 AuthContext: About to setUser()');

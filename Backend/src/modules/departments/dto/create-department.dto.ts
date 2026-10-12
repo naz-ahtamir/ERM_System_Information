@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, MaxLength, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateDepartmentDto {
   @ApiProperty({ example: 'HSE', description: 'Nama departemen' })
@@ -13,6 +13,11 @@ export class CreateDepartmentDto {
   @IsNotEmpty()
   @MaxLength(30)
   code: string;
+
+  @ApiPropertyOptional({ description: 'UUID pusat (center) yang menaungi departemen ini' })
+  @IsOptional()
+  @IsUUID()
+  centerId?: string;
 }
 
 export class UpsertDepartmentsDto {

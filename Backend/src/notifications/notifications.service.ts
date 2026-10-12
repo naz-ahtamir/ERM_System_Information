@@ -18,6 +18,7 @@ export class NotificationsService {
         message: createNotificationDto.message,
         findingId: createNotificationDto.findingId ?? null,
         objekK3Id: createNotificationDto.objekK3Id ?? null,
+        picaId:    createNotificationDto.picaId    ?? null,
         isRead: createNotificationDto.isRead ?? false,
       },
     });
@@ -47,6 +48,13 @@ export class NotificationsService {
             noSeri: true,
             tanggalBerlaku: true,
             statusRiksaUji: true,
+          },
+        },
+        pica: {
+          select: {
+            id: true,
+            temuanMasalah: true,
+            statusPerbaikan: true,
           },
         },
       },

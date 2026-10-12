@@ -132,13 +132,14 @@ async function fetchWithAuth<T = any>(
  */
 export const authApi = {
   login: async (idKaryawan: string, password: string): Promise<AuthResponse> => {
-    // Gunakan raw fetch — JANGAN pakai fetchWithAuth karena:
-    // 1. Belum ada token saat login
-    // 2. fetchWithAuth throw pesan generic untuk 401, bukan pesan dari backend
-    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    // Gunakan Next.js proxy route /api/auth/login agar:
+    // 1. Tidak ada CORS issue (request dari browser ke same origin)
+    // 2. Backend URL tersembunyi dari browser di production
+    // 3. Proxy menampilkan pesan "Backend tidak dapat dijangkau" jika server mati
+    const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idKaryawan, password }),
+      body: JSON.stringify({ idKaryawan: String(idKaryawan).trim(), password }),
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));

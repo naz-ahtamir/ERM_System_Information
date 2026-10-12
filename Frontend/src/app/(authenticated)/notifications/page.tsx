@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useNotifications } from '@/contexts/NotificationContext';
 
 type FilterType = 'all' | 'unread' | 'read';
-type NotifType = 'all' | 'finding_submitted' | 'approval_required' | 'finding_approved' | 'finding_rejected' | 'license_expiring_soon' | 'license_expired';
+type NotifType = 'all' | 'finding_submitted' | 'approval_required' | 'finding_approved' | 'finding_rejected' | 'license_expiring_soon' | 'license_expired' | 'pica_deadline_overdue' | 'pica_tacc_reminder';
 
 // Map subElementId → URL halaman asal finding
 const SUB_ELEMENT_URL: Record<string, string> = {
@@ -52,7 +52,24 @@ const SUB_ELEMENT_URL: Record<string, string> = {
   'sc-documentation':                    '/safety-compliance/documentation-records',
 };
 
-function getFindingUrl(notification: { findingId?: string | null; objekK3Id?: string | null; finding?: { subElementId?: string } | null }): string {
+function getFindingUrl(notification: {
+  type?: string;
+  findingId?: string | null;
+  objekK3Id?: string | null;
+  picaId?: string | null;
+  finding?: { subElementId?: string } | null;
+}): string {
+  // PICA notification → /internal-audit-smk/pica?id=xxx
+  if (
+    notification.picaId ||
+    notification.type === 'pica_deadline_overdue' ||
+    notification.type === 'pica_tacc_reminder'
+  ) {
+    const id = notification.picaId;
+    return id
+      ? `/internal-audit-smk/pica?id=${id}`
+      : '/internal-audit-smk/pica';
+  }
   // ObjekK3 → equipment-safety dengan ?id=
   if (notification.objekK3Id) {
     return `/accident-prevention/equipment-safety?id=${notification.objekK3Id}`;
@@ -64,23 +81,27 @@ function getFindingUrl(notification: { findingId?: string | null; objekK3Id?: st
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  finding_submitted: 'Temuan Baru',
-  approval_required: 'Perlu Persetujuan',
-  finding_approved: 'Disetujui',
-  finding_rejected: 'Ditolak',
-  deadline_reminder: 'Deadline',
-  license_expiring_soon: 'Lisensi Segera Habis',
-  license_expired: 'Lisensi Kedaluwarsa',
+  finding_submitted:    'Temuan Baru',
+  approval_required:    'Perlu Persetujuan',
+  finding_approved:     'Disetujui',
+  finding_rejected:     'Ditolak',
+  deadline_reminder:    'Deadline',
+  license_expiring_soon:'Lisensi Segera Habis',
+  license_expired:      'Lisensi Kedaluwarsa',
+  pica_deadline_overdue:'PICA Deadline Terlewat',
+  pica_tacc_reminder:   'PICA Revisi TACC',
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  finding_submitted: 'bg-blue-100 text-blue-700',
-  approval_required: 'bg-orange-100 text-orange-700',
-  finding_approved: 'bg-green-100 text-green-700',
-  finding_rejected: 'bg-red-100 text-red-700',
-  deadline_reminder: 'bg-yellow-100 text-yellow-800',
-  license_expiring_soon: 'bg-amber-100 text-amber-700',
-  license_expired: 'bg-red-100 text-red-800',
+  finding_submitted:    'bg-blue-100 text-blue-700',
+  approval_required:    'bg-orange-100 text-orange-700',
+  finding_approved:     'bg-green-100 text-green-700',
+  finding_rejected:     'bg-red-100 text-red-700',
+  deadline_reminder:    'bg-yellow-100 text-yellow-800',
+  license_expiring_soon:'bg-amber-100 text-amber-700',
+  license_expired:      'bg-red-100 text-red-800',
+  pica_deadline_overdue:'bg-red-100 text-red-700',
+  pica_tacc_reminder:   'bg-purple-100 text-purple-700',
 };
 
 function getNotificationIcon(type: string) {
@@ -139,6 +160,22 @@ function getNotificationIcon(type: string) {
         <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
           <svg className="w-5 h-5 text-red-700" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+        </div>
+      );
+    case 'pica_deadline_overdue':
+      return (
+        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+          <svg className="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+      );
+    case 'pica_tacc_reminder':
+      return (
+        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+          <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
         </div>
       );
@@ -315,6 +352,8 @@ export default function NotificationsPage() {
               'finding_rejected',
               'license_expiring_soon',
               'license_expired',
+              'pica_deadline_overdue',
+              'pica_tacc_reminder',
             ] as NotifType[]
           ).map((t) => (
             <button

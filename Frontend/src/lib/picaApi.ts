@@ -46,6 +46,7 @@ export const picaApi = {
    */
   getAll: (filters?: PicaFilters): Promise<PicaRecord[]> => {
     const params = new URLSearchParams();
+    if (filters?.picId)         params.set('picId', filters.picId);
     if (filters?.divisiId)      params.set('divisiId', filters.divisiId);
     if (filters?.status)        params.set('status', filters.status);
     if (filters?.kategori)      params.set('kategori', filters.kategori);
@@ -138,6 +139,12 @@ export const picaApi = {
       method: 'PATCH',
       body: JSON.stringify({ status, keterangan }),
     }),
+
+  /**
+   * DELETE /api/pica/:id/files/:fileId — hapus satu file dari record PICA
+   */
+  deleteFile: (picaId: string, fileId: string): Promise<{ message: string }> =>
+    authFetch<{ message: string }>(`/api/pica/${picaId}/files/${fileId}`, { method: 'DELETE' }),
 
   /**
    * DELETE /api/pica?id=... — hapus record (admin)

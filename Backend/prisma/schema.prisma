@@ -143,9 +143,11 @@ model Notification {
   isRead    Boolean          @default(false) @map("is_read")
   findingId String?          @map("finding_id")
   objekK3Id String?          @map("objek_k3_id")
+  picaId    String?          @map("pica_id")
   createdAt DateTime         @default(now()) @map("created_at")
   finding   Finding?         @relation(fields: [findingId], references: [id])
   objekK3   ObjekK3?         @relation(fields: [objekK3Id], references: [id])
+  pica      Pica?            @relation(fields: [picaId], references: [id])
   user      User             @relation(fields: [userId], references: [id])
 
   @@map("notifications")
@@ -594,6 +596,7 @@ model Pica {
 
   files                   PicaFile[]
   riwayatApproval         PicaApproval[]
+  notifications           Notification[]
 
   @@map("pica")
 }

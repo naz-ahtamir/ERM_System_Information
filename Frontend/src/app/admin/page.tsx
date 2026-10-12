@@ -902,6 +902,46 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {/* Quick links — menu admin lainnya */}
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link href="/admin/org-structure"
+              className="flex items-center gap-4 p-4 bg-white border border-[#e5e0db] rounded-xl hover:border-[#f15a22] hover:shadow-md transition-all group">
+              <div className="w-10 h-10 rounded-xl bg-[#f15a22]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#f15a22] transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f15a22" strokeWidth="2" className="group-hover:stroke-white transition-colors">
+                  <rect x="2" y="7" width="20" height="14" rx="2"/>
+                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                  <line x1="12" y1="12" x2="12" y2="16"/>
+                  <line x1="10" y1="14" x2="14" y2="14"/>
+                </svg>
+              </div>
+              <div>
+                <p className="font-bold text-[14px] text-[#231f20] group-hover:text-[#f15a22] transition-colors">Struktur Organisasi</p>
+                <p className="text-[12px] text-[#6b6560] mt-0.5">Kelola Pusat, Departemen, Divisi &amp; PIC</p>
+              </div>
+              <svg className="ml-auto text-[#c5c0bb] group-hover:text-[#f15a22] transition-colors flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </Link>
+
+            <Link href="/admin/master-data"
+              className="flex items-center gap-4 p-4 bg-white border border-[#e5e0db] rounded-xl hover:border-[#f15a22] hover:shadow-md transition-all group">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-500 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" className="group-hover:stroke-white transition-colors">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                </svg>
+              </div>
+              <div>
+                <p className="font-bold text-[14px] text-[#231f20] group-hover:text-[#f15a22] transition-colors">Master Data</p>
+                <p className="text-[12px] text-[#6b6560] mt-0.5">Kelola data referensi sistem</p>
+              </div>
+              <svg className="ml-auto text-[#c5c0bb] group-hover:text-[#f15a22] transition-colors flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </Link>
+          </div>
+
           {/* Bottom navigation */}
           <div className="mt-6 flex items-center gap-3 flex-wrap">
             <Link href="/dashboard" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#c5c0bb] text-[13px] text-[#231f20] font-medium rounded-lg hover:border-[#f15a22] hover:text-[#f15a22] transition-colors">

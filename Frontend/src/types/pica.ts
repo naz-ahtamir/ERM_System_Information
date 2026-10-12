@@ -26,6 +26,7 @@ export type StatusPerbaikan = 'OPEN' | 'INPG' | 'CLSD';
 // ── File attachment ────────────────────────────────────────────────────────
 
 export interface PicaFile {
+  id?: string;           // id di database (untuk hapus file individual)
   fieldName: string;     // nama field form (e.g. "dokumentasiTemuan", "dokumentasiPerbaikan")
   fileName: string;      // nama asli file
   fileUrl: string;       // URL file yang diupload (/uploads/pica/...)
@@ -143,6 +144,7 @@ export interface ApprovalPicaDto {
 
 export interface PicaFilters {
   divisiId?: string;
+  picId?: string;       // filter PIC — hanya lihat record miliknya
   status?: StatusPerbaikan | '';
   kategori?: KategoriTemuan | '';
   search?: string;
