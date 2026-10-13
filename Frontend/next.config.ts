@@ -9,11 +9,17 @@ const nextConfig: NextConfig = {
   // ── Gambar — izinkan dari backend (localhost:3001) dan Supabase Storage ─
   images: {
     remotePatterns: [
-      // File upload lokal dari NestJS backend
+      // File upload lokal dari NestJS backend (development)
       {
         protocol: "http",
         hostname: "localhost",
         port: "3001",
+        pathname: "/uploads/**",
+      },
+      // File upload via Cloudflare Tunnel (production)
+      {
+        protocol: "https",
+        hostname: "api.naz-ahtamir.site",
         pathname: "/uploads/**",
       },
       // File upload cloud dari Supabase Storage
