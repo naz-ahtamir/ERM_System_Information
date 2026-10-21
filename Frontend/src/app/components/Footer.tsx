@@ -15,10 +15,9 @@ export function Footer() {
             <p className="font-medium text-xs text-[#6B7280] uppercase tracking-wider mb-3">
               PT. QMB New Energy Materials
             </p>
-            <p className="text-sm text-[#6B7280] max-w-sm leading-relaxed">
-              Committed to zero fatality and zero harm across all smelting
-              operations. Transparent public reporting since 2019.
-            </p>
+            {/* <p className="text-sm text-[#6B7280] max-w-sm leading-relaxed">
+              Live above all. No Safety, No Work.              
+            </p> */}
           </div>
           <div>
             <div className="text-xs font-bold tracking-wider uppercase text-[#FF6B1A] mb-4">

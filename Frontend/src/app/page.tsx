@@ -116,10 +116,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-3 flex flex-col items-center gap-2 text-white/50 text-[11px] font-semibold tracking-widest uppercase">
+        {/* <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-3 flex flex-col items-center gap-2 text-white/50 text-[11px] font-semibold tracking-widest uppercase">
           <div className="w-px h-8 bg-[#FF6B1A] animate-scroll-pulse"></div>
           Scroll
-        </div>
+        </div> */}
       </section>
 
       {/* ─── STATS ────────────────────────────────────────────────────────── */}
@@ -285,7 +285,7 @@ export default function Home() {
           {/* Specific Policy */}
           <div className="bg-white border border-[#E5E7EB] shadow-xs p-8 rounded-2xl">
             <span className="inline-block px-3 py-1 rounded-md bg-[#FFF1E8] text-[#FF6B1A] text-[12px] font-bold tracking-wider uppercase mb-5">
-              Special Policy
+              Specific Policy
             </span>
             <p className="text-[14px] text-[#1F2937] leading-relaxed mb-6 pl-4 border-l-2 border-[#FF6B1A]">
               PT. QMB New Energy Materials is committed to becoming an outstanding company by consistently and continuously implementing the Occupational Safety and Health Management System at every work process, ensuring the creation of a safe and healthy working environment for all workers, and complying with all applicable laws and regulations of the Republic of Indonesia. Therefore, PT. QMB New Energy Materials is committed to:
