@@ -215,7 +215,7 @@ function TreeItem({
       <div
         className={`group flex items-stretch min-h-[44px] cursor-pointer rounded-xl transition-all duration-150 ${
           isSelected
-            ? 'bg-orange-50 ring-1 ring-[#f15a22]/30'
+            ? 'bg-orange-50 ring-1 ring-[#FF6B1A]/30'
             : 'hover:bg-gray-50'
         }`}
         onClick={() => onSelect(node)}
@@ -256,7 +256,7 @@ function TreeItem({
             onClick={(e) => { e.stopPropagation(); if (hasChildren) onToggle(node.id); }}
             className={`flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center transition-all ${
               hasChildren
-                ? 'hover:bg-[#f15a22]/10 text-[#a09b96] hover:text-[#f15a22]'
+                ? 'hover:bg-[#FF6B1A]/10 text-[#9CA3AF] hover:text-[#FF6B1A]'
                 : 'opacity-0 pointer-events-none'
             }`}
           >
@@ -277,26 +277,26 @@ function TreeItem({
           {/* Badge jenis + nama */}
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <JenisBadge jenis={node.jenisDokumen} size="sm" />
-            <span className={`text-[13px] font-semibold truncate ${isSelected ? 'text-[#f15a22]' : 'text-[#231f20]'}`}>
+            <span className={`text-[13px] font-semibold truncate ${isSelected ? 'text-[#FF6B1A]' : 'text-[#1F2937]'}`}>
               {node.namaDokumen}
             </span>
           </div>
 
           {/* Meta — nomor, revisi, status */}
           <div className="hidden md:flex items-center gap-3 flex-shrink-0">
-            <span className="text-[11px] text-[#6b6560] font-mono bg-gray-50 border border-gray-100 px-1.5 py-0.5 rounded">
+            <span className="text-[11px] text-[#6B7280] font-mono bg-gray-50 border border-gray-100 px-1.5 py-0.5 rounded">
               {node.nomorDokumen}
             </span>
-            <span className="text-[11px] text-[#a09b96]">Rev.{node.revisi ?? '00'}</span>
+            <span className="text-[11px] text-[#9CA3AF]">Rev.{node.revisi ?? '00'}</span>
             <StatusValBadge val={node.statusValidasi} />
-            <span className="text-[11px] text-[#a09b96] hidden lg:inline">{fmt(node.tanggalTerbit)}</span>
+            <span className="text-[11px] text-[#9CA3AF] hidden lg:inline">{fmt(node.tanggalTerbit)}</span>
           </div>
 
           {/* Aksi hover */}
           <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
             <button
               onClick={(e) => { e.stopPropagation(); onEdit(node); }}
-              className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-orange-50 rounded-lg transition-colors"
+              className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg transition-colors"
               title="Edit"
             >
               <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -307,7 +307,7 @@ function TreeItem({
             {isAdmin && (
               <button
                 onClick={(e) => { e.stopPropagation(); onDelete(node); }}
-                className="p-1.5 text-[#6b6560] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 title="Hapus"
               >
                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -506,14 +506,14 @@ function DocFormModal({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
           <div>
-            <h2 className="font-bold text-[15px] text-[#231f20]">
+            <h2 className="font-bold text-[15px] text-[#1F2937]">
               {editDoc ? 'Edit Dokumen' : 'Tambah Dokumen'}
             </h2>
-            <p className="text-[11px] text-[#a09b96] mt-0.5">
+            <p className="text-[11px] text-[#9CA3AF] mt-0.5">
               Parent opsional — dokumen boleh berdiri sendiri di departemen
             </p>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -643,7 +643,7 @@ function DocFormModal({
                 <input ref={fileRef} type="file" accept=".pdf,.doc,.docx"
                   onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="hidden" />
                 <button type="button" onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-2 px-3 py-2 text-[12px] font-semibold border border-gray-200 rounded-lg hover:border-[#f15a22] hover:text-[#f15a22] transition-colors">
+                  className="flex items-center gap-2 px-3 py-2 text-[12px] font-semibold border border-gray-200 rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors">
                   <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
@@ -651,16 +651,16 @@ function DocFormModal({
                   Pilih File
                 </button>
                 {file ? (
-                  <div className="flex items-center gap-2 text-[12px] text-[#231f20]">
+                  <div className="flex items-center gap-2 text-[12px] text-[#1F2937]">
                     <span className="truncate max-w-[160px]">{file.name}</span>
                     <button type="button" onClick={() => { setFile(null); if (fileRef.current) fileRef.current.value = ''; }}
-                      className="text-[#a09b96] hover:text-red-500">✕</button>
+                      className="text-[#9CA3AF] hover:text-red-500">✕</button>
                   </div>
                 ) : editDoc?.fileUrl ? (
                   <a href={editDoc.fileUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-[12px] text-[#f15a22] hover:underline">File saat ini</a>
+                    className="text-[12px] text-[#FF6B1A] hover:underline">File saat ini</a>
                 ) : (
-                  <span className="text-[12px] text-[#a09b96]">Belum ada file</span>
+                  <span className="text-[12px] text-[#9CA3AF]">Belum ada file</span>
                 )}
               </div>
             </Field>
@@ -670,11 +670,11 @@ function DocFormModal({
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 flex-shrink-0">
           <button onClick={onClose} disabled={saving}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50">
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50">
             Batal
           </button>
           <button onClick={handleSubmit} disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60">
             {saving ? (
               <><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -695,18 +695,18 @@ function Field({ label, required, error, hint, children }: {
 }) {
   return (
     <div>
-      <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+      <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
         {label}{required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       {children}
       {error && <p className="text-red-500 text-[11px] mt-1">{error}</p>}
-      {hint && !error && <p className="text-[#a09b96] text-[11px] mt-1">{hint}</p>}
+      {hint && !error && <p className="text-[#9CA3AF] text-[11px] mt-1">{hint}</p>}
     </div>
   );
 }
 
 function inputCls(hasError: boolean) {
-  return `w-full px-3.5 py-2.5 text-[13px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${hasError ? 'border-red-400 bg-red-50' : 'border-gray-200'}`;
+  return `w-full px-3.5 py-2.5 text-[13px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] transition-colors ${hasError ? 'border-red-400 bg-red-50' : 'border-gray-200'}`;
 }
 
 // ── Detail Panel ───────────────────────────────────────────────────────────
@@ -734,10 +734,10 @@ function DetailPanel({
             <div className="flex items-center gap-2 mb-2">
               <JenisBadge jenis={doc.jenisDokumen} size="md" />
             </div>
-            <h3 className="font-bold text-[16px] text-[#231f20] leading-snug">{doc.namaDokumen}</h3>
-            <p className="text-[12px] text-[#a09b96] mt-1 font-mono">{doc.nomorDokumen}</p>
+            <h3 className="font-bold text-[16px] text-[#1F2937] leading-snug">{doc.namaDokumen}</h3>
+            <p className="text-[12px] text-[#9CA3AF] mt-1 font-mono">{doc.nomorDokumen}</p>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] flex-shrink-0 p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] flex-shrink-0 p-1">
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -757,27 +757,27 @@ function DetailPanel({
                 label: 'Parent',
                 value: doc.parent
                   ? <span className="text-[13px]">[{doc.parent.nomorDokumen}] {doc.parent.namaDokumen}</span>
-                  : <span className="text-[#a09b96]">— (dokumen root)</span>,
+                  : <span className="text-[#9CA3AF]">— (dokumen root)</span>,
               },
               {
                 label: 'File',
                 value: doc.fileUrl
-                  ? <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#f15a22] hover:underline text-[13px]">Lihat File</a>
-                  : <span className="text-[#a09b96]">Tidak ada</span>,
+                  ? <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#FF6B1A] hover:underline text-[13px]">Lihat File</a>
+                  : <span className="text-[#9CA3AF]">Tidak ada</span>,
               },
               { label: 'Dibuat Oleh', value: doc.createdBy?.nama ?? '—' },
               { label: 'Tanggal Dibuat', value: fmt(doc.createdAt) },
             ].map(({ label, value }) => (
               <div key={label} className="flex items-start gap-3">
-                <span className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] w-28 flex-shrink-0 mt-0.5">{label}</span>
-                <span className="text-[13px] text-[#231f20] font-medium flex-1">{value}</span>
+                <span className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] w-28 flex-shrink-0 mt-0.5">{label}</span>
+                <span className="text-[13px] text-[#1F2937] font-medium flex-1">{value}</span>
               </div>
             ))}
           </div>
         </div>
         <div className="flex items-center gap-3 px-6 py-4 border-t border-gray-100 flex-shrink-0">
           <button onClick={onEdit}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors">
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors">
             Edit
           </button>
           {isAdmin && (
@@ -939,17 +939,17 @@ export default function MasterListDocumentsPage() {
     <style>
       body{font-family:Arial,sans-serif;font-size:11px;color:#1f2937;padding:16px}
       @media print{body{padding:4mm;font-size:10px}.no-print{display:none!important}@page{margin:8mm;size:A3 landscape}}
-      .header{background:#231f20;color:white;padding:14px 18px;margin-bottom:12px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
+      .header{background:#1F2937;color:white;padding:14px 18px;margin-bottom:12px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
       .header h1{font-size:16px;margin:0 0 3px}
       .header p{font-size:10px;color:#9ca3af;margin:0}
-      .print-btn{background:#f15a22;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-bottom:12px}
+      .print-btn{background:#FF6B1A;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-bottom:12px}
       table{border-collapse:collapse;width:100%;min-width:900px}
-      th{background:#231f20;color:white;padding:8px 10px;text-align:left;font-size:11px;position:sticky;top:0}
+      th{background:#1F2937;color:white;padding:8px 10px;text-align:left;font-size:11px;position:sticky;top:0}
       td{padding:7px 10px;border-bottom:1px solid #e5e7eb;vertical-align:middle}
     </style></head><body>
     <div class="header">
       <div><h1>Master List Documents</h1><p>Dicetak: ${new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' })}</p></div>
-      <div style="text-align:right"><p style="font-size:14px;font-weight:700;color:#f15a22">${sorted.length} Dokumen</p><p>SMK3 Safety System</p></div>
+      <div style="text-align:right"><p style="font-size:14px;font-weight:700;color:#FF6B1A">${sorted.length} Dokumen</p><p>SMK3 Safety System</p></div>
     </div>
     <button class="print-btn no-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
     <table>
@@ -976,18 +976,18 @@ export default function MasterListDocumentsPage() {
   })();
 
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* Page Header */}
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">
             Safety Compliance › Documentation &amp; Records
           </p>
-          <h1 className="font-bold text-white text-[clamp(22px,4vw,34px)] leading-tight">
+          <h1 className="font-bold text-[#1F2937] text-[clamp(22px,4vw,34px)] leading-tight">
             Master List Documents
           </h1>
-          {/* <p className="text-[#8a8580] text-[13px] mt-1.5">
+          {/* <p className="text-[#6B7280] text-[13px] mt-1.5">
             Daftar induk seluruh dokumen K3 — hierarki 4 level per departemen
           </p> */}
 
@@ -1002,10 +1002,10 @@ export default function MasterListDocumentsPage() {
                   </div>
                   <div>
                     <div className="text-white font-bold text-[13px]">{totalByJenis(j.value)}</div>
-                    <div className="text-[10px] text-[#8a8580]">{j.label}</div>
+                    <div className="text-[10px] text-[#6B7280]">{j.label}</div>
                   </div>
                   {i < JENIS_OPTIONS.length - 1 && (
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f15a22" strokeWidth="2.5">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FF6B1A" strokeWidth="2.5">
                       <path d="m9 18 6-6-6-6" />
                     </svg>
                   )}
@@ -1013,7 +1013,7 @@ export default function MasterListDocumentsPage() {
               );
             })}
             <div className="ml-auto flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
-              <span className="text-[#8a8580] text-[12px]">Total Dokumen</span>
+              <span className="text-[#6B7280] text-[12px]">Total Dokumen</span>
               <span className="text-white font-bold text-[18px]">{allDocs.length}</span>
             </div>
           </div> */}
@@ -1029,16 +1029,16 @@ export default function MasterListDocumentsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             {/* Search */}
             <div className="relative flex-1">
-              <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a09b96]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
               <input
                 type="text" value={search} onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari nama / nomor dokumen..."
-                className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors"
               />
               {search && (
-                <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]">
+                <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
@@ -1049,7 +1049,7 @@ export default function MasterListDocumentsPage() {
             {/* Export button */}
             <button
               onClick={() => handleExport()}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#c5c0bb] text-[#231f20] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -1061,7 +1061,7 @@ export default function MasterListDocumentsPage() {
             {/* Tambah Dokumen */}
             <button
               onClick={() => { setEditDoc(null); setModalOpen(true); }}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors whitespace-nowrap"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors whitespace-nowrap"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -1073,13 +1073,13 @@ export default function MasterListDocumentsPage() {
           {/* Row 2: Filter dropdowns */}
           <div className="flex flex-wrap gap-3">
             <select value={filterDept} onChange={(e) => setFilterDept(e.target.value)}
-              className="py-2.5 px-3.5 text-[13px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] transition-colors">
+              className="py-2.5 px-3.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] transition-colors">
               <option value="">Semua Departemen</option>
               {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
 
             <select value={filterJenis} onChange={(e) => setFilterJenis(e.target.value)}
-              className="py-2.5 px-3.5 text-[13px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] transition-colors">
+              className="py-2.5 px-3.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] transition-colors">
               <option value="">Semua Jenis</option>
               {JENIS_OPTIONS.map((j) => <option key={j.value} value={j.value}>{j.label}</option>)}
             </select>
@@ -1088,11 +1088,11 @@ export default function MasterListDocumentsPage() {
 
         {/* Info */}
         <div className="flex items-center justify-between mb-3 px-1">
-          <p className="text-[12px] text-[#6b6560]">
+          <p className="text-[12px] text-[#6B7280]">
             {loading ? 'Memuat data...' : `Menampilkan ${filtered.length} dokumen${search || filterDept || filterJenis ? ` dari ${allDocs.length} total` : ''}`}
           </p>
           {isAdmin && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#f15a22]/10 text-[#f15a22] rounded-full font-semibold border border-[#f15a22]/20">
+            <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
               Mode Admin
             </span>
           )}
@@ -1108,15 +1108,15 @@ export default function MasterListDocumentsPage() {
         ) : filtered.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-16 px-6 text-center shadow-sm">
             <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-4">
-              <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#c5c0bb" strokeWidth="1.5">
+              <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#E5E7EB" strokeWidth="1.5">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
               </svg>
             </div>
-            <p className="font-semibold text-[#231f20] text-[14px] mb-1">
+            <p className="font-semibold text-[#1F2937] text-[14px] mb-1">
               {search || filterDept || filterJenis ? 'Tidak ada dokumen yang cocok' : 'Belum ada dokumen'}
             </p>
-            <p className="text-[#6b6560] text-[13px]">
+            <p className="text-[#6B7280] text-[13px]">
               {search || filterDept || filterJenis ? 'Coba ubah filter' : 'Klik "Tambah Dokumen" untuk mulai.'}
             </p>
           </div>
@@ -1124,7 +1124,7 @@ export default function MasterListDocumentsPage() {
           /* ── Flat view saat search/filter jenis aktif ── */
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
-              <p className="text-[11px] text-[#6b6560] font-semibold uppercase tracking-wide">
+              <p className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wide">
                 Hasil Pencarian / Filter — {flatFiltered.length} dokumen
               </p>
             </div>
@@ -1133,7 +1133,7 @@ export default function MasterListDocumentsPage() {
                 const c = JENIS_BADGE[doc.jenisDokumen];
                 return (
                   <div key={doc.id}
-                    className={`group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${detailDoc?.id === doc.id ? 'bg-orange-50 ring-1 ring-[#f15a22]/20' : 'hover:bg-gray-50'}`}
+                    className={`group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${detailDoc?.id === doc.id ? 'bg-orange-50 ring-1 ring-[#FF6B1A]/20' : 'hover:bg-gray-50'}`}
                     onClick={() => setDetailDoc(doc)}
                   >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${c.bg} ${c.text}`}>
@@ -1142,9 +1142,9 @@ export default function MasterListDocumentsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <JenisBadge jenis={doc.jenisDokumen} size="sm" />
-                        <span className="text-[13px] font-semibold text-[#231f20] truncate">{doc.namaDokumen}</span>
+                        <span className="text-[13px] font-semibold text-[#1F2937] truncate">{doc.namaDokumen}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-[11px] text-[#a09b96]">
+                      <div className="flex items-center gap-2 text-[11px] text-[#9CA3AF]">
                         <span className="font-mono">{doc.nomorDokumen}</span>
                         <span>·</span>
                         <span>{doc.departemen?.name}</span>
@@ -1157,7 +1157,7 @@ export default function MasterListDocumentsPage() {
                       <StatusValBadge val={doc.statusValidasi} />
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={(e) => { e.stopPropagation(); setEditDoc(doc); setModalOpen(true); }}
-                          className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-orange-50 rounded-lg">
+                          className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg">
                           <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -1165,7 +1165,7 @@ export default function MasterListDocumentsPage() {
                         </button>
                         {isAdmin && (
                           <button onClick={(e) => { e.stopPropagation(); handleDelete(doc); }}
-                            className="p-1.5 text-[#6b6560] hover:text-red-500 hover:bg-red-50 rounded-lg">
+                            className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg">
                             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <polyline points="3 6 5 6 21 6" />
                               <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -1194,17 +1194,17 @@ export default function MasterListDocumentsPage() {
                     onClick={() => toggleExpand(deptKey)}
                     className="w-full flex items-center gap-4 px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors text-left"
                   >
-                    {/* <div className="w-10 h-10 rounded-xl bg-[#f15a22] flex items-center justify-center flex-shrink-0 shadow-sm">
+                    {/* <div className="w-10 h-10 rounded-xl bg-[#FF6B1A] flex items-center justify-center flex-shrink-0 shadow-sm">
                       <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                         <polyline points="9 22 9 12 15 12 15 22" />
                       </svg>
                     </div> */}
                     <div className="flex-1">
-                      <div className="font-bold text-[15px] text-[#231f20]">{dept.name}</div>
+                      <div className="font-bold text-[15px] text-[#1F2937]">{dept.name}</div>
                       <div className="flex items-center gap-3 mt-0.5">
-                        {/* <span className="text-[11px] text-[#a09b96] font-mono bg-gray-50 border border-gray-100 px-1.5 py-0.5 rounded">{dept.code}</span>
-                        <span className="text-[11px] text-[#6b6560]">{count} dokumen</span> */}
+                        {/* <span className="text-[11px] text-[#9CA3AF] font-mono bg-gray-50 border border-gray-100 px-1.5 py-0.5 rounded">{dept.code}</span>
+                        <span className="text-[11px] text-[#6B7280]">{count} dokumen</span> */}
                         {/* Mini stat per jenis */}
                         {/* <div className="flex gap-1.5">
                           {JENIS_OPTIONS.map((j) => {
@@ -1222,7 +1222,7 @@ export default function MasterListDocumentsPage() {
                     <svg
                       width="16" height="16" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor" strokeWidth="2.5"
-                      className={`text-[#a09b96] transition-transform duration-200 flex-shrink-0 ${deptOpen ? 'rotate-90' : ''}`}
+                      className={`text-[#9CA3AF] transition-transform duration-200 flex-shrink-0 ${deptOpen ? 'rotate-90' : ''}`}
                     >
                       <path d="m9 18 6-6-6-6" />
                     </svg>
@@ -1232,7 +1232,7 @@ export default function MasterListDocumentsPage() {
                   {deptOpen && (
                     <div className="px-4 py-3">
                       {tree.length === 0 ? (
-                        <p className="text-[13px] text-[#a09b96] py-4 text-center">Tidak ada dokumen di departemen ini</p>
+                        <p className="text-[13px] text-[#9CA3AF] py-4 text-center">Tidak ada dokumen di departemen ini</p>
                       ) : (
                         tree.map((node, idx) => (
                           <TreeItem

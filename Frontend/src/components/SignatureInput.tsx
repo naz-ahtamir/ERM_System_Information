@@ -37,42 +37,42 @@ export default function SignatureInput({ value, onChange, label, required = fals
 
   return (
     <div className="mb-6">
-      <label className="block font-barlow-condensed font-bold text-sm text-[#231f20] mb-2">
-        {label} {required && <span className="text-[#f15a22]">*</span>}
+      <label className="block text-[12px] font-semibold uppercase tracking-wider text-[#6B7280] mb-2">
+        {label} {required && <span className="text-[#FF6B1A]">*</span>}
       </label>
-      <div className="border-2 border-[#d4cfc9] rounded-lg p-2 bg-white">
+      <div className="border border-[#E5E7EB] rounded-xl p-3 bg-[#FAFAFA]">
         <SignatureCanvas
           ref={sigCanvas}
           canvasProps={{
-            className: "w-full h-36 border border-gray-300 rounded",
+            className: "w-full h-36 border border-[#E5E7EB] rounded-lg bg-white",
             style: { touchAction: "none" },
           }}
           backgroundColor="rgb(255,255,255)"
-          penColor="#231f20"
+          penColor="#1F2937"
           velocityFilterWeight={0.7}
           clearOnResize={false}
         />
       </div>
-      <div className="flex gap-3 mt-3">
+      <div className="flex gap-2.5 mt-3">
         <button
           type="button"
           onClick={save}
-          className="px-4 py-2 bg-[#f15a22] text-white font-barlow-condensed text-xs font-bold uppercase tracking-wider rounded hover:bg-[#d14a1a] transition"
+          className="px-4 py-2 bg-[#FF6B1A] text-white text-[12px] font-semibold rounded-lg hover:bg-[#E85D0F] transition shadow-xs"
         >
           Simpan Tanda Tangan
         </button>
         <button
           type="button"
           onClick={clear}
-          className="px-4 py-2 bg-[#c5c0bb] text-[#231f20] font-barlow-condensed text-xs font-bold uppercase tracking-wider rounded hover:bg-[#a5a09b] transition"
+          className="px-4 py-2 bg-white border border-[#E5E7EB] text-[#1F2937] text-[12px] font-semibold rounded-lg hover:bg-[#F9FAFB] transition shadow-xs"
         >
           Hapus
         </button>
       </div>
       {value && !isEmpty && (
         <div className="mt-3">
-          <p className="text-xs text-[#6b6560] mb-1">Pratinjau:</p>
-          <img src={value} alt="Tanda tangan" className="h-16 border border-gray-200 rounded" />
+          <p className="text-[12px] font-medium text-[#6B7280] mb-1">Pratinjau:</p>
+          <img src={value} alt="Tanda tangan" className="h-16 border border-[#E5E7EB] rounded-lg bg-white p-1" />
         </div>
       )}
     </div>

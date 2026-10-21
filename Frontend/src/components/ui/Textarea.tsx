@@ -11,28 +11,30 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-[#4B5563] mb-1.5">
             {label}
-            {props.required && <span className="text-red-500 ml-1">*</span>}
+            {props.required && <span className="text-[#FF6B1A] ml-1">*</span>}
           </label>
         )}
         <textarea
           ref={ref}
           className={`
-            w-full px-3 py-2 border rounded-lg shadow-sm
-            focus:outline-none focus:ring-2 focus:ring-[#f15a22] focus:border-transparent
-            disabled:bg-gray-100 disabled:cursor-not-allowed
-            ${error ? 'border-red-500' : 'border-gray-300'}
+            w-full px-3.5 py-2.5 text-sm text-[#1F2937] bg-white border rounded-lg shadow-xs
+            placeholder:text-gray-400
+            transition-colors duration-150
+            focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]
+            disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-200
+            ${error ? 'border-red-400 focus:ring-red-400/20 focus:border-red-500' : 'border-[#E5E7EB]'}
             ${className}
           `}
           rows={4}
           {...props}
         />
         {error && (
-          <p className="mt-1 text-sm text-red-600">{error}</p>
+          <p className="mt-1.5 text-xs text-red-600 font-medium">{error}</p>
         )}
         {helperText && !error && (
-          <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+          <p className="mt-1.5 text-xs text-[#6B7280]">{helperText}</p>
         )}
       </div>
     );

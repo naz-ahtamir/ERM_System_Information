@@ -33,10 +33,10 @@ export function UserProfileCard() {
 
   const roleBadgeClass =
     user.role === "admin"
-      ? "bg-[#f15a22] text-white"
+      ? "bg-[#FFF1E8] text-[#FF6B1A] border border-[#FF6B1A]/30"
       : user.role === "supervisor"
-      ? "bg-blue-100 text-blue-700"
-      : "bg-[#e5e0db] text-[#231f20]";
+      ? "bg-blue-50 text-blue-700 border border-blue-200"
+      : "bg-[#F3F4F6] text-[#374151] border border-[#E5E7EB]";
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,26 +88,26 @@ export function UserProfileCard() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-[#e5e0db] shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
       {/* Card Header */}
-      <div className="bg-[#231f20] px-6 py-5 flex items-center justify-between">
+      <div className="bg-white px-6 py-5 border-b border-[#E5E7EB] flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* Avatar */}
-          <div className="w-12 h-12 rounded-full bg-[#f15a22] flex items-center justify-center text-white font-bold text-[18px] select-none">
+          <div className="w-12 h-12 rounded-full bg-[#FFF1E8] border border-[#FF6B1A]/20 flex items-center justify-center text-[#FF6B1A] font-bold text-[18px] select-none">
             {(user.nama || user.name || "?").charAt(0).toUpperCase()}
           </div>
           <div>
-            <div className="text-white font-bold text-[15px] leading-tight">
+            <div className="text-[#1F2937] font-bold text-[15px] leading-tight">
               {user.nama || user.name}
             </div>
-            <span className={`inline-block mt-1 px-2 py-0.5 text-[10px] font-bold rounded-full ${roleBadgeClass}`}>
+            <span className={`inline-block mt-1 px-2.5 py-0.5 text-[10px] font-bold rounded-full ${roleBadgeClass}`}>
               {roleLabel}
             </span>
           </div>
         </div>
         <button
           onClick={openEdit}
-          className="flex items-center gap-1.5 px-3.5 py-2 bg-[#3a3535] hover:bg-[#f15a22] text-white text-[12px] font-semibold rounded-lg transition-colors"
+          className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-[#F3F4F6] border border-[#E5E7EB] text-[#374151] hover:text-[#FF6B1A] text-[12px] font-semibold rounded-lg transition-colors"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -155,10 +155,10 @@ export function UserProfileCard() {
           )}
 
           {/* Quick actions */}
-          <div className="pt-3 border-t border-[#f1f0ee] flex flex-wrap gap-2">
+          <div className="pt-4 border-t border-[#E5E7EB] flex flex-wrap gap-2">
             <Link
               href="/change-password"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#faf9f7] border border-[#e5e0db] text-[#6b6560] text-[12px] font-semibold rounded-lg hover:border-[#f15a22] hover:text-[#f15a22] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#4B5563] text-[12px] font-semibold rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -168,7 +168,7 @@ export function UserProfileCard() {
             {user.role === "admin" && (
               <Link
                 href="/admin"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#faf9f7] border border-[#e5e0db] text-[#6b6560] text-[12px] font-semibold rounded-lg hover:border-[#f15a22] hover:text-[#f15a22] transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#4B5563] text-[12px] font-semibold rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
@@ -181,7 +181,7 @@ export function UserProfileCard() {
       ) : (
         /* ── Edit Form ── */
         <form onSubmit={handleSave} className="p-6 space-y-4">
-          <p className="text-[12px] text-[#6b6560]">Edit informasi profil Anda di bawah ini.</p>
+          <p className="text-[12px] text-[#6B7280]">Edit informasi profil Anda di bawah ini.</p>
 
           {[
             { label: "Nama Lengkap", field: "nama", type: "text" },
@@ -190,14 +190,14 @@ export function UserProfileCard() {
             { label: "Email", field: "email", type: "email" },
           ].map(({ label, field, type }) => (
             <div key={field}>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#374151] mb-1.5">
                 {label}
               </label>
               <input
                 type={type}
                 value={(form as any)[field]}
                 onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-[#faf9f7] border border-[#e5e0db] text-[13px] text-[#231f20] rounded-lg focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                className="w-full px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[13px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors"
               />
             </div>
           ))}
@@ -212,14 +212,14 @@ export function UserProfileCard() {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 py-2.5 bg-[#f15a22] text-white font-bold text-[13px] rounded-lg hover:bg-[#d44d1a] transition-colors disabled:opacity-60"
+              className="flex-1 py-2.5 bg-[#FF6B1A] text-white font-semibold text-[13px] rounded-lg hover:bg-[#E85D0F] shadow-sm transition-colors disabled:opacity-60"
             >
               {saving ? "Menyimpan..." : "Simpan"}
             </button>
             <button
               type="button"
               onClick={() => { setShowEdit(false); setError(""); }}
-              className="flex-1 py-2.5 bg-[#e5e0db] text-[#231f20] font-bold text-[13px] rounded-lg hover:bg-[#d0cbc6] transition-colors"
+              className="flex-1 py-2.5 bg-[#F3F4F6] text-[#374151] font-semibold text-[13px] rounded-lg hover:bg-[#E5E7EB] transition-colors"
             >
               Batal
             </button>
@@ -234,10 +234,10 @@ export function UserProfileCard() {
 function InfoRow({ icon, label, value, mono }: { icon: React.ReactNode; label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 text-[#c5c0bb] shrink-0">{icon}</span>
+      <span className="mt-0.5 text-[#9CA3AF] shrink-0">{icon}</span>
       <div className="min-w-0">
-        <div className="text-[10px] font-bold uppercase tracking-wide text-[#6b6560]">{label}</div>
-        <div className={`text-[13px] text-[#231f20] font-medium mt-0.5 ${mono ? "font-mono" : ""}`}>
+        <div className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280]">{label}</div>
+        <div className={`text-[13px] text-[#1F2937] font-medium mt-0.5 ${mono ? "font-mono" : ""}`}>
           {value}
         </div>
       </div>

@@ -25,7 +25,7 @@ export default function SubSubElement711Page() {
       title: "Inspeksi Ketidaksesuaian",
       description: "Pemeriksaan untuk mengidentifikasi dan mendokumentasikan ketidaksesuaian terhadap standar K3 yang berlaku",
       icon: "fa-exclamation-triangle",
-      color: "border-t-[#f7941d]",
+      color: "border-t-[#FF6B1A]",
     },
     {
       id: "inspeksi-sarana-prasarana",
@@ -53,55 +53,55 @@ export default function SubSubElement711Page() {
   return (
     <>
       {/* Page Header */}
-      <div className="bg-[#231f20] py-8 px-5 md:px-10 border-b-[4px] border-b-[#f15a22]">
+      <div className="bg-[#1F2937] py-8 px-5 md:px-10 border-b-[4px] border-b-[#FF6B1A]">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb */}
           <div className="flex items-center gap-3 mb-6 flex-wrap">
-            <Link href="/smk3" className="text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <Link href="/smk3" className="text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m12 19-7-7 7-7" />
                 <path d="M19 12H5" />
               </svg>
             </Link>
-            <div className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#c5c0bb]">SMK3</div>
-            <div className="text-[#c5c0bb]">/</div>
-            <Link href="/smk3/pemantauan" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <div className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#E5E7EB]">SMK3</div>
+            <div className="text-[#E5E7EB]">/</div>
+            <Link href="/smk3/pemantauan" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               Elemen 7
             </Link>
-            <div className="text-[#c5c0bb]">/</div>
-            <Link href="/smk3/pemantauan/7-1" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <div className="text-[#E5E7EB]">/</div>
+            <Link href="/smk3/pemantauan/7-1" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               Sub-Elemen 7.1
             </Link>
-            <div className="text-[#c5c0bb]">/</div>
-            <div className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22]">7.1.1</div>
+            <div className="text-[#E5E7EB]">/</div>
+            <div className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A]">7.1.1</div>
           </div>
 
           {/* Title Section */}
           <div className="flex items-start gap-4 mb-4">
-            <div className="bg-[#f15a22] px-4 py-2 flex items-center justify-center text-white font-barlow-condensed font-extrabold text-[18px]">
+            <div className="bg-[#FF6B1A] px-4 py-2 flex items-center justify-center text-white font-barlow-condensed font-extrabold text-[18px]">
               7.1.1
             </div>
             <div className="flex-1">              
-              <h1 className="font-barlow-condensed font-extrabold text-white uppercase leading-[0.95] tracking-[-0.01em] text-[clamp(24px,4vw,40px)]">
+              <h1 className="font-barlow-condensed font-extrabold text-[#1F2937] uppercase leading-[0.95] tracking-[-0.01em] text-[clamp(24px,4vw,40px)]">
                 Pelaksanaan Inspeksi K3
               </h1>
             </div>
           </div>
-          <p className="text-[#c5c0bb] text-[14px] max-w-3xl">
+          <p className="text-[#E5E7EB] text-[14px] max-w-3xl">
             Kelola berbagai jenis inspeksi keselamatan dan kesehatan kerja secara terstruktur dan terorganisir
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <section className="py-16 md:py-24 px-5 md:px-10 bg-[#faf9f7]">
+      <section className="py-16 md:py-24 px-5 md:px-10 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12">
-            <div className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] flex items-center gap-3 mb-4">
+            <div className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] flex items-center gap-3 mb-4">
               <span>{inspectionTypes.length} Jenis Inspeksi</span>
-              <span className="w-10 h-0.5 bg-[#f15a22]"></span>
+              <span className="w-10 h-0.5 bg-[#FF6B1A]"></span>
             </div>
-            <h2 className="font-barlow-condensed font-extrabold text-[#231f20] uppercase leading-tight text-[clamp(28px,4vw,48px)]">
+            <h2 className="font-barlow-condensed font-extrabold text-[#1F2937] uppercase leading-tight text-[clamp(28px,4vw,48px)]">
               Pilih Jenis Inspeksi
             </h2>
           </div>
@@ -116,7 +116,7 @@ export default function SubSubElement711Page() {
               >
                 {/* Icon Badge */}
                 <div className="flex items-center justify-between mb-6">
-                  <div className="bg-[#f15a22]/10 w-14 h-14 rounded-full flex items-center justify-center text-[#f15a22] group-hover:bg-[#f15a22] group-hover:text-white transition-colors">
+                  <div className="bg-[#FF6B1A]/10 w-14 h-14 rounded-full flex items-center justify-center text-[#FF6B1A] group-hover:bg-[#FF6B1A] group-hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       {item.id === "inspeksi-ketidaksesuaian" && (
                         <>
@@ -153,17 +153,17 @@ export default function SubSubElement711Page() {
                 </div>
 
                 {/* Title */}
-                <h3 className="font-barlow-condensed font-extrabold text-[20px] uppercase text-[#231f20] leading-tight mb-3 group-hover:text-[#f15a22] transition-colors">
+                <h3 className="font-barlow-condensed font-extrabold text-[20px] uppercase text-[#1F2937] leading-tight mb-3 group-hover:text-[#FF6B1A] transition-colors">
                   {item.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-[#6b6560] text-[14px] leading-relaxed mb-6">
+                <p className="text-[#6B7280] text-[14px] leading-relaxed mb-6">
                   {item.description}
                 </p>
 
                 {/* Action Button */}
-                <div className="w-full px-4 py-2.5 bg-[#f15a22] text-white font-barlow-condensed font-bold text-[12px] tracking-[0.08em] uppercase hover:bg-[#f7941d] transition-colors text-center">
+                <div className="w-full px-4 py-2.5 bg-[#FF6B1A] text-white font-barlow-condensed font-bold text-[12px] tracking-[0.08em] uppercase hover:bg-[#FF6B1A] transition-colors text-center">
                   Kelola Data
                 </div>
               </Link>

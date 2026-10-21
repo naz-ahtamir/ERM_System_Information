@@ -67,7 +67,7 @@ function DrillTypeBadge({ type }: { type: DrillType }) {
     CHEMICAL_SPILL: "bg-purple-100 text-purple-700",
     EVACUATION: "bg-blue-100 text-blue-700",
     FIRST_AID: "bg-teal-100 text-teal-700",
-    OTHER: "bg-[#e5e0db] text-[#6b6560]",
+    OTHER: "bg-[#E5E7EB] text-[#6B7280]",
   };
   return (
     <span
@@ -162,18 +162,18 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">
               Emergency Drill
             </p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">
+            <h2 className="font-bold text-[15px] text-[#1F2937]">
               Tambah Rencana Drill
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-[#6b6560] hover:text-[#231f20] p-1"
+            className="text-[#6B7280] hover:text-[#1F2937] p-1"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -192,7 +192,7 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Plan Date <span className="text-red-500">*</span>
               </label>
               <input
@@ -200,18 +200,18 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
                 required
                 value={form.planDate}
                 onChange={(e) => f("planDate")(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]"
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Jenis Drill <span className="text-red-500">*</span>
               </label>
               <select
                 required
                 value={form.drillType}
                 onChange={(e) => f("drillType")(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22] bg-white"
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] bg-white"
               >
                 <option value="">-- Pilih Jenis --</option>
                 {DRILL_TYPES.map(([v, l]) => (
@@ -222,7 +222,7 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               Skenario <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -231,20 +231,20 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
               value={form.scenario}
               onChange={(e) => f("scenario")(e.target.value)}
               placeholder="Uraikan skenario drill..."
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22] resize-none"
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] resize-none"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Department <span className="text-red-500">*</span>
               </label>
               <select
                 required
                 value={form.departmentId}
                 onChange={(e) => f("departmentId")(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22] bg-white"
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] bg-white"
               >
                 <option value="">-- Pilih Dept --</option>
                 {departments.map((d) => (
@@ -253,7 +253,7 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Division / Unit <span className="text-red-500">*</span>
               </label>
               <input
@@ -262,13 +262,13 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
                 value={form.division}
                 onChange={(e) => f("division")(e.target.value)}
                 placeholder="Divisi yang terlibat"
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]"
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               PIC Plan <span className="text-red-500">*</span>
             </label>
             <input
@@ -277,12 +277,12 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
               value={form.picPlan}
               onChange={(e) => f("picPlan")(e.target.value)}
               placeholder="Person in Charge (rencana)"
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]"
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               Notes Plan
             </label>
             <textarea
@@ -290,17 +290,17 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
               value={form.notesPlan}
               onChange={(e) => f("notesPlan")(e.target.value)}
               placeholder="Catatan tambahan rencana..."
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22] resize-none"
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] resize-none"
             />
           </div>
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors"
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors"
           >
             Batal
           </button>
@@ -311,7 +311,7 @@ function PlanModal({ isOpen, onClose, departments, onSaved }: PlanModalProps) {
               form?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
             }}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60"
+            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60"
           >
             {saving && (
               <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -437,19 +437,19 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-start justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">
               Isi Hasil Pelaksanaan
             </p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">
+            <h2 className="font-bold text-[15px] text-[#1F2937]">
               Actual — {DRILL_TYPE_LABELS[drill.drillType]}
             </h2>
-            <p className="text-[12px] text-[#6b6560] mt-0.5">
+            <p className="text-[12px] text-[#6B7280] mt-0.5">
               Plan: {fmtDate(drill.planDate)} · {drill.department?.name}
             </p>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1 flex-shrink-0">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1 flex-shrink-0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -471,18 +471,18 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Actual Date
               </label>
               <input
                 type="date"
                 value={form.actualDate}
                 onChange={(e) => f("actualDate")(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]"
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Durasi
               </label>
               <input
@@ -490,13 +490,13 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
                 value={form.duration}
                 onChange={(e) => f("duration")(e.target.value)}
                 placeholder="Cth: 2 jam 30 menit"
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]"
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               Lokasi Pelaksanaan
             </label>
             <input
@@ -504,12 +504,12 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
               value={form.location}
               onChange={(e) => f("location")(e.target.value)}
               placeholder="Area / gedung tempat drill"
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]"
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               PIC Actual
             </label>
             <input
@@ -517,13 +517,13 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
               value={form.picActual}
               onChange={(e) => f("picActual")(e.target.value)}
               placeholder="Person in Charge (pelaksanaan)"
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]"
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]"
             />
           </div>
 
           {/* Participation */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               Jumlah Peserta
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -535,29 +535,29 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
                 ] as [string, keyof typeof form][]
               ).map(([lbl, key]) => (
                 <div key={key}>
-                  <div className="text-[11px] text-[#6b6560] mb-1">{lbl}</div>
+                  <div className="text-[11px] text-[#6B7280] mb-1">{lbl}</div>
                   <input
                     type="number"
                     min="0"
                     value={(form as any)[key]}
                     onChange={(e) => f(key)(e.target.value)}
                     placeholder="0"
-                    className="w-full px-3 py-2 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]"
+                    className="w-full px-3 py-2 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]"
                   />
                 </div>
               ))}
             </div>
             {staf > 0 && (
-              <div className="mt-2 px-3.5 py-2 bg-[#f1f0ee] rounded-xl text-[12px] text-[#231f20]">
+              <div className="mt-2 px-3.5 py-2 bg-[#FAFAFA] rounded-xl text-[12px] text-[#1F2937]">
                 Participation Rate:{" "}
-                <strong className="text-[#f15a22]">{rate.toFixed(2)}%</strong>
-                <span className="text-[#6b6560] ml-1.5">(auto-calculated)</span>
+                <strong className="text-[#FF6B1A]">{rate.toFixed(2)}%</strong>
+                <span className="text-[#6B7280] ml-1.5">(auto-calculated)</span>
               </div>
             )}
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               Notes Actual
             </label>
             <textarea
@@ -565,13 +565,13 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
               value={form.notesActual}
               onChange={(e) => f("notesActual")(e.target.value)}
               placeholder="Catatan pelaksanaan, temuan, evaluasi..."
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22] resize-none"
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] resize-none"
             />
           </div>
 
           {/* File uploads */}
-          <div className="space-y-3 border-t border-[#f1f0ee] pt-4">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#6b6560]">
+          <div className="space-y-3 border-t border-[#FAFAFA] pt-4">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#6B7280]">
               Upload Dokumentasi
             </p>
 
@@ -604,14 +604,14 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
               ] as const
             ).map(({ label, accept, ref, file, setFile, existing }) => (
               <div key={label} className="flex items-center justify-between gap-3">
-                <span className="text-[12px] text-[#231f20] min-w-[130px]">
+                <span className="text-[12px] text-[#1F2937] min-w-[130px]">
                   {label}
                 </span>
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <button
                     type="button"
                     onClick={() => (ref as React.RefObject<HTMLInputElement>).current?.click()}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#c5c0bb] text-[12px] font-medium rounded-lg hover:border-[#f15a22] hover:text-[#f15a22] transition-colors whitespace-nowrap"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E7EB] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors whitespace-nowrap"
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -627,7 +627,7 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
                       href={resolveFileUrl(existing)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] text-[#f15a22] hover:underline truncate"
+                      className="text-[11px] text-[#FF6B1A] hover:underline truncate"
                     >
                       📎 Lihat file
                     </a>
@@ -648,11 +648,11 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors"
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors"
           >
             Batal
           </button>
@@ -662,7 +662,7 @@ function ActualModal({ isOpen, drill, onClose, onSaved }: ActualModalProps) {
               formEl?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
             }}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60"
+            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60"
           >
             {saving && (
               <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -761,12 +761,12 @@ function EditPlanModal({ isOpen, drill, departments, onClose, onSaved }: EditPla
     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Edit</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Edit Rencana Drill</h2>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">Edit</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">Edit Rencana Drill</h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -783,18 +783,18 @@ function EditPlanModal({ isOpen, drill, departments, onClose, onSaved }: EditPla
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Plan Date <span className="text-red-500">*</span>
               </label>
               <input type="date" required value={form.planDate} onChange={(e) => f("planDate")(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]" />
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]" />
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Jenis Drill <span className="text-red-500">*</span>
               </label>
               <select required value={form.drillType} onChange={(e) => f("drillType")(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22] bg-white">
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] bg-white">
                 <option value="">-- Pilih Jenis --</option>
                 {DRILL_TYPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
               </select>
@@ -802,47 +802,47 @@ function EditPlanModal({ isOpen, drill, departments, onClose, onSaved }: EditPla
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Skenario <span className="text-red-500">*</span></label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Skenario <span className="text-red-500">*</span></label>
             <textarea required rows={3} value={form.scenario} onChange={(e) => f("scenario")(e.target.value)}
               placeholder="Uraikan skenario drill..."
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22] resize-none" />
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] resize-none" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Department <span className="text-red-500">*</span></label>
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Department <span className="text-red-500">*</span></label>
               <select required value={form.departmentId} onChange={(e) => f("departmentId")(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22] bg-white">
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] bg-white">
                 <option value="">-- Pilih Dept --</option>
                 {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Division / Unit <span className="text-red-500">*</span></label>
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Division / Unit <span className="text-red-500">*</span></label>
               <input type="text" required value={form.division} onChange={(e) => f("division")(e.target.value)}
                 placeholder="Divisi yang terlibat"
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]" />
+                className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]" />
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">PIC Plan <span className="text-red-500">*</span></label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">PIC Plan <span className="text-red-500">*</span></label>
             <input type="text" required value={form.picPlan} onChange={(e) => f("picPlan")(e.target.value)}
               placeholder="Person in Charge (rencana)"
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]" />
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]" />
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Notes Plan</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Notes Plan</label>
             <textarea rows={2} value={form.notesPlan} onChange={(e) => f("notesPlan")(e.target.value)}
               placeholder="Catatan tambahan rencana..."
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22] resize-none" />
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] resize-none" />
           </div>
         </form>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           <button type="button" onClick={onClose}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">
             Batal
           </button>
           <button
@@ -851,7 +851,7 @@ function EditPlanModal({ isOpen, drill, departments, onClose, onSaved }: EditPla
               formEl?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
             }}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60">
             {saving && <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>}
             {saving ? "Menyimpan..." : "Simpan Perubahan"}
           </button>
@@ -882,19 +882,19 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
       <div className="fixed inset-0 bg-black/30 z-[450]" onClick={onClose} />
       <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[460] flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between px-6 py-5 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-start justify-between px-6 py-5 border-b border-[#E5E7EB] flex-shrink-0">
           <div className="flex-1 min-w-0 pr-4">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-1">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-1">
               Detail Emergency Drill
             </p>
-            <h3 className="font-bold text-[16px] text-[#231f20] leading-snug">
+            <h3 className="font-bold text-[16px] text-[#1F2937] leading-snug">
               {DRILL_TYPE_LABELS[drill.drillType]}
             </h3>
             <div className="mt-2">
               <StatusBadge status={drill.status} />
             </div>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] flex-shrink-0 p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] flex-shrink-0 p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -906,7 +906,7 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6 text-[13px]">
           {/* Plan */}
           <section>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-[#f15a22] mb-3">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-[#FF6B1A] mb-3">
               Plan (Rencana)
             </p>
             <div className="space-y-2.5">
@@ -919,8 +919,8 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
                 ...(drill.notesPlan ? [["Notes Plan", drill.notesPlan]] : []),
               ].map(([l, v]) => (
                 <div key={l} className="flex gap-3">
-                  <span className="w-24 flex-shrink-0 font-semibold text-[#6b6560]">{l}</span>
-                  <span className="flex-1 text-[#231f20] whitespace-pre-wrap">{v}</span>
+                  <span className="w-24 flex-shrink-0 font-semibold text-[#6B7280]">{l}</span>
+                  <span className="flex-1 text-[#1F2937] whitespace-pre-wrap">{v}</span>
                 </div>
               ))}
             </div>
@@ -952,8 +952,8 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
                     : []),
                 ].map(([l, v]) => (
                   <div key={l} className="flex gap-3">
-                    <span className="w-24 flex-shrink-0 font-semibold text-[#6b6560]">{l}</span>
-                    <span className="flex-1 text-[#231f20]">{v}</span>
+                    <span className="w-24 flex-shrink-0 font-semibold text-[#6B7280]">{l}</span>
+                    <span className="flex-1 text-[#1F2937]">{v}</span>
                   </div>
                 ))}
               </div>
@@ -972,7 +972,7 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
           {/* Dokumentasi */}
           {(drill.photoDocumentation || drill.attendanceList || drill.drillReport) && (
             <section>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-[#6b6560] mb-3">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[#6B7280] mb-3">
                 Dokumentasi
               </p>
               <div className="space-y-2">
@@ -984,14 +984,14 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
                   .filter(([, v]) => !!v)
                   .map(([l, v]) => (
                     <div key={l as string} className="flex items-center gap-3">
-                      <span className="w-24 flex-shrink-0 font-semibold text-[#6b6560]">
+                      <span className="w-24 flex-shrink-0 font-semibold text-[#6B7280]">
                         {l}
                       </span>
                       <a
                         href={resolveFileUrl(v as string)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#f15a22] hover:underline flex items-center gap-1"
+                        className="text-[#FF6B1A] hover:underline flex items-center gap-1"
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -1007,7 +1007,7 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
           )}
 
           {/* Audit */}
-          <section className="text-[11px] text-[#a09a95] border-t border-[#f1f0ee] pt-4">
+          <section className="text-[11px] text-[#a09a95] border-t border-[#FAFAFA] pt-4">
             <p>
               Dibuat oleh{" "}
               <span className="font-semibold">{drill.createdBy?.nama}</span> ·{" "}
@@ -1024,7 +1024,7 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col gap-2 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex flex-col gap-2 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           <div className="flex items-center gap-2 flex-wrap">
             {!hasActual && (
               <button
@@ -1040,7 +1040,7 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
             {hasActual && (
               <button
                 onClick={onFillActual}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
@@ -1051,7 +1051,7 @@ function DetailPanel({ drill, isAdmin, onClose, onEditPlan, onFillActual, onDele
             )}
             <button
               onClick={onEditPlan}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors"
             >
               Edit Plan
             </button>
@@ -1200,19 +1200,19 @@ export default function EmergencyDrillPage() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
+    <div className="min-h-screen bg-[#FAFAFA]">
       {toast && <Toast msg={toast.msg} type={toast.type} />}
 
       {/* Page Header */}
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-6xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">
             Accident Prevention › Emergency Preparedness
           </p>
-          <h1 className="font-bold text-white text-[clamp(22px,4vw,38px)] leading-tight">
+          <h1 className="font-bold text-[#1F2937] text-[clamp(22px,4vw,38px)] leading-tight">
             Emergency Drill
           </h1>
-          <p className="text-[#8a8580] text-[13px] mt-1.5">
+          <p className="text-[#6B7280] text-[13px] mt-1.5">
             Perencanaan dan pencatatan pelaksanaan simulasi tanggap darurat.
           </p>
         </div>
@@ -1226,7 +1226,7 @@ export default function EmergencyDrillPage() {
           {/* Search */}
           <div className="relative flex-1">
             <svg
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a09b96]"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
               width="15" height="15" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" strokeWidth="2"
             >
@@ -1238,12 +1238,12 @@ export default function EmergencyDrillPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari Emergency Drill..."
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors"
             />
             {search && (
               <button
                 onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -1257,7 +1257,7 @@ export default function EmergencyDrillPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as DrillStatus | "")}
-            className="px-3.5 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 whitespace-nowrap"
+            className="px-3.5 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 whitespace-nowrap"
           >
             <option value="">Semua Status</option>
             <option value="COMPLETED">COMPLETED</option>
@@ -1268,7 +1268,7 @@ export default function EmergencyDrillPage() {
           <select
             value={filterYear}
             onChange={(e) => setFilterYear(e.target.value)}
-            className="px-3.5 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 whitespace-nowrap"
+            className="px-3.5 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 whitespace-nowrap"
           >
             <option value="">Semua Tahun</option>
             {years.map((y) => (
@@ -1279,7 +1279,7 @@ export default function EmergencyDrillPage() {
           {/* Add Plan */}
           <button
             onClick={() => setPlanModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors whitespace-nowrap"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -1291,42 +1291,42 @@ export default function EmergencyDrillPage() {
 
         {/* Info bar */}
         <div className="flex items-center justify-between mb-3 px-1 flex-wrap gap-2">
-          <p className="text-[12px] text-[#6b6560]">
+          <p className="text-[12px] text-[#6B7280]">
             {loading
               ? "Memuat data..."
               : `Menampilkan ${filtered.length} record${search ? ` dari ${records.length}` : ""}`}
           </p>
           {isAdmin && !loading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#f15a22]/10 text-[#f15a22] rounded-full font-semibold border border-[#f15a22]/20">
+            <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
               Mode Admin
             </span>
           )}
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-2xl border border-[#e5e0db] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-8 space-y-3">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-12 bg-[#f1f0ee] rounded-xl animate-pulse" />
+                <div key={i} className="h-12 bg-[#FAFAFA] rounded-xl animate-pulse" />
               ))}
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-[#f1f0ee] flex items-center justify-center mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+              <div className="w-16 h-16 rounded-2xl bg-[#FAFAFA] flex items-center justify-center mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5">
                   <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
                   <polyline points="14 2 14 8 20 8" />
                   <line x1="12" y1="18" x2="12" y2="12" />
                   <line x1="9" y1="15" x2="15" y2="15" />
                 </svg>
               </div>
-              <p className="font-semibold text-[15px] text-[#231f20]">
+              <p className="font-semibold text-[15px] text-[#1F2937]">
                 {search || filterStatus || filterYear
                   ? "Tidak ada record yang sesuai"
                   : "Belum ada Emergency Drill"}
               </p>
-              <p className="text-[13px] text-[#a09b96] mt-1">
+              <p className="text-[13px] text-[#9CA3AF] mt-1">
                 {search || filterStatus || filterYear
                   ? "Coba ubah filter pencarian"
                   : "Klik \"Tambah Rencana\" untuk membuat drill baru"}
@@ -1336,7 +1336,7 @@ export default function EmergencyDrillPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#e5e0db] bg-[#faf9f7]">
+                  <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
                     {[
                       "Plan Date",
                       "Jenis Drill",
@@ -1350,7 +1350,7 @@ export default function EmergencyDrillPage() {
                     ].map((h) => (
                       <th
                         key={h}
-                        className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wide text-[#6b6560] whitespace-nowrap"
+                        className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wide text-[#6B7280] whitespace-nowrap"
                       >
                         {h}
                       </th>
@@ -1362,26 +1362,26 @@ export default function EmergencyDrillPage() {
                     <tr
                       key={drill.id}
                       onClick={() => setDetailDrill(drill)}
-                      className={`border-b border-[#f1f0ee] hover:bg-[#faf9f7] cursor-pointer transition-colors ${
+                      className={`border-b border-[#FAFAFA] hover:bg-[#FAFAFA] cursor-pointer transition-colors ${
                         idx % 2 === 0 ? "bg-white" : "bg-[#fafafa]"
                       }`}
                     >
-                      <td className="px-4 py-3 text-[13px] text-[#231f20] whitespace-nowrap">
+                      <td className="px-4 py-3 text-[13px] text-[#1F2937] whitespace-nowrap">
                         {fmtDate(drill.planDate)}
                       </td>
                       <td className="px-4 py-3">
                         <DrillTypeBadge type={drill.drillType} />
                       </td>
                       <td
-                        className="px-4 py-3 text-[13px] text-[#231f20] max-w-[180px] truncate"
+                        className="px-4 py-3 text-[13px] text-[#1F2937] max-w-[180px] truncate"
                         title={drill.scenario}
                       >
                         {drill.scenario}
                       </td>
-                      <td className="px-4 py-3 text-[12px] text-[#6b6560] whitespace-nowrap">
+                      <td className="px-4 py-3 text-[12px] text-[#6B7280] whitespace-nowrap">
                         {drill.department?.name ?? "—"}
                       </td>
-                      <td className="px-4 py-3 text-[12px] text-[#6b6560]">
+                      <td className="px-4 py-3 text-[12px] text-[#6B7280]">
                         {drill.picPlan}
                       </td>
                       <td className="px-4 py-3 text-[13px] whitespace-nowrap">
@@ -1412,7 +1412,7 @@ export default function EmergencyDrillPage() {
                             onClick={() => setActualModalDrill(drill)}
                             className={`p-1.5 rounded transition-colors ${
                               drill.actualDate
-                                ? "text-[#6b6560] hover:text-[#f15a22] hover:bg-[#fff3ee]"
+                                ? "text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#fff3ee]"
                                 : "text-green-600 hover:text-green-700 hover:bg-green-50"
                             }`}
                           >
@@ -1433,7 +1433,7 @@ export default function EmergencyDrillPage() {
                               title="Hapus"
                               onClick={() => handleDelete(drill.id)}
                               disabled={deleting === drill.id}
-                              className="p-1.5 text-[#6b6560] hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-40"
+                              className="p-1.5 text-[#6B7280] hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-40"
                             >
                               {deleting === drill.id ? (
                                 <div className="w-3.5 h-3.5 border border-red-400 border-t-transparent rounded-full animate-spin" />

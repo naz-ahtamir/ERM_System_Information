@@ -37,7 +37,7 @@ export async function exportFindingToPDF(finding: Finding): Promise<void> {
     let yPosition = margin;
 
     // Company Header with Orange Background
-    pdf.setFillColor(241, 90, 34); // Orange (#f15a22)
+    pdf.setFillColor(255, 107, 26); // Orange (#FF6B1A)
     pdf.rect(0, 0, pageWidth, 35, 'F');
 
     // Company Name and Title
@@ -114,7 +114,7 @@ export async function exportFindingToPDF(finding: Finding): Promise<void> {
       margin: margin,
       theme: 'striped',
       headStyles: {
-        fillColor: [241, 90, 34], // Orange header
+        fillColor: [255, 107, 26], // Orange (#FF6B1A) header
         textColor: [255, 255, 255],
         fontStyle: 'bold',
         halign: 'left',

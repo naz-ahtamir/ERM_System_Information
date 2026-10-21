@@ -24,13 +24,13 @@ interface RecentFindingsProps {
 export function RecentFindings({ findings, isLoading }: RecentFindingsProps) {
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Temuan Terbaru</CardTitle>
+      <Card className="rounded-xl border border-[#E5E7EB] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <CardHeader className="border-b border-[#E5E7EB] px-6 py-4">
+          <CardTitle className="text-base font-bold text-[#1F2937]">Temuan Terbaru</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin h-8 w-8 border-4 border-[#f15a22] border-t-transparent rounded-full"></div>
+            <div className="animate-spin h-8 w-8 border-3 border-[#FF6B1A] border-t-transparent rounded-full"></div>
           </div>
         </CardContent>
       </Card>
@@ -38,75 +38,80 @@ export function RecentFindings({ findings, isLoading }: RecentFindingsProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="rounded-xl border border-[#E5E7EB] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <CardHeader className="border-b border-[#E5E7EB] px-6 py-4">
         <div className="flex items-center justify-between">
-          <CardTitle>Temuan Terbaru</CardTitle>
+          <div>
+            <CardTitle className="text-base font-bold text-[#1F2937]">Temuan Terbaru</CardTitle>
+            <p className="text-xs text-[#6B7280] mt-0.5">Daftar laporan temuan K3 paling mutakhir</p>
+          </div>
           <Link
             href="/findings"
-            className="text-sm text-[#f15a22] hover:underline font-medium"
+            className="text-xs font-semibold text-[#FF6B1A] hover:text-[#E85D0F] hover:underline"
           >
-            Lihat Semua
+            Lihat Semua →
           </Link>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         {findings.length === 0 ? (
-          <EmptyState
-            message="Belum ada data finding"
-            action={{
-              label: 'Tambah Finding',
-              onClick: () => (window.location.href = '/findings/new'),
-            }}
-          />
+          <div className="p-6">
+            <EmptyState
+              message="Belum ada data temuan"
+              action={{
+                label: 'Tambah Temuan',
+                onClick: () => (window.location.href = '/findings/new'),
+              }}
+            />
+          </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                    Judul
+                <tr className="bg-[#FAFAFA] border-b border-[#E5E7EB]">
+                  <th className="py-3 px-6 text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+                    Judul Temuan
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
                     Status
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
                     Lokasi
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
                     Tanggal
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  <th className="py-3 px-6 text-right text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
                     Aksi
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#F3F4F6]">
                 {findings.slice(0, 5).map((finding) => (
-                  <tr key={finding.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 px-4">
+                  <tr key={finding.id} className="hover:bg-[#FFF9F5]/70 transition-colors">
+                    <td className="py-3.5 px-6">
                       <Link
                         href={`/findings/${finding.id}`}
-                        className="text-sm font-medium text-gray-900 hover:text-[#f15a22]"
+                        className="text-sm font-medium text-[#1F2937] hover:text-[#FF6B1A] transition-colors line-clamp-1"
                       >
                         {finding.title}
                       </Link>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4 whitespace-nowrap">
                       <StatusBadge status={finding.findingStatus} />
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-600">
-                      {finding.data?.lokasiUtama || '-'}
+                    <td className="py-3.5 px-4 text-sm text-[#6B7280] whitespace-nowrap">
+                      {finding.data?.lokasiUtama || '—'}
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-600">
+                    <td className="py-3.5 px-4 text-sm text-[#6B7280] whitespace-nowrap">
                       {finding.data?.tanggalInspeksi || new Date(finding.createdAt).toLocaleDateString('id-ID')}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-6 text-right whitespace-nowrap">
                       <Link
                         href={`/findings/${finding.id}`}
-                        className="text-sm text-[#f15a22] hover:underline font-medium"
+                        className="text-xs font-semibold text-[#FF6B1A] hover:text-[#E85D0F] hover:underline"
                       >
-                        Lihat
+                        Detail
                       </Link>
                     </td>
                   </tr>

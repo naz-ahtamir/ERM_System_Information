@@ -401,7 +401,7 @@ export default function FindingDetailPage() {
                     onClick={() => setSelectedPhotoIndex(index)}
                     className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                       selectedPhotoIndex === index
-                        ? 'border-[#f15a22] shadow-md'
+                        ? 'border-[#FF6B1A] shadow-md'
                         : 'border-gray-300 opacity-70 hover:opacity-100'
                     }`}
                   >
@@ -429,7 +429,7 @@ export default function FindingDetailPage() {
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Masukkan alasan penolakan..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-[#f15a22] focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] resize-none transition-colors"
               rows={4}
             />
             <div className="flex gap-3 justify-end">

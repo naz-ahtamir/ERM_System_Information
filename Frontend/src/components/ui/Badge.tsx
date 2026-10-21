@@ -8,15 +8,15 @@ interface BadgeProps {
 
 export function Badge({ children, variant = 'default', className = '' }: BadgeProps) {
   const variants = {
-    default: 'bg-gray-100 text-gray-800',
-    success: 'bg-green-100 text-green-800',
-    warning: 'bg-yellow-100 text-yellow-800',
-    danger: 'bg-red-100 text-red-800',
-    info: 'bg-blue-100 text-blue-800',
+    default: 'bg-gray-100 text-gray-700 border border-gray-200/80',
+    success: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    warning: 'bg-amber-50 text-amber-700 border border-amber-200',
+    danger: 'bg-rose-50 text-rose-700 border border-rose-200',
+    info: 'bg-blue-50 text-blue-700 border border-blue-200',
   };
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${variants[variant]} ${className}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium tracking-tight ${variants[variant]} ${className}`}>
       {children}
     </span>
   );
@@ -29,15 +29,16 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status, className = '' }: StatusBadgeProps) {
   const statusConfig = {
-    OPEN: { label: 'Open', variant: 'warning' as const, color: 'bg-[#f15a22] text-white' },
-    INPG: { label: 'In Progress', variant: 'info' as const, color: 'bg-blue-500 text-white' },
-    CLSD: { label: 'Closed', variant: 'success' as const, color: 'bg-green-500 text-white' },
+    OPEN: { label: 'Open', color: 'bg-[#FFF1E8] text-[#FF6B1A] border border-[#FF6B1A]/30', dot: 'bg-[#FF6B1A]' },
+    INPG: { label: 'In Progress', color: 'bg-amber-50 text-amber-700 border border-amber-200', dot: 'bg-amber-500' },
+    CLSD: { label: 'Closed', color: 'bg-emerald-50 text-emerald-700 border border-emerald-200', dot: 'bg-emerald-500' },
   };
 
-  const config = statusConfig[status];
+  const config = statusConfig[status] || statusConfig.OPEN;
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color} ${className}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color} ${className}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
       {config.label}
     </span>
   );

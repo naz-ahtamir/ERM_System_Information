@@ -253,16 +253,16 @@ export function NotificationDropdown({
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={`Notifikasi${unreadCount > 0 ? `, ${unreadCount} belum dibaca` : ''}`}
-        className="relative p-2 text-[#a09a96] hover:text-[#f15a22] focus:outline-none focus:ring-2 focus:ring-[#f15a22] rounded-full transition-colors"
+        className="relative p-2 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 rounded-lg transition-colors"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
 
         {/* Badge unread count */}
         {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+          <span className="absolute top-1 right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] px-1 text-[10px] font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-[#FF6B1A] rounded-full shadow-xs">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -270,13 +270,13 @@ export function NotificationDropdown({
 
       {/* ── Dropdown Panel ── */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-96 bg-white rounded-2xl shadow-xl border border-[#E5E7EB] z-50 overflow-hidden animate-slide-in">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB] bg-[#FAFAFA]">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-gray-900">Notifikasi</h3>
+              <h3 className="text-sm font-bold text-[#1F2937]">Notifikasi</h3>
               {unreadCount > 0 && (
-                <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium bg-[#f15a22] text-white rounded-full">
+                <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold bg-[#FFF1E8] text-[#FF6B1A] rounded-full border border-[#FF6B1A]/20">
                   {unreadCount}
                 </span>
               )}
@@ -284,7 +284,7 @@ export function NotificationDropdown({
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
-                className="text-xs text-[#f15a22] hover:text-[#d14a12] font-medium transition-colors"
+                className="text-xs text-[#FF6B1A] hover:text-[#E85D0F] font-semibold transition-colors"
               >
                 Tandai semua dibaca
               </button>
@@ -292,17 +292,17 @@ export function NotificationDropdown({
           </div>
 
           {/* Notifications List */}
-          <div className="max-h-[380px] overflow-y-auto divide-y divide-gray-50">
+          <div className="max-h-[380px] overflow-y-auto divide-y divide-[#F3F4F6]">
             {displayed.length === 0 ? (
               <div className="px-4 py-10 text-center">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
                   <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                       d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                 </div>
-                <p className="text-sm font-medium text-gray-700">Tidak ada notifikasi</p>
-                <p className="text-xs text-gray-400 mt-1">Notifikasi baru akan muncul di sini</p>
+                <p className="text-sm font-semibold text-[#1F2937]">Tidak ada notifikasi</p>
+                <p className="text-xs text-[#6B7280] mt-1">Notifikasi baru akan muncul di sini</p>
               </div>
             ) : (
               displayed.map((notification) => (
@@ -310,8 +310,8 @@ export function NotificationDropdown({
                   key={notification.id}
                   href={getNotificationUrl(notification)}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`block px-4 py-3 hover:bg-gray-50 transition-colors ${
-                    !notification.isRead ? 'bg-blue-50 hover:bg-blue-50/80' : ''
+                  className={`block px-4 py-3 transition-colors ${
+                    !notification.isRead ? 'bg-[#FFF9F5] hover:bg-[#FFF1E8]/70' : 'hover:bg-gray-50'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -319,30 +319,30 @@ export function NotificationDropdown({
 
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm leading-tight ${
-                        !notification.isRead ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'
+                        !notification.isRead ? 'font-bold text-[#1F2937]' : 'font-medium text-[#4B5563]'
                       }`}>
                         {notification.title}
                       </p>
-                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-[#6B7280] mt-0.5 line-clamp-2 leading-relaxed">
                         {notification.message}
                       </p>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2 mt-1.5">
                         <p className="text-[11px] text-gray-400">{getRelativeTime(notification.createdAt)}</p>
                         {/* Label tipe notifikasi */}
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                           notification.type === 'license_expired'
-                            ? 'bg-red-100 text-red-700'
+                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
                             : notification.type === 'license_expiring_soon'
-                            ? 'bg-amber-100 text-amber-700'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
                             : notification.type === 'approval_required' || notification.type === 'finding_submitted'
-                            ? 'bg-orange-100 text-orange-700'
+                            ? 'bg-[#FFF1E8] text-[#FF6B1A] border border-[#FF6B1A]/20'
                             : notification.type === 'deadline_reminder'
-                            ? 'bg-yellow-100 text-yellow-700'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
                             : notification.type === 'finding_approved'
-                            ? 'bg-green-100 text-green-700'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : notification.type === 'finding_rejected'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                            : 'bg-gray-100 text-gray-700 border border-gray-200'
                         }`}>
                           {notification.type === 'finding_submitted' && '→ Review'}
                           {notification.type === 'approval_required' && '→ Approval'}
@@ -355,9 +355,9 @@ export function NotificationDropdown({
                       </div>
                     </div>
 
-                    {/* Titik biru untuk unread */}
+                    {/* Titik oranye untuk unread */}
                     {!notification.isRead && (
-                      <span className="flex-shrink-0 mt-1.5 w-2 h-2 rounded-full bg-blue-500" />
+                      <span className="flex-shrink-0 mt-1.5 w-2 h-2 rounded-full bg-[#FF6B1A]" />
                     )}
                   </div>
                 </Link>
@@ -366,11 +366,11 @@ export function NotificationDropdown({
           </div>
 
           {/* Footer */}
-          <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50">
+          <div className="px-4 py-2.5 border-t border-[#E5E7EB] bg-[#FAFAFA]">
             <Link
               href="/notifications"
               onClick={() => setIsOpen(false)}
-              className="block text-center text-sm text-[#f15a22] hover:text-[#d14a12] font-medium transition-colors"
+              className="block text-center text-xs text-[#FF6B1A] hover:text-[#E85D0F] font-bold transition-colors"
             >
               Lihat semua notifikasi
               {notifications.length > 5 && (

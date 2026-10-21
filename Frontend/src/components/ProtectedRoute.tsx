@@ -33,11 +33,11 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf9f7]">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
         <div className="text-center">
           <div className="inline-block animate-spin mb-4">
             <svg
-              className="w-8 h-8 text-[#f15a22]"
+              className="w-8 h-8 text-[#FF6B1A]"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
               ></path>
             </svg>
           </div>
-          <p className="text-[#6b6560]">Loading...</p>
+          <p className="text-[#6B7280] text-sm font-medium">Loading...</p>
         </div>
       </div>
     );

@@ -348,7 +348,7 @@ export function FindingForm({
                 accept="image/jpeg,image/png,image/jpg"
                 onChange={handleFileSelect}
                 disabled={isUploadingFiles || uploadedFiles.length + filePreviews.length >= 5}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f15a22]"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]"
               />
               <span className="text-sm text-gray-500">
                 {uploadedFiles.length + filePreviews.length}/5

@@ -216,40 +216,40 @@ export default function KonsultasiKebijakanPage() {
   return (
     <>
       {/* Page Header */}
-      <div className="bg-[#231f20] py-8 px-5 md:px-10 border-b-[4px] border-b-[#f15a22]">
+      <div className="bg-[#1F2937] py-8 px-5 md:px-10 border-b-[4px] border-b-[#FF6B1A]">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb */}
           <div className="flex items-center gap-3 mb-6 flex-wrap text-sm">
-            <Link href="/smk3" className="text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <Link href="/smk3" className="text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               SMK3
             </Link>
-            <span className="text-[#c5c0bb]">/</span>
-            <Link href="/smk3/komitmen" className="text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <span className="text-[#E5E7EB]">/</span>
+            <Link href="/smk3/komitmen" className="text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               Elemen 1
             </Link>
-            <span className="text-[#c5c0bb]">/</span>
-            <Link href="/smk3/komitmen/1-1" className="text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <span className="text-[#E5E7EB]">/</span>
+            <Link href="/smk3/komitmen/1-1" className="text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               Kebijakan K3
             </Link>
-            <span className="text-[#c5c0bb]">/</span>
-            <span className="text-[#f15a22]">Konsultasi</span>
+            <span className="text-[#E5E7EB]">/</span>
+            <span className="text-[#FF6B1A]">Konsultasi</span>
           </div>
 
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <div className="bg-[#f15a22] px-3 py-1.5 text-white font-barlow-condensed font-extrabold text-[16px]">
+                <div className="bg-[#FF6B1A] px-3 py-1.5 text-white font-barlow-condensed font-extrabold text-[16px]">
                   1.1.2
                 </div>
-                <h1 className="font-barlow-condensed font-extrabold text-white uppercase text-[clamp(24px,4vw,48px)]">
+                <h1 className="font-barlow-condensed font-extrabold text-[#1F2937] uppercase text-[clamp(24px,4vw,48px)]">
                   Konsultasi Penyusunan Kebijakan K3
                 </h1>
               </div>
-              <p className="text-[#c5c0bb] text-[14px]">
+              <p className="text-[#E5E7EB] text-[14px]">
                 Dokumentasi konsultasi dengan stakeholder dalam penyusunan kebijakan K3
               </p>
               {!isAdmin && (
-                <p className="text-[#f7941d] text-[12px] mt-2">
+                <p className="text-[#FF6B1A] text-[12px] mt-2">
                   ℹ️ Anda dapat mencari, menambah, dan melihat data. Edit dan hapus hanya untuk admin.
                 </p>
               )}
@@ -259,7 +259,7 @@ export default function KonsultasiKebijakanPage() {
                 resetForm();
                 setShowForm(!showForm);
               }}
-              className="px-6 py-3 bg-[#f15a22] text-white font-barlow-condensed font-bold text-[12px] tracking-[0.08em] uppercase hover:bg-[#f7941d] transition-colors"
+              className="px-6 py-3 bg-[#FF6B1A] text-white font-barlow-condensed font-bold text-[12px] tracking-[0.08em] uppercase hover:bg-[#FF6B1A] transition-colors"
             >
               {showForm ? "Tutup Form" : "+ Tambah Konsultasi"}
             </button>
@@ -272,13 +272,13 @@ export default function KonsultasiKebijakanPage() {
         <section className="py-8 px-5 md:px-10 bg-[#f8f7f5]">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white p-8 shadow-lg">
-              <h2 className="font-barlow-condensed font-bold text-[20px] uppercase text-[#231f20] mb-6">
+              <h2 className="font-barlow-condensed font-bold text-[20px] uppercase text-[#1F2937] mb-6">
                 {editingId ? "Edit Konsultasi" : "Tambah Konsultasi Baru"}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2">
-                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#231f20] mb-2">
+                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#1F2937] mb-2">
                       Judul Konsultasi *
                     </label>
                     <input
@@ -286,13 +286,13 @@ export default function KonsultasiKebijakanPage() {
                       required
                       value={formData.judulKonsultasi}
                       onChange={(e) => setFormData({ ...formData, judulKonsultasi: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                      className="w-full px-4 py-3 border border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A]"
                       placeholder="Contoh: Konsultasi Penyusunan Kebijakan K3 dengan P2K3"
                     />
                   </div>
 
                   <div>
-                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#231f20] mb-2">
+                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#1F2937] mb-2">
                       Tanggal Konsultasi *
                     </label>
                     <input
@@ -300,12 +300,12 @@ export default function KonsultasiKebijakanPage() {
                       required
                       value={formData.tanggalKonsultasi}
                       onChange={(e) => setFormData({ ...formData, tanggalKonsultasi: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                      className="w-full px-4 py-3 border border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A]"
                     />
                   </div>
 
                   <div>
-                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#231f20] mb-2">
+                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#1F2937] mb-2">
                       Lokasi *
                     </label>
                     <input
@@ -313,13 +313,13 @@ export default function KonsultasiKebijakanPage() {
                       required
                       value={formData.lokasi}
                       onChange={(e) => setFormData({ ...formData, lokasi: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                      className="w-full px-4 py-3 border border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A]"
                       placeholder="Contoh: Ruang Rapat Lantai 3"
                     />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#231f20] mb-2">
+                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#1F2937] mb-2">
                       Peserta *
                     </label>
                     <textarea
@@ -327,39 +327,39 @@ export default function KonsultasiKebijakanPage() {
                       required
                       value={formData.peserta}
                       onChange={(e) => setFormData({ ...formData, peserta: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                      className="w-full px-4 py-3 border border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A]"
                       placeholder="Daftar peserta konsultasi (pisahkan dengan koma atau enter)"
                     />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#231f20] mb-2">
+                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#1F2937] mb-2">
                       Topik Bahasan
                     </label>
                     <textarea
                       rows={3}
                       value={formData.topikBahasan}
                       onChange={(e) => setFormData({ ...formData, topikBahasan: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                      className="w-full px-4 py-3 border border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A]"
                       placeholder="Topik yang dibahas dalam konsultasi"
                     />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#231f20] mb-2">
+                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#1F2937] mb-2">
                       Hasil Konsultasi
                     </label>
                     <textarea
                       rows={4}
                       value={formData.hasilKonsultasi}
                       onChange={(e) => setFormData({ ...formData, hasilKonsultasi: e.target.value })}
-                      className="w-full px-4 py-3 border border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                      className="w-full px-4 py-3 border border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A]"
                       placeholder="Kesimpulan dan hasil dari konsultasi"
                     />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#231f20] mb-2">
+                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#1F2937] mb-2">
                       Foto Kegiatan (JPG/PNG/PDF, max 5 files, 2MB each)
                     </label>
                     <input
@@ -367,34 +367,34 @@ export default function KonsultasiKebijakanPage() {
                       accept="image/jpeg,image/jpg,image/png,application/pdf"
                       multiple
                       onChange={(e) => setFotoKegiatan(e.target.files)}
-                      className="w-full px-4 py-3 border border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                      className="w-full px-4 py-3 border border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A]"
                     />
-                    <p className="text-[12px] text-[#6b6560] mt-2">
+                    <p className="text-[12px] text-[#6B7280] mt-2">
                       Upload foto dokumentasi kegiatan konsultasi (maksimal 5 file, masing-masing 2MB)
                     </p>
                   </div>
 
                   <div>
-                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#231f20] mb-2">
+                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#1F2937] mb-2">
                       Daftar Hadir (PDF, max 2MB)
                     </label>
                     <input
                       type="file"
                       accept=".pdf"
                       onChange={(e) => setDaftarHadir(e.target.files?.[0] || null)}
-                      className="w-full px-4 py-3 border border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                      className="w-full px-4 py-3 border border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A]"
                     />
                   </div>
 
                   <div>
-                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#231f20] mb-2">
+                    <label className="block font-barlow-condensed font-bold text-[13px] tracking-[0.1em] uppercase text-[#1F2937] mb-2">
                       Notulen (PDF, max 3MB)
                     </label>
                     <input
                       type="file"
                       accept=".pdf"
                       onChange={(e) => setNotulen(e.target.files?.[0] || null)}
-                      className="w-full px-4 py-3 border border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                      className="w-full px-4 py-3 border border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A]"
                     />
                   </div>
                 </div>
@@ -403,14 +403,14 @@ export default function KonsultasiKebijakanPage() {
                   <button
                     type="submit"
                     disabled={submitting || (!!editingId && !isAdmin)}
-                    className="px-8 py-3 bg-[#f15a22] text-white font-barlow-condensed font-bold text-[12px] tracking-[0.08em] uppercase hover:bg-[#f7941d] transition-colors disabled:opacity-50"
+                    className="px-8 py-3 bg-[#FF6B1A] text-white font-barlow-condensed font-bold text-[12px] tracking-[0.08em] uppercase hover:bg-[#FF6B1A] transition-colors disabled:opacity-50"
                   >
                     {submitting ? "Menyimpan..." : editingId ? "Update Konsultasi" : "Simpan Konsultasi"}
                   </button>
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="px-8 py-3 bg-[#6b6560] text-white font-barlow-condensed font-bold text-[12px] tracking-[0.08em] uppercase hover:bg-[#231f20] transition-colors"
+                    className="px-8 py-3 bg-[#6B7280] text-white font-barlow-condensed font-bold text-[12px] tracking-[0.08em] uppercase hover:bg-[#1F2937] transition-colors"
                   >
                     Batal
                   </button>
@@ -422,7 +422,7 @@ export default function KonsultasiKebijakanPage() {
       )}
 
       {/* Search and List Section */}
-      <section className="py-16 px-5 md:px-10 bg-[#faf9f7]">
+      <section className="py-16 px-5 md:px-10 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto">
           {/* Search Bar */}
           <div className="mb-8">
@@ -431,19 +431,19 @@ export default function KonsultasiKebijakanPage() {
               placeholder="🔍 Cari berdasarkan judul, lokasi, atau peserta..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-6 py-4 border-2 border-[#c5c0bb] text-[14px] focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20"
+              className="w-full px-6 py-4 border-2 border-[#E5E7EB] text-[14px] focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20"
             />
           </div>
 
           <div className="flex items-center justify-between mb-8">
-            <h2 className="font-barlow-condensed font-bold text-[24px] uppercase text-[#231f20]">
+            <h2 className="font-barlow-condensed font-bold text-[24px] uppercase text-[#1F2937]">
               Daftar Konsultasi ({filteredList.length})
             </h2>
           </div>
 
           {filteredList.length === 0 ? (
             <div className="bg-white p-12 text-center">
-              <p className="text-[#6b6560] text-[14px]">
+              <p className="text-[#6B7280] text-[14px]">
                 {searchQuery ? "Tidak ada data yang sesuai dengan pencarian." : "Belum ada data konsultasi."}
               </p>
             </div>
@@ -454,26 +454,26 @@ export default function KonsultasiKebijakanPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="bg-[#f15a22] text-white px-3 py-1 text-[11px] font-barlow-condensed font-bold uppercase">
+                        <span className="bg-[#FF6B1A] text-white px-3 py-1 text-[11px] font-barlow-condensed font-bold uppercase">
                           {konsultasi.status}
                         </span>
-                        <span className="text-[#6b6560] text-[12px]">
+                        <span className="text-[#6B7280] text-[12px]">
                           {new Date(konsultasi.tanggalKonsultasi).toLocaleDateString("id-ID")}
                         </span>
                       </div>
-                      <h3 className="font-barlow-condensed font-bold text-[18px] text-[#231f20] mb-2">
+                      <h3 className="font-barlow-condensed font-bold text-[18px] text-[#1F2937] mb-2">
                         {konsultasi.judulKonsultasi}
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[13px] text-[#6b6560] mb-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[13px] text-[#6B7280] mb-3">
                         <div><span className="font-bold">Lokasi:</span> {konsultasi.lokasi}</div>
                         <div><span className="font-bold">Dibuat oleh:</span> {typeof konsultasi.createdBy === 'object' ? konsultasi.createdBy?.nama : konsultasi.createdBy}</div>
                       </div>
-                      <div className="text-[13px] text-[#6b6560] mb-3">
+                      <div className="text-[13px] text-[#6B7280] mb-3">
                         <span className="font-bold">Peserta:</span>
                         <p className="mt-1">{konsultasi.peserta}</p>
                       </div>
                       {konsultasi.hasilKonsultasi && (
-                        <div className="text-[13px] text-[#6b6560] mb-3">
+                        <div className="text-[13px] text-[#6B7280] mb-3">
                           <span className="font-bold">Hasil:</span>
                           <p className="mt-1">{konsultasi.hasilKonsultasi}</p>
                         </div>
@@ -487,7 +487,7 @@ export default function KonsultasiKebijakanPage() {
                               <button
                                 key={idx}
                                 onClick={() => handleViewFile(url)}
-                                className="px-3 py-1.5 bg-[#f8f7f5] border border-[#c5c0bb] text-[11px] font-barlow-condensed hover:bg-[#f15a22] hover:text-white hover:border-[#f15a22] transition-colors"
+                                className="px-3 py-1.5 bg-[#f8f7f5] border border-[#E5E7EB] text-[11px] font-barlow-condensed hover:bg-[#FF6B1A] hover:text-white hover:border-[#FF6B1A] transition-colors"
                               >
                                 📷 Foto {idx + 1}
                               </button>
@@ -497,7 +497,7 @@ export default function KonsultasiKebijakanPage() {
                         {konsultasi.daftarHadirUrl && (
                           <button
                             onClick={() => handleViewFile(konsultasi.daftarHadirUrl)}
-                            className="px-3 py-1.5 bg-[#f8f7f5] border border-[#c5c0bb] text-[11px] font-barlow-condensed hover:bg-[#f15a22] hover:text-white hover:border-[#f15a22] transition-colors"
+                            className="px-3 py-1.5 bg-[#f8f7f5] border border-[#E5E7EB] text-[11px] font-barlow-condensed hover:bg-[#FF6B1A] hover:text-white hover:border-[#FF6B1A] transition-colors"
                           >
                             📄 Daftar Hadir
                           </button>
@@ -505,7 +505,7 @@ export default function KonsultasiKebijakanPage() {
                         {konsultasi.notulenUrl && (
                           <button
                             onClick={() => handleViewFile(konsultasi.notulenUrl)}
-                            className="px-3 py-1.5 bg-[#f8f7f5] border border-[#c5c0bb] text-[11px] font-barlow-condensed hover:bg-[#f15a22] hover:text-white hover:border-[#f15a22] transition-colors"
+                            className="px-3 py-1.5 bg-[#f8f7f5] border border-[#E5E7EB] text-[11px] font-barlow-condensed hover:bg-[#FF6B1A] hover:text-white hover:border-[#FF6B1A] transition-colors"
                           >
                             📝 Notulen
                           </button>
@@ -519,7 +519,7 @@ export default function KonsultasiKebijakanPage() {
                         <>
                           <button
                             onClick={() => handleEdit(konsultasi)}
-                            className="px-4 py-2 bg-[#f7941d] text-white font-barlow-condensed font-bold text-[11px] tracking-[0.08em] uppercase hover:bg-[#f15a22] transition-colors whitespace-nowrap"
+                            className="px-4 py-2 bg-[#FF6B1A] text-white font-barlow-condensed font-bold text-[11px] tracking-[0.08em] uppercase hover:bg-[#FF6B1A] transition-colors whitespace-nowrap"
                           >
                             Edit
                           </button>

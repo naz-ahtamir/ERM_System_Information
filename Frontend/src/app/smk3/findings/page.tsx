@@ -180,7 +180,7 @@ function FindingsListContent() {
             <button
               onClick={handleExportToExcel}
               disabled={isExporting || findings.length === 0}
-              className="flex items-center gap-2 px-6 py-2 bg-[#f15a22] text-white font-medium rounded-lg hover:bg-[#e0490e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-2 px-6 py-2 bg-[#FF6B1A] text-white font-medium rounded-lg hover:bg-[#E85D0F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isExporting ? (
                 <>
@@ -208,7 +208,7 @@ function FindingsListContent() {
                   onClick={() => handleStatusChange(filter.value)}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     selectedStatus === filter.value
-                      ? 'bg-[#f15a22] text-white'
+                      ? 'bg-[#FF6B1A] text-white'
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                   }`}
                 >
@@ -270,7 +270,7 @@ function FindingsListContent() {
                           <td className="px-6 py-4 text-sm text-gray-900 font-medium">
                             <Link 
                               href={`/smk3/findings/${finding.id}`}
-                              className="text-[#f15a22] hover:underline"
+                              className="text-[#FF6B1A] hover:underline"
                             >
                               {finding.title}
                             </Link>

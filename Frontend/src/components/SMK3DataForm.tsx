@@ -164,7 +164,7 @@ export default function SMK3DataForm({
   const renderField = (field: FormField) => {
     const value = formData[field.name] ?? "";
     const baseClass =
-      "w-full px-4 py-2.5 border border-[#d4cfc9] rounded focus:outline-none focus:ring-2 focus:ring-[#f15a22] focus:border-transparent";
+      "w-full px-4 py-2.5 border border-[#E5E7EB] rounded focus:outline-none focus:ring-2 focus:ring-[#FF6B1A] focus:border-transparent";
 
     switch (field.type) {
       case "text":
@@ -254,16 +254,16 @@ export default function SMK3DataForm({
                 handleFileChange(field.name, e.target.files?.[0] || null)
               }
               required={field.required && !isEdit}
-              className={`${baseClass} file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#f15a22] file:text-white hover:file:bg-[#d14a1a]`}
+              className={`${baseClass} file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#FF6B1A] file:text-white hover:file:bg-[#E85D0F]`}
             />
-            <p className="text-xs text-[#6b6560] mt-1">
+            <p className="text-xs text-[#6B7280] mt-1">
               Maks {field.maxSize || 5}MB · Format: {field.accept}
             </p>
             {isEdit &&
               initialData?.files?.find(
                 (f: any) => f.fieldName === field.name
               ) && (
-                <p className="text-xs text-[#f15a22] mt-1">
+                <p className="text-xs text-[#FF6B1A] mt-1">
                   File saat ini:{" "}
                   {
                     initialData.files.find(
@@ -303,17 +303,17 @@ export default function SMK3DataForm({
                 />
               </svg>
             </div>
-            <h3 className="font-barlow-condensed font-extrabold text-2xl text-[#231f20] uppercase mb-2">
+            <h3 className="font-barlow-condensed font-extrabold text-2xl text-[#1F2937] uppercase mb-2">
               Menunggu Persetujuan
             </h3>
-            <p className="text-[#6b6560] text-sm mb-2">
+            <p className="text-[#6B7280] text-sm mb-2">
               Data temuan berhasil disubmit dan{" "}
               <span className="font-semibold text-amber-600">
                 menunggu persetujuan atasan
               </span>{" "}
               sebelum aktif.
             </p>
-            <p className="text-[#6b6560] text-sm mb-6">
+            <p className="text-[#6B7280] text-sm mb-6">
               Status temuan akan tetap{" "}
               <span className="font-bold text-amber-600">INPG</span> hingga
               disetujui.
@@ -329,7 +329,7 @@ export default function SMK3DataForm({
                 setApprovalStep("idle");
                 onSuccess?.();
               }}
-              className="w-full px-6 py-3 bg-[#f7941d] text-white font-barlow-condensed font-bold text-sm tracking-wider uppercase rounded hover:bg-[#d17a1a] transition-colors"
+              className="w-full px-6 py-3 bg-[#FF6B1A] text-white font-barlow-condensed font-bold text-sm tracking-wider uppercase rounded hover:bg-[#E85D0F] transition-colors"
             >
               Selesai
             </button>
@@ -369,7 +369,7 @@ export default function SMK3DataForm({
 
           {/* Modal Body */}
           <div className="p-6 space-y-4">
-            <p className="text-[#231f20] text-sm">
+            <p className="text-[#1F2937] text-sm">
               Temuan dengan status{" "}
               <span className="font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
                 INPG (In Progress)
@@ -379,11 +379,11 @@ export default function SMK3DataForm({
               dapat diproses.
             </p>
 
-            <div className="bg-[#faf9f7] border border-[#d4cfc9] rounded-lg p-4 space-y-1 text-sm">
-              <p className="text-[#6b6560]">
+            <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg p-4 space-y-1 text-sm">
+              <p className="text-[#6B7280]">
                 <span className="font-semibold">Setelah submit:</span>
               </p>
-              <ul className="space-y-1 text-[#6b6560] ml-2">
+              <ul className="space-y-1 text-[#6B7280] ml-2">
                 <li className="flex items-start gap-2">
                   <span className="text-amber-500 mt-0.5">→</span>
                   Data masuk ke antrian persetujuan atasan
@@ -401,9 +401,9 @@ export default function SMK3DataForm({
 
             {/* Catatan untuk atasan */}
             <div>
-              <label className="block font-barlow-condensed font-semibold text-sm text-[#231f20] mb-2 uppercase tracking-wide">
+              <label className="block font-barlow-condensed font-semibold text-sm text-[#1F2937] mb-2 uppercase tracking-wide">
                 Catatan untuk Atasan{" "}
-                <span className="text-[#6b6560] font-normal normal-case tracking-normal">
+                <span className="text-[#6B7280] font-normal normal-case tracking-normal">
                   (opsional)
                 </span>
               </label>
@@ -412,17 +412,17 @@ export default function SMK3DataForm({
                 onChange={e => setApprovalNote(e.target.value)}
                 placeholder="Jelaskan konteks temuan atau alasan memerlukan persetujuan..."
                 rows={3}
-                className="w-full px-4 py-2.5 border border-[#d4cfc9] rounded focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none text-sm"
+                className="w-full px-4 py-2.5 border border-[#E5E7EB] rounded focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none text-sm"
               />
             </div>
           </div>
 
           {/* Modal Footer */}
-          <div className="bg-[#faf9f7] px-6 py-4 flex gap-3">
+          <div className="bg-[#FAFAFA] px-6 py-4 flex gap-3">
             <button
               onClick={() => setApprovalStep("idle")}
               disabled={approvalStep === "submitting"}
-              className="flex-1 px-4 py-2.5 border border-[#d4cfc9] text-[#6b6560] font-barlow-condensed font-bold text-sm tracking-wider uppercase rounded hover:bg-[#d4cfc9]/30 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 border border-[#E5E7EB] text-[#6B7280] font-barlow-condensed font-bold text-sm tracking-wider uppercase rounded hover:bg-[#E5E7EB]/30 transition-colors disabled:opacity-50"
             >
               Batal
             </button>
@@ -471,8 +471,8 @@ export default function SMK3DataForm({
 
       <div className="space-y-6">
         {/* Form Header */}
-        <div className="bg-[#f15a22]/10 p-4 rounded">
-          <h3 className="font-barlow-condensed font-bold text-lg text-[#231f20] uppercase">
+        <div className="bg-[#FFF1E8] border border-[#FF6B1A]/20 p-4 rounded-xl">
+          <h3 className="font-bold text-[15px] text-[#FF6B1A] uppercase tracking-wide">
             {isEdit ? "Edit Data" : "Tambah Data Baru"}
           </h3>          
         </div>
@@ -500,8 +500,8 @@ export default function SMK3DataForm({
         {/* Status Temuan — hanya tampil jika hasApprovalWorkflow */}
         {hasApprovalWorkflow && !isEdit && (
           <div>
-            <label className="block font-barlow-condensed font-semibold text-sm text-[#231f20] mb-3 uppercase tracking-wide">
-              Status Temuan <span className="text-[#f15a22]">*</span>
+            <label className="block font-barlow-condensed font-semibold text-sm text-[#1F2937] mb-3 uppercase tracking-wide">
+              Status Temuan <span className="text-[#FF6B1A]">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               {/* INPG */}
@@ -511,7 +511,7 @@ export default function SMK3DataForm({
                 className={`relative flex flex-col items-start p-4 border-2 rounded-lg transition-all text-left ${
                   findingStatus === "INPG"
                     ? "border-amber-400 bg-amber-50"
-                    : "border-[#d4cfc9] bg-white hover:border-amber-300"
+                    : "border-[#E5E7EB] bg-white hover:border-amber-300"
                 }`}
               >
                 {findingStatus === "INPG" && (
@@ -534,10 +534,10 @@ export default function SMK3DataForm({
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-700 mb-2">
                   INPG
                 </span>
-                <span className="font-barlow-condensed font-bold text-[#231f20] text-sm">
+                <span className="font-barlow-condensed font-bold text-[#1F2937] text-sm">
                   In Progress
                 </span>
-                <span className="text-xs text-[#6b6560] mt-1 leading-snug">
+                <span className="text-xs text-[#6B7280] mt-1 leading-snug">
                   Belum ada perbaikan · Butuh persetujuan atasan
                 </span>
               </button>
@@ -549,7 +549,7 @@ export default function SMK3DataForm({
                 className={`relative flex flex-col items-start p-4 border-2 rounded-lg transition-all text-left ${
                   findingStatus === "CLSD"
                     ? "border-green-400 bg-green-50"
-                    : "border-[#d4cfc9] bg-white hover:border-green-300"
+                    : "border-[#E5E7EB] bg-white hover:border-green-300"
                 }`}
               >
                 {findingStatus === "CLSD" && (
@@ -572,10 +572,10 @@ export default function SMK3DataForm({
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-700 mb-2">
                   CLSD
                 </span>
-                <span className="font-barlow-condensed font-bold text-[#231f20] text-sm">
+                <span className="font-barlow-condensed font-bold text-[#1F2937] text-sm">
                   Closed
                 </span>
-                <span className="text-xs text-[#6b6560] mt-1 leading-snug">
+                <span className="text-xs text-[#6B7280] mt-1 leading-snug">
                   Perbaikan sudah dilakukan · Langsung tersimpan
                 </span>
               </button>
@@ -634,11 +634,11 @@ export default function SMK3DataForm({
             <div key={field.name}>
               <label
                 htmlFor={field.name}
-                className="block font-barlow-condensed font-semibold text-sm text-[#231f20] mb-2 uppercase tracking-wide"
+                className="block font-barlow-condensed font-semibold text-sm text-[#1F2937] mb-2 uppercase tracking-wide"
               >
                 {field.label}
                 {field.required && (
-                  <span className="text-[#f15a22] ml-1">*</span>
+                  <span className="text-[#FF6B1A] ml-1">*</span>
                 )}
               </label>
               {renderField(field)}
@@ -647,7 +647,7 @@ export default function SMK3DataForm({
         </div>
 
         {/* Form Actions */}
-        <div className="flex gap-3 pt-4 border-t border-[#d4cfc9]">
+        <div className="flex gap-3 pt-4 border-t border-[#E5E7EB]">
           <button
             type="button"
             onClick={handleSubmitClick}
@@ -655,7 +655,7 @@ export default function SMK3DataForm({
             className={`flex-1 px-6 py-3 text-white font-barlow-condensed font-bold text-sm tracking-wider uppercase rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
               hasApprovalWorkflow && findingStatus === "INPG" && !isEdit
                 ? "bg-amber-500 hover:bg-amber-600"
-                : "bg-[#f15a22] hover:bg-[#d14a1a]"
+                : "bg-[#FF6B1A] hover:bg-[#E85D0F]"
             }`}
           >
             {isSubmitting ? (
@@ -709,7 +709,7 @@ export default function SMK3DataForm({
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="px-6 py-3 bg-[#6b6560] text-white font-barlow-condensed font-bold text-sm tracking-wider uppercase rounded hover:bg-[#231f20] transition-colors disabled:opacity-50"
+              className="px-6 py-3 bg-[#6B7280] text-white font-barlow-condensed font-bold text-sm tracking-wider uppercase rounded hover:bg-[#1F2937] transition-colors disabled:opacity-50"
             >
               Batal
             </button>

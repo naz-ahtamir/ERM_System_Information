@@ -9,13 +9,13 @@ interface CardProps {
 export function Card({ children, className = '', padding = 'md' }: CardProps) {
   const paddingClasses = {
     none: '',
-    sm: 'p-3',
-    md: 'p-4',
-    lg: 'p-6',
+    sm: 'p-3.5',
+    md: 'p-5',
+    lg: 'p-6 sm:p-7',
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-md border border-gray-200 ${paddingClasses[padding]} ${className}`}>
+    <div className={`bg-white rounded-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] border border-[#E5E7EB] transition-all duration-200 ${paddingClasses[padding]} ${className}`}>
       {children}
     </div>
   );
@@ -28,7 +28,7 @@ interface CardHeaderProps {
 
 export function CardHeader({ children, className = '' }: CardHeaderProps) {
   return (
-    <div className={`border-b border-gray-200 pb-3 mb-3 ${className}`}>
+    <div className={`border-b border-[#E5E7EB] pb-4 mb-4 ${className}`}>
       {children}
     </div>
   );
@@ -41,7 +41,7 @@ interface CardTitleProps {
 
 export function CardTitle({ children, className = '' }: CardTitleProps) {
   return (
-    <h3 className={`text-lg font-semibold text-gray-900 ${className}`}>
+    <h3 className={`text-base font-semibold text-[#1F2937] tracking-tight ${className}`}>
       {children}
     </h3>
   );

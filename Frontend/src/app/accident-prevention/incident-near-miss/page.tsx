@@ -41,7 +41,7 @@ const JENIS_COLORS: Record<JenisKecelakaan, string> = {
 };
 
 const STATUS_COLORS: Record<InvestigationStatus, string> = {
-  DRAFT:               "bg-[#e5e0db] text-[#6b6560]",
+  DRAFT:               "bg-[#E5E7EB] text-[#6B7280]",
   UNDER_INVESTIGATION: "bg-blue-100 text-blue-700",
   PENDING_APPROVAL:    "bg-amber-100 text-amber-700",
   APPROVED:            "bg-teal-100 text-teal-700",
@@ -110,9 +110,9 @@ function Spinner() {
 
 // ── Input / Textarea helpers ──────────────────────────────────────────────────
 
-const inputCls = "w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/20 focus:border-[#f15a22]";
+const inputCls = "w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A]";
 const selectCls = inputCls + " bg-white";
-const labelCls = "block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5";
+const labelCls = "block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5";
 
 // ── Export Modal ──────────────────────────────────────────────────────────────
 
@@ -183,7 +183,7 @@ function ExportModal({ isOpen, onClose, records }: ExportModalProps) {
     filtered.forEach((r) => { statusCounters[r.status] = (statusCounters[r.status] ?? 0) + 1; });
 
     const statusBg: Record<InvestigationStatus, string> = {
-      DRAFT:               '#f1f0ee',
+      DRAFT:               '#FAFAFA',
       UNDER_INVESTIGATION: '#dbeafe',
       PENDING_APPROVAL:    '#fef3c7',
       APPROVED:            '#ccfbf1',
@@ -238,14 +238,14 @@ function ExportModal({ isOpen, onClose, records }: ExportModalProps) {
       @page { margin: 8mm; size: A3 landscape; }
       tr { page-break-inside: avoid; }
     }
-    .header { background: #231f20; color: white; padding: 16px 20px; margin-bottom: 14px; border-radius: 6px; border-bottom: 3px solid #f15a22; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .header { background: #1F2937; color: white; padding: 16px 20px; margin-bottom: 14px; border-radius: 6px; border-bottom: 3px solid #FF6B1A; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .header h1 { font-size: 18px; margin-bottom: 3px; }
     .header p { font-size: 11px; color: #9ca3af; }
     .stats { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
     .stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 14px; text-align: center; min-width: 90px; }
-    .stat-num { font-size: 20px; font-weight: 700; color: #f15a22; }
+    .stat-num { font-size: 20px; font-weight: 700; color: #FF6B1A; }
     .stat-label { font-size: 10px; color: #6b7280; }
-    .print-btn { background: #f15a22; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+    .print-btn { background: #FF6B1A; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
     .table-wrap { overflow-x: auto; border-radius: 6px; border: 1px solid #d1d5db; }
     table { border-collapse: collapse; width: 100%; min-width: 1200px; }
     thead th { background: #1f2937; color: #9ca3af; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; padding: 9px 10px; text-align: left; position: sticky; top: 0; }
@@ -255,7 +255,7 @@ function ExportModal({ isOpen, onClose, records }: ExportModalProps) {
 <body>
   <div class="header">
     <div><h1>Investigasi Kecelakaan — SMK3</h1><p>${dateLabel}</p></div>
-    <div style="text-align:right;"><p style="font-size:13px;font-weight:700;color:#f15a22;">${filtered.length} Record</p><p style="font-size:10px;color:#9ca3af;">Accident Prevention</p></div>
+    <div style="text-align:right;"><p style="font-size:13px;font-weight:700;color:#FF6B1A;">${filtered.length} Record</p><p style="font-size:10px;color:#9ca3af;">Accident Prevention</p></div>
   </div>
   <div class="stats no-print">
     <div class="stat"><div class="stat-num">${filtered.length}</div><div class="stat-label">Total</div></div>
@@ -300,63 +300,63 @@ function ExportModal({ isOpen, onClose, records }: ExportModalProps) {
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Export Data</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Download Rekap Investigasi</h2>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">Export Data</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">Download Rekap Investigasi</h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
         </div>
         <div className="px-6 py-5 space-y-4">
-          <p className="text-[13px] text-[#6b6560]">Kosongkan tanggal untuk export semua record.</p>
+          <p className="text-[13px] text-[#6B7280]">Kosongkan tanggal untuk export semua record.</p>
           {/* Format */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-2">Format Export</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-2">Format Export</label>
             <div className="grid grid-cols-2 gap-3">
               <button type="button" onClick={() => setExportFormat('html')}
-                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'html' ? 'border-[#f15a22] bg-orange-50' : 'border-[#e5e0db] hover:border-[#f15a22]/40'}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'html' ? '#f15a22' : '#a09b96'} strokeWidth="2">
+                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'html' ? 'border-[#FF6B1A] bg-orange-50' : 'border-[#E5E7EB] hover:border-[#FF6B1A]/40'}`}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'html' ? '#FF6B1A' : '#9CA3AF'} strokeWidth="2">
                   <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
                 </svg>
-                <span className={`font-bold text-[12px] ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#6b6560]'}`}>HTML / Print</span>
-                <span className={`text-[10px] text-center ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#a09b96]'}`}>Print / Save PDF</span>
+                <span className={`font-bold text-[12px] ${exportFormat === 'html' ? 'text-[#FF6B1A]' : 'text-[#6B7280]'}`}>HTML / Print</span>
+                <span className={`text-[10px] text-center ${exportFormat === 'html' ? 'text-[#FF6B1A]' : 'text-[#9CA3AF]'}`}>Print / Save PDF</span>
               </button>
               <button type="button" onClick={() => setExportFormat('csv')}
-                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'csv' ? 'border-green-500 bg-green-50' : 'border-[#e5e0db] hover:border-green-300'}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'csv' ? '#16a34a' : '#a09b96'} strokeWidth="2">
+                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'csv' ? 'border-green-500 bg-green-50' : 'border-[#E5E7EB] hover:border-green-300'}`}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'csv' ? '#16a34a' : '#9CA3AF'} strokeWidth="2">
                   <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
                   <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>
                 </svg>
-                <span className={`font-bold text-[12px] ${exportFormat === 'csv' ? 'text-green-700' : 'text-[#6b6560]'}`}>CSV / Excel</span>
-                <span className={`text-[10px] text-center ${exportFormat === 'csv' ? 'text-green-600' : 'text-[#a09b96]'}`}>Data saja</span>
+                <span className={`font-bold text-[12px] ${exportFormat === 'csv' ? 'text-green-700' : 'text-[#6B7280]'}`}>CSV / Excel</span>
+                <span className={`text-[10px] text-center ${exportFormat === 'csv' ? 'text-green-600' : 'text-[#9CA3AF]'}`}>Data saja</span>
               </button>
             </div>
           </div>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Dari Tanggal</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Dari Tanggal</label>
             <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A]" />
           </div>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Sampai Tanggal</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Sampai Tanggal</label>
             <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A]" />
           </div>
-          <div className="px-3 py-2 bg-[#faf9f7] rounded-xl border border-[#e5e0db]">
-            <p className="text-[12px] text-[#6b6560]">Total record tersedia: <strong className="text-[#231f20]">{records.length}</strong></p>
+          <div className="px-3 py-2 bg-[#FAFAFA] rounded-xl border border-[#E5E7EB]">
+            <p className="text-[12px] text-[#6B7280]">Total record tersedia: <strong className="text-[#1F2937]">{records.length}</strong></p>
           </div>
         </div>
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db]">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB]">
           <button onClick={onClose} disabled={exporting}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">
             Batal
           </button>
           <button onClick={handleExport} disabled={exporting}
-            className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${exportFormat === 'html' ? 'bg-[#f15a22] hover:bg-[#d44d1a]' : 'bg-green-600 hover:bg-green-700'}`}>
+            className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${exportFormat === 'html' ? 'bg-[#FF6B1A] hover:bg-[#E85D0F]' : 'bg-green-600 hover:bg-green-700'}`}>
             {exporting ? <Spinner /> : (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -442,16 +442,16 @@ function CreateModal({ isOpen, onClose, onSaved, editing }: CreateModalProps) {
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">
               Investigasi Kecelakaan
             </p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">
+            <h2 className="font-bold text-[15px] text-[#1F2937]">
               {editing ? "Edit Laporan Kecelakaan" : "Laporan Kecelakaan Baru"}
             </h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -521,7 +521,7 @@ function CreateModal({ isOpen, onClose, onSaved, editing }: CreateModalProps) {
             <label className={labelCls}>Foto Bukti</label>
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => refFoto.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#c5c0bb] text-[12px] font-medium rounded-lg hover:border-[#f15a22] hover:text-[#f15a22] transition-colors">
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E7EB] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                 </svg>
@@ -530,7 +530,7 @@ function CreateModal({ isOpen, onClose, onSaved, editing }: CreateModalProps) {
               {fotoBuktiFile ? (
                 <span className="text-[11px] text-green-600">✓ {fotoBuktiFile.name}</span>
               ) : editing?.fotoBukti ? (
-                <a href={resolveFileUrl(editing.fotoBukti)} target="_blank" rel="noreferrer" className="text-[11px] text-[#f15a22] hover:underline">📎 Lihat file</a>
+                <a href={resolveFileUrl(editing.fotoBukti)} target="_blank" rel="noreferrer" className="text-[11px] text-[#FF6B1A] hover:underline">📎 Lihat file</a>
               ) : (
                 <span className="text-[11px] text-[#a09a95]">Belum ada file</span>
               )}
@@ -540,12 +540,12 @@ function CreateModal({ isOpen, onClose, onSaved, editing }: CreateModalProps) {
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">
             Batal
           </button>
           <button form="inv-create-form" type="submit" disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60">
             {saving && <Spinner />}
             {saving ? "Menyimpan..." : editing ? "Simpan Perubahan" : "Buat Laporan"}
           </button>
@@ -622,13 +622,13 @@ function InvestigasiModal({ isOpen, inv, onClose, onSaved, currentUserId, curren
     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
-        <div className="flex items-start justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-start justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Isi Data Investigasi</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Form Investigasi</h2>
-            <p className="text-[12px] text-[#6b6560] mt-0.5">{inv.lokasi} · {fmtDate(inv.tanggalKejadian)}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">Isi Data Investigasi</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">Form Investigasi</h2>
+            <p className="text-[12px] text-[#6B7280] mt-0.5">{inv.lokasi} · {fmtDate(inv.tanggalKejadian)}</p>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1 flex-shrink-0">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1 flex-shrink-0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -670,7 +670,7 @@ function InvestigasiModal({ isOpen, inv, onClose, onSaved, currentUserId, curren
             <label className={labelCls}>Lampiran Laporan (PDF)</label>
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => refLampiran.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#c5c0bb] text-[12px] font-medium rounded-lg hover:border-[#f15a22] hover:text-[#f15a22] transition-colors">
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E5E7EB] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                 </svg>
@@ -679,7 +679,7 @@ function InvestigasiModal({ isOpen, inv, onClose, onSaved, currentUserId, curren
               {lampiranFile ? (
                 <span className="text-[11px] text-green-600">✓ {lampiranFile.name}</span>
               ) : inv.lampiranLaporan ? (
-                <a href={resolveFileUrl(inv.lampiranLaporan)} target="_blank" rel="noreferrer" className="text-[11px] text-[#f15a22] hover:underline">📎 Lihat file</a>
+                <a href={resolveFileUrl(inv.lampiranLaporan)} target="_blank" rel="noreferrer" className="text-[11px] text-[#FF6B1A] hover:underline">📎 Lihat file</a>
               ) : (
                 <span className="text-[11px] text-[#a09a95]">Belum ada file</span>
               )}
@@ -688,10 +688,10 @@ function InvestigasiModal({ isOpen, inv, onClose, onSaved, currentUserId, curren
           </div>
         </form>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">Batal</button>
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">Batal</button>
           <button form="inv-investigasi-form" type="submit" disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60">
             {saving && <Spinner />}
             {saving ? "Menyimpan..." : "Simpan Investigasi"}
           </button>
@@ -757,31 +757,31 @@ function DetailPanel({
       <div className="fixed inset-0 bg-black/30 z-[450]" onClick={onClose} />
       <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[460] flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between px-6 py-5 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-start justify-between px-6 py-5 border-b border-[#E5E7EB] flex-shrink-0">
           <div className="flex-1 min-w-0 pr-4">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-1">Detail Investigasi Kecelakaan</p>
-            <h3 className="font-bold text-[16px] text-[#231f20] leading-snug">{inv.lokasi}</h3>
-            <p className="text-[12px] text-[#6b6560] mt-0.5">{fmtDate(inv.tanggalKejadian)} · {inv.waktuKejadian}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-1">Detail Investigasi Kecelakaan</p>
+            <h3 className="font-bold text-[16px] text-[#1F2937] leading-snug">{inv.lokasi}</h3>
+            <p className="text-[12px] text-[#6B7280] mt-0.5">{fmtDate(inv.tanggalKejadian)} · {inv.waktuKejadian}</p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               <StatusBadge status={inv.status} />
               <JenisBadge jenis={inv.jenisKecelakaan} />
             </div>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] flex-shrink-0 p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] flex-shrink-0 p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
 
         {/* Stepper */}
         {inv.status !== "REJECTED" && (
-          <div className="px-6 py-3 border-b border-[#f1f0ee] flex gap-1 overflow-x-auto">
+          <div className="px-6 py-3 border-b border-[#FAFAFA] flex gap-1 overflow-x-auto">
             {steps.map(([label, done], i) => (
               <div key={label} className="flex items-center gap-1 shrink-0">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${done ? "bg-[#f15a22] text-white" : "bg-[#e5e0db] text-[#a09a95]"}`}>
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${done ? "bg-[#FF6B1A] text-white" : "bg-[#E5E7EB] text-[#a09a95]"}`}>
                   {done ? "✓" : i + 1}
                 </div>
-                <span className={`text-[10px] ${done ? "text-[#f15a22] font-semibold" : "text-[#a09a95]"}`}>{label}</span>
-                {i < steps.length - 1 && <span className="text-[#e5e0db] mx-0.5">—</span>}
+                <span className={`text-[10px] ${done ? "text-[#FF6B1A] font-semibold" : "text-[#a09a95]"}`}>{label}</span>
+                {i < steps.length - 1 && <span className="text-[#E5E7EB] mx-0.5">—</span>}
               </div>
             ))}
           </div>
@@ -793,7 +793,7 @@ function DetailPanel({
 
           {/* Data Kecelakaan */}
           <section>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-[#f15a22] mb-3">Data Kecelakaan</p>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-[#FF6B1A] mb-3">Data Kecelakaan</p>
             <div className="space-y-2.5">
               {([
                 ["Tanggal", fmtDate(inv.tanggalKejadian)],
@@ -810,7 +810,7 @@ function DetailPanel({
               <InfoRow label="Deskripsi" value={<p className="whitespace-pre-wrap">{inv.deskripsiKejadian}</p>} />
               {inv.fotoBukti && (
                 <InfoRow label="Foto Bukti" value={
-                  <a href={resolveFileUrl(inv.fotoBukti)} target="_blank" rel="noreferrer" className="text-[#f15a22] hover:underline flex items-center gap-1">
+                  <a href={resolveFileUrl(inv.fotoBukti)} target="_blank" rel="noreferrer" className="text-[#FF6B1A] hover:underline flex items-center gap-1">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
@@ -835,7 +835,7 @@ function DetailPanel({
                   {inv.catatanTambahan && <InfoRow label="Catatan" value={<p className="whitespace-pre-wrap">{inv.catatanTambahan}</p>} />}
                   {inv.lampiranLaporan && (
                     <InfoRow label="Lampiran" value={
-                      <a href={resolveFileUrl(inv.lampiranLaporan)} target="_blank" rel="noreferrer" className="text-[#f15a22] hover:underline flex items-center gap-1">
+                      <a href={resolveFileUrl(inv.lampiranLaporan)} target="_blank" rel="noreferrer" className="text-[#FF6B1A] hover:underline flex items-center gap-1">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
@@ -873,7 +873,7 @@ function DetailPanel({
           {/* Finding link */}
           {inv.findingId && (
             <section>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-[#6b6560] mb-2">Finding Terkait</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[#6B7280] mb-2">Finding Terkait</p>
               <div className="inline-flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl text-[12px] text-amber-700">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
                 Finding #{inv.findingId.slice(-6)} otomatis dibuat
@@ -884,13 +884,13 @@ function DetailPanel({
           {/* Riwayat */}
           {inv.logs.length > 0 && (
             <section>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-[#6b6560] mb-3">Riwayat Aktivitas</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[#6B7280] mb-3">Riwayat Aktivitas</p>
               <div className="space-y-2">
                 {inv.logs.map((log) => (
                   <div key={log.id} className="flex gap-2.5 text-[12px]">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#f15a22] mt-1.5 shrink-0" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#FF6B1A] mt-1.5 shrink-0" />
                     <div>
-                      <p className="text-[#231f20]">{log.description}</p>
+                      <p className="text-[#1F2937]">{log.description}</p>
                       <p className="text-[#a09a95]">{log.user.nama} · {new Date(log.timestamp).toLocaleString("id-ID")}</p>
                     </div>
                   </div>
@@ -900,18 +900,18 @@ function DetailPanel({
           )}
 
           {/* Audit */}
-          <section className="text-[11px] text-[#a09a95] border-t border-[#f1f0ee] pt-4">
+          <section className="text-[11px] text-[#a09a95] border-t border-[#FAFAFA] pt-4">
             <p>Dibuat oleh <span className="font-semibold">{inv.pelapor.nama}</span> · {new Date(inv.createdAt).toLocaleString("id-ID")}</p>
           </section>
         </div>
 
         {/* Action Footer */}
-        <div className="flex flex-col gap-2 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex flex-col gap-2 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           {/* DRAFT: Edit + Mulai Investigasi */}
           {inv.status === "DRAFT" && (
             <div className="flex gap-2">
               <button onClick={onEditKecelakaan}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">
                 Edit Laporan
               </button>
               <button onClick={() => doAction(() => investigationApi.startInvestigation(inv.id, currentUserId))} disabled={loading}
@@ -926,7 +926,7 @@ function DetailPanel({
           {inv.status === "UNDER_INVESTIGATION" && (
             <div className="flex gap-2">
               <button onClick={onFillInvestigasi}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors">
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 Isi Investigasi
               </button>
@@ -996,8 +996,8 @@ function DetailPanel({
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex gap-3">
-      <span className="w-28 flex-shrink-0 font-semibold text-[#6b6560]">{label}</span>
-      <span className="flex-1 text-[#231f20]">{value}</span>
+      <span className="w-28 flex-shrink-0 font-semibold text-[#6B7280]">{label}</span>
+      <span className="flex-1 text-[#1F2937]">{value}</span>
     </div>
   );
 }
@@ -1079,19 +1079,19 @@ export default function InvestigasiKecelakaanPage() {
   // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
+    <div className="min-h-screen bg-[#FAFAFA]">
       {toast && <Toast msg={toast.msg} type={toast.type} />}
 
       {/* Page Header */}
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-6xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">
             Accident Prevention
           </p>
-          <h1 className="font-bold text-white text-[clamp(22px,4vw,38px)] leading-tight">
+          <h1 className="font-bold text-[#1F2937] text-[clamp(22px,4vw,38px)] leading-tight">
             Investigasi Kecelakaan
           </h1>
-          <p className="text-[#8a8580] text-[13px] mt-1.5">
+          <p className="text-[#6B7280] text-[13px] mt-1.5">
             Pelaporan, investigasi, dan penyelesaian kecelakaan kerja sesuai alur SMK3.
           </p>
         </div>
@@ -1104,20 +1104,20 @@ export default function InvestigasiKecelakaanPage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
           {/* Search */}
           <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a09b96]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari lokasi, area, deskripsi..."
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors" />
+              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors" />
             {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]">
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             )}
           </div>
 
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as any)}
-            className="px-3.5 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 whitespace-nowrap">
+            className="px-3.5 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 whitespace-nowrap">
             <option value="">Semua Status</option>
             {(Object.entries(STATUS_LABELS) as [InvestigationStatus, string][]).map(([v, l]) => (
               <option key={v} value={v}>{l}</option>
@@ -1125,7 +1125,7 @@ export default function InvestigasiKecelakaanPage() {
           </select>
 
           <select value={filterJenis} onChange={(e) => setFilterJenis(e.target.value as any)}
-            className="px-3.5 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 whitespace-nowrap">
+            className="px-3.5 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 whitespace-nowrap">
             <option value="">Semua Jenis</option>
             {(Object.entries(JENIS_LABELS) as [JenisKecelakaan, string][]).map(([v, l]) => (
               <option key={v} value={v}>{l}</option>
@@ -1133,7 +1133,7 @@ export default function InvestigasiKecelakaanPage() {
           </select>
 
           <button onClick={() => setExportModalOpen(true)} disabled={records.length === 0}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#c5c0bb] text-[#231f20] text-[13px] font-semibold rounded-xl hover:border-[#f15a22] hover:text-[#f15a22] transition-colors whitespace-nowrap disabled:opacity-40">
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors whitespace-nowrap disabled:opacity-40">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
@@ -1141,42 +1141,42 @@ export default function InvestigasiKecelakaanPage() {
           </button>
 
           <button onClick={() => { setEditTarget(null); setCreateModalOpen(true); }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors whitespace-nowrap">
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors whitespace-nowrap">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Laporan Baru
           </button>        </div>
 
         {/* Info bar */}
         <div className="flex items-center justify-between mb-3 px-1 flex-wrap gap-2">
-          <p className="text-[12px] text-[#6b6560]">
+          <p className="text-[12px] text-[#6B7280]">
             {loading ? "Memuat data..." : `Menampilkan ${filtered.length} record${search ? ` dari ${records.length}` : ""}`}
           </p>
           {isAdmin && !loading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#f15a22]/10 text-[#f15a22] rounded-full font-semibold border border-[#f15a22]/20">
+            <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
               Mode Admin
             </span>
           )}
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-2xl border border-[#e5e0db] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-8 space-y-3">
-              {[1,2,3,4].map((i) => <div key={i} className="h-12 bg-[#f1f0ee] rounded-xl animate-pulse" />)}
+              {[1,2,3,4].map((i) => <div key={i} className="h-12 bg-[#FAFAFA] rounded-xl animate-pulse" />)}
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-[#f1f0ee] flex items-center justify-center mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+              <div className="w-16 h-16 rounded-2xl bg-[#FAFAFA] flex items-center justify-center mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5">
                   <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/>
                   <polyline points="14 2 14 8 20 8"/>
                   <line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
                 </svg>
               </div>
-              <p className="font-semibold text-[15px] text-[#231f20]">
+              <p className="font-semibold text-[15px] text-[#1F2937]">
                 {search || filterStatus || filterJenis ? "Tidak ada record yang sesuai" : "Belum ada data investigasi"}
               </p>
-              <p className="text-[13px] text-[#a09b96] mt-1">
+              <p className="text-[13px] text-[#9CA3AF] mt-1">
                 {search || filterStatus || filterJenis ? "Coba ubah filter pencarian" : `Klik "Laporan Baru" untuk membuat laporan kecelakaan`}
               </p>
             </div>
@@ -1184,34 +1184,34 @@ export default function InvestigasiKecelakaanPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#e5e0db] bg-[#faf9f7]">
+                  <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
                     {["Tanggal", "Lokasi / Area", "Jenis", "Korban", "Pelapor", "Status", ""].map((h) => (
-                      <th key={h} className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wide text-[#6b6560] whitespace-nowrap">{h}</th>
+                      <th key={h} className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wide text-[#6B7280] whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((inv, idx) => (
                     <tr key={inv.id} onClick={() => setDetailInv(inv)}
-                      className={`border-b border-[#f1f0ee] hover:bg-[#faf9f7] cursor-pointer transition-colors ${idx % 2 === 0 ? "bg-white" : "bg-[#fafafa]"}`}>
-                      <td className="px-4 py-3 text-[13px] text-[#231f20] whitespace-nowrap">
+                      className={`border-b border-[#FAFAFA] hover:bg-[#FAFAFA] cursor-pointer transition-colors ${idx % 2 === 0 ? "bg-white" : "bg-[#fafafa]"}`}>
+                      <td className="px-4 py-3 text-[13px] text-[#1F2937] whitespace-nowrap">
                         {fmtDate(inv.tanggalKejadian)}
                         <br /><span className="text-[#a09a95] text-[11px]">{inv.waktuKejadian}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-semibold text-[13px] text-[#231f20]">{inv.lokasi}</p>
-                        <p className="text-[11px] text-[#6b6560]">{inv.area}</p>
+                        <p className="font-semibold text-[13px] text-[#1F2937]">{inv.lokasi}</p>
+                        <p className="text-[11px] text-[#6B7280]">{inv.area}</p>
                       </td>
                       <td className="px-4 py-3"><JenisBadge jenis={inv.jenisKecelakaan} /></td>
-                      <td className="px-4 py-3 text-center text-[13px] text-[#231f20] font-semibold">{inv.jumlahKorban}</td>
-                      <td className="px-4 py-3 text-[12px] text-[#6b6560]">{inv.pelapor.nama}</td>
+                      <td className="px-4 py-3 text-center text-[13px] text-[#1F2937] font-semibold">{inv.jumlahKorban}</td>
+                      <td className="px-4 py-3 text-[12px] text-[#6B7280]">{inv.pelapor.nama}</td>
                       <td className="px-4 py-3"><StatusBadge status={inv.status} /></td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-1">
                           {/* Isi investigasi */}
                           {inv.status === "UNDER_INVESTIGATION" && (
                             <button title="Isi Investigasi" onClick={() => setInvestigasiTarget(inv)}
-                              className="p-1.5 text-[#f15a22] hover:bg-[#fff3ee] rounded transition-colors">
+                              className="p-1.5 text-[#FF6B1A] hover:bg-[#fff3ee] rounded transition-colors">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                               </svg>
@@ -1220,7 +1220,7 @@ export default function InvestigasiKecelakaanPage() {
                           {/* Edit (hanya DRAFT) */}
                           {inv.status === "DRAFT" && (
                             <button title="Edit" onClick={() => { setEditTarget(inv); setCreateModalOpen(true); }}
-                              className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-[#fff3ee] rounded transition-colors">
+                              className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#fff3ee] rounded transition-colors">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                               </svg>

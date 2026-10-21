@@ -294,15 +294,15 @@ export default function InspeksiKetidaksesuaianPage() {
     }
     const value    = formData[field.name] ?? "";
     const readOnly = field.name === "safetyOfficer";
-    const cls      = "w-full px-3 py-2.5 md:py-2 text-sm md:text-base border border-[#d4cfc9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f15a22] focus:border-transparent bg-white";
+    const cls      = "w-full px-3 py-2.5 md:py-2 text-sm md:text-base border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A] focus:border-transparent bg-white";
 
     return (
       <div key={field.name}>
-        <label className="block text-xs md:text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide mb-1.5 md:mb-1.5">
+        <label className="block text-xs md:text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide mb-1.5 md:mb-1.5">
           {field.label}
-          {field.required && <span className="text-[#f15a22] ml-0.5">*</span>}
+          {field.required && <span className="text-[#FF6B1A] ml-0.5">*</span>}
           {field.labelCn && (
-            <span className="ml-1 font-normal text-[#c5c0bb] normal-case tracking-normal text-[10px] md:text-[11px]">
+            <span className="ml-1 font-normal text-[#E5E7EB] normal-case tracking-normal text-[10px] md:text-[11px]">
               {field.labelCn}
             </span>
           )}
@@ -315,7 +315,7 @@ export default function InspeksiKetidaksesuaianPage() {
             placeholder={field.placeholder}
             rows={field.rows || 3}
             readOnly={readOnly}
-            className={`${cls} resize-y ${readOnly ? "bg-[#faf9f7] cursor-not-allowed" : ""}`}
+            className={`${cls} resize-y ${readOnly ? "bg-[#FAFAFA] cursor-not-allowed" : ""}`}
           />
         ) : field.type === "select" ? (
           <select
@@ -351,13 +351,13 @@ export default function InspeksiKetidaksesuaianPage() {
                   }
                 }
               }}
-              className={`${cls} file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#f15a22] file:text-white hover:file:bg-[#d14a1a]`}
+              className={`${cls} file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#FF6B1A] file:text-white hover:file:bg-[#E85D0F]`}
             />
             {field.note && (
-              <p className="text-[10px] md:text-[11px] text-[#6b6560] mt-1">{field.note}</p>
+              <p className="text-[10px] md:text-[11px] text-[#6B7280] mt-1">{field.note}</p>
             )}
             {formData[`${field.name}_preview`] && (
-              <div className="mt-2 rounded-lg overflow-hidden border border-[#d4cfc9]">
+              <div className="mt-2 rounded-lg overflow-hidden border border-[#E5E7EB]">
                 <img
                   src={formData[`${field.name}_preview`]}
                   alt="Preview"
@@ -374,7 +374,7 @@ export default function InspeksiKetidaksesuaianPage() {
             onChange={e => setFormData(p => ({ ...p, [field.name]: e.target.value }))}
             placeholder={field.placeholder}
             readOnly={readOnly}
-            className={`${cls} ${readOnly ? "bg-[#faf9f7] cursor-not-allowed" : ""}`}
+            className={`${cls} ${readOnly ? "bg-[#FAFAFA] cursor-not-allowed" : ""}`}
           />
         )}
       </div>
@@ -385,7 +385,7 @@ export default function InspeksiKetidaksesuaianPage() {
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#f15a22] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#FF6B1A] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -394,10 +394,10 @@ export default function InspeksiKetidaksesuaianPage() {
   return (
     <>
       {/* Page Header */}
-      <div className="bg-[#231f20] pt-[calc(72px+48px)] pb-10 px-5 md:px-10 border-b-4 border-[#f15a22]">
+      <div className="bg-[#1F2937] pt-[calc(72px+48px)] pb-10 px-5 md:px-10 border-b-4 border-[#FF6B1A]">
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex items-center gap-2 mb-5 flex-wrap">
-            <Link href="/smk3" className="text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <Link href="/smk3" className="text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
               </svg>
@@ -411,27 +411,27 @@ export default function InspeksiKetidaksesuaianPage() {
               <span key={i} className="flex items-center gap-2">
                 <Link
                   href={b.href}
-                  className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#c5c0bb] hover:text-[#f15a22] transition-colors"
+                  className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors"
                 >
                   {b.label}
                 </Link>
                 <span className="text-[#3a3535]">/</span>
               </span>
             ))}
-            <span className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22]">
+            <span className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A]">
               Inspeksi Ketidaksesuaian
             </span>
           </div>
 
           <div className="flex items-start gap-4">
-            <div className="bg-[#f7941d] px-4 py-2 text-white font-barlow-condensed font-extrabold text-lg flex-shrink-0">
+            <div className="bg-[#FF6B1A] px-4 py-2 text-white font-barlow-condensed font-extrabold text-lg flex-shrink-0">
               7.1.1.1
             </div>
             <div>
-              <h1 className="font-barlow-condensed font-extrabold text-white uppercase leading-none text-[clamp(22px,4vw,40px)] mb-2">
+              <h1 className="font-barlow-condensed font-extrabold text-[#1F2937] uppercase leading-none text-[clamp(22px,4vw,40px)] mb-2">
                 Inspeksi Ketidaksesuaian
               </h1>
-              <p className="text-[#c5c0bb] text-sm">
+              <p className="text-[#E5E7EB] text-sm">
                 Pemeriksaan dan dokumentasi ketidaksesuaian terhadap standar K3
               </p>
             </div>
@@ -440,7 +440,7 @@ export default function InspeksiKetidaksesuaianPage() {
       </div>
 
       {/* Main Layout */}
-      <div className="bg-[#faf9f7] min-h-screen">
+      <div className="bg-[#FAFAFA] min-h-screen">
         <div className="max-w-screen-2xl mx-auto p-2 md:p-4 lg:p-6">
           <div
             className="flex flex-col md:flex-row gap-2 md:gap-4"
@@ -449,12 +449,12 @@ export default function InspeksiKetidaksesuaianPage() {
 
             {/* ══ LEFT PANEL — 100% mobile, 40% desktop ══ */}
             <div
-              className="flex flex-col bg-white rounded-xl border border-[#d4cfc9] overflow-hidden w-full md:w-[40%]"
+              className="flex flex-col bg-white rounded-xl border border-[#E5E7EB] overflow-hidden w-full md:w-[40%]"
             >
     {/* Toolbar */}
-              <div className="flex items-center gap-2 px-2 md:px-3 py-2 md:py-2.5 border-b border-[#d4cfc9] flex-shrink-0">
-                <div className="flex items-center gap-2 flex-1 bg-[#faf9f7] border border-[#d4cfc9] rounded-lg px-2 py-2 md:px-2.5 md:py-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b6560" strokeWidth="2">
+              <div className="flex items-center gap-2 px-2 md:px-3 py-2 md:py-2.5 border-b border-[#E5E7EB] flex-shrink-0">
+                <div className="flex items-center gap-2 flex-1 bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg px-2 py-2 md:px-2.5 md:py-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2">
                     <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                   </svg>
                   <input
@@ -463,12 +463,12 @@ export default function InspeksiKetidaksesuaianPage() {
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Cari... [/]"
-                    className="bg-transparent text-sm md:text-base text-[#231f20] placeholder:text-[#c5c0bb] outline-none flex-1 min-w-0 py-1 md:py-0"
+                    className="bg-transparent text-sm md:text-base text-[#1F2937] placeholder:text-[#E5E7EB] outline-none flex-1 min-w-0 py-1 md:py-0"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery("")}
-                      className="text-[#c5c0bb] hover:text-[#231f20] p-1 md:p-1.5"
+                      className="text-[#E5E7EB] hover:text-[#1F2937] p-1 md:p-1.5"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M18 6 6 18M6 6l12 12"/>
@@ -483,8 +483,8 @@ export default function InspeksiKetidaksesuaianPage() {
                     onClick={() => setFilterStatus(s)}
                     className={`text-[11px] md:text-xs font-semibold px-2 py-1 md:px-2.5 md:py-1 rounded-full border transition-colors whitespace-nowrap ${
                       filterStatus === s
-                        ? "bg-[#f15a22] text-white border-[#f15a22]"
-                        : "bg-white text-[#6b6560] border-[#d4cfc9] hover:border-[#f15a22] hover:text-[#f15a22]"
+                        ? "bg-[#FF6B1A] text-white border-[#FF6B1A]"
+                        : "bg-white text-[#6B7280] border-[#E5E7EB] hover:border-[#FF6B1A] hover:text-[#FF6B1A]"
                     }`}
                   >
                     {s || "Semua"}
@@ -493,7 +493,7 @@ export default function InspeksiKetidaksesuaianPage() {
 
                 <button
                   onClick={openNewPanel}
-                  className="flex items-center gap-1 px-2 md:px-3 py-1 md:py-1.5 bg-[#f15a22] text-white text-xs md:text-xs font-bold uppercase rounded-lg hover:bg-[#d14a1a] transition-colors flex-shrink-0"
+                  className="flex items-center gap-1 px-2 md:px-3 py-1 md:py-1.5 bg-[#FF6B1A] text-white text-xs md:text-xs font-bold uppercase rounded-lg hover:bg-[#E85D0F] transition-colors flex-shrink-0"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M12 5v14M5 12h14"/>
@@ -503,7 +503,7 @@ export default function InspeksiKetidaksesuaianPage() {
               </div>
 
               {/* Summary */}
-              <div className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1.5 md:py-1.5 border-b border-[#d4cfc9] bg-[#faf9f7] flex-shrink-0 text-[10px] md:text-[11px] text-[#6b6560]">
+              <div className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1.5 md:py-1.5 border-b border-[#E5E7EB] bg-[#FAFAFA] flex-shrink-0 text-[10px] md:text-[11px] text-[#6B7280]">
                 <span>{filtered.length} temuan</span>
                 {(["", "INPG", "CLSD"] as FilterStatus[]).map(s => {
                   const cnt = filtered.filter(r => r.findingStatus === s).length;
@@ -525,10 +525,10 @@ export default function InspeksiKetidaksesuaianPage() {
               <div className="overflow-y-auto flex-1">
                 {isLoadingList ? (
                   <div className="flex items-center justify-center h-32">
-                    <div className="w-6 h-6 border-2 border-[#f15a22] border-t-transparent rounded-full animate-spin" />
+                    <div className="w-6 h-6 border-2 border-[#FF6B1A] border-t-transparent rounded-full animate-spin" />
                   </div>
                 ) : filtered.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-40 gap-2 text-[#c5c0bb]">
+                  <div className="flex flex-col items-center justify-center h-40 gap-2 text-[#E5E7EB]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                       <polyline points="14 2 14 8 20 8"/>
@@ -536,7 +536,7 @@ export default function InspeksiKetidaksesuaianPage() {
                     <p className="text-sm">Tidak ada temuan</p>
                     <button
                       onClick={openNewPanel}
-                      className="text-xs text-[#f15a22] underline"
+                      className="text-xs text-[#FF6B1A] underline"
                     >
                       Tambah temuan baru
                     </button>
@@ -552,8 +552,8 @@ export default function InspeksiKetidaksesuaianPage() {
                           onClick={() => selectRecord(record, idx)}
                           className={`flex items-stretch cursor-pointer transition-colors ${
                             isActive
-                              ? "bg-orange-50 border-l-2 border-l-[#f15a22]"
-                              : "hover:bg-[#faf9f7] border-l-2 border-l-transparent"
+                              ? "bg-orange-50 border-l-2 border-l-[#FF6B1A]"
+                              : "hover:bg-[#FAFAFA] border-l-2 border-l-transparent"
                           }`}
                         >
                           {/* Foto */}
@@ -569,7 +569,7 @@ export default function InspeksiKetidaksesuaianPage() {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5">
                                   <rect x="3" y="3" width="18" height="18" rx="2"/>
                                   <circle cx="8.5" cy="8.5" r="1.5"/>
                                   <polyline points="21 15 16 10 5 21"/>
@@ -588,13 +588,13 @@ export default function InspeksiKetidaksesuaianPage() {
                               )}
                             </div>
 
-                            <p className="text-xs font-semibold text-[#231f20] truncate mt-1">
+                            <p className="text-xs font-semibold text-[#1F2937] truncate mt-1">
                               {record.data?.lokasiUtama || "—"}
                             </p>
-                            <p className="text-[11px] text-[#6b6560] truncate">
+                            <p className="text-[11px] text-[#6B7280] truncate">
                               {record.data?.safetyOfficer || (typeof record.createdBy === 'object' ? record.createdBy?.nama : record.createdBy)}
                             </p>
-                            <p className="text-[11px] text-[#c5c0bb]">
+                            <p className="text-[11px] text-[#E5E7EB]">
                               {record.data?.tanggalInspeksi
                                 ? new Date(record.data.tanggalInspeksi).toLocaleDateString("id-ID", {
                                     day: "2-digit", month: "short", year: "numeric",
@@ -612,7 +612,7 @@ export default function InspeksiKetidaksesuaianPage() {
               </div>
 
               {/* Keyboard hints */}
-              <div className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 md:py-1.5 border-t border-[#d4cfc9] bg-[#faf9f7] flex-shrink-0 flex-wrap text-[9px] md:text-[10px]">
+              <div className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 md:py-1.5 border-t border-[#E5E7EB] bg-[#FAFAFA] flex-shrink-0 flex-wrap text-[9px] md:text-[10px]">
                 {[
                   ["N", "Tambah"],
                   ["↑↓", "Navigasi"],
@@ -620,7 +620,7 @@ export default function InspeksiKetidaksesuaianPage() {
                   ["Enter", "Simpan"],
                 ].map(([k, l]) => (
                   <span key={k} className="flex items-center gap-0.5 md:gap-1">
-                    <kbd className="bg-white border border-[#d4cfc9] rounded px-0.5 md:px-1 py-0.5 md:py-0.5 text-[8px] md:text-[9px] text-[#6b6560]">
+                    <kbd className="bg-white border border-[#E5E7EB] rounded px-0.5 md:px-1 py-0.5 md:py-0.5 text-[8px] md:text-[9px] text-[#6B7280]">
                       {k}
                     </kbd>
                     {l}
@@ -630,24 +630,24 @@ export default function InspeksiKetidaksesuaianPage() {
             </div>
 
             {/* ══ RIGHT PANEL — 100% mobile, 60% desktop ══ */}
-            <div className="flex flex-col bg-white rounded-xl border border-[#d4cfc9] overflow-hidden flex-1 min-w-0 w-full md:w-[60%]">
+            <div className="flex flex-col bg-white rounded-xl border border-[#E5E7EB] overflow-hidden flex-1 min-w-0 w-full md:w-[60%]">
 
               {/* Empty */}
               {panelMode === "empty" && (
                 <div className="flex flex-col items-center justify-center flex-1 gap-3 text-center px-8">
-                  <div className="w-14 h-14 rounded-full bg-[#faf9f7] border border-[#d4cfc9] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+                  <div className="w-14 h-14 rounded-full bg-[#FAFAFA] border border-[#E5E7EB] flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5">
                       <rect x="3" y="3" width="18" height="18" rx="2"/>
                       <circle cx="8.5" cy="8.5" r="1.5"/>
                       <polyline points="21 15 16 10 5 21"/>
                     </svg>
                   </div>
-                  <p className="text-sm text-[#6b6560]">
+                  <p className="text-sm text-[#6B7280]">
                     Pilih temuan dari daftar untuk melihat detail
                   </p>
-                  <p className="text-xs text-[#c5c0bb]">
+                  <p className="text-xs text-[#E5E7EB]">
                     atau tekan{" "}
-                    <kbd className="bg-[#faf9f7] border border-[#d4cfc9] rounded px-1.5 py-0.5 text-[10px]">
+                    <kbd className="bg-[#FAFAFA] border border-[#E5E7EB] rounded px-1.5 py-0.5 text-[10px]">
                       N
                     </kbd>{" "}
                     untuk tambah baru
@@ -659,13 +659,13 @@ export default function InspeksiKetidaksesuaianPage() {
               {panelMode === "detail" && selectedRecord && (
                 <>
                   {/* Header */}
-                  <div className="flex flex-col md:flex-row md:items-center gap-3 px-3 md:px-5 py-3 border-b border-[#d4cfc9] flex-shrink-0">
+                  <div className="flex flex-col md:flex-row md:items-center gap-3 px-3 md:px-5 py-3 border-b border-[#E5E7EB] flex-shrink-0">
                     <div className="flex items-center gap-2 flex-1 flex-wrap">
                       <StatusBadge status={selectedRecord.findingStatus || "INPG"} />
                       {selectedRecord.data?.levelHazard && (
                         <LevelBadge level={selectedRecord.data.levelHazard} />
                       )}
-                      <span className="text-xs text-[#6b6560] truncate">
+                      <span className="text-xs text-[#6B7280] truncate">
                         {(typeof selectedRecord.createdBy === 'object' ? selectedRecord.createdBy?.nama : selectedRecord.createdBy)} ·{" "}
                         {new Date(selectedRecord.createdAt).toLocaleDateString("id-ID")}
                       </span>
@@ -678,7 +678,7 @@ export default function InspeksiKetidaksesuaianPage() {
                             (session?.user as any)?.idKaryawan) && (
                           <button
                             onClick={() => openEditPanel(selectedRecord)}
-                            className="flex items-center gap-1 px-3 py-2 md:py-1.5 text-xs font-semibold bg-[#f15a22] text-white rounded-lg hover:bg-[#d14a1a] transition-colors"
+                            className="flex items-center gap-1 px-3 py-2 md:py-1.5 text-xs font-semibold bg-[#FF6B1A] text-white rounded-lg hover:bg-[#E85D0F] transition-colors"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -701,7 +701,7 @@ export default function InspeksiKetidaksesuaianPage() {
                         <button
                           onClick={() => handleDelete(selectedRecord.id!)}
                           title="Hapus"
-                          className="p-1.5 text-[#c5c0bb] hover:text-red-500 transition-colors"
+                          className="p-1.5 text-[#E5E7EB] hover:text-red-500 transition-colors"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="3 6 5 6 21 6"/>
@@ -714,7 +714,7 @@ export default function InspeksiKetidaksesuaianPage() {
 
                       <button
                         onClick={closePanels}
-                        className="p-1.5 text-[#c5c0bb] hover:text-[#231f20] transition-colors"
+                        className="p-1.5 text-[#E5E7EB] hover:text-[#1F2937] transition-colors"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M18 6 6 18M6 6l12 12"/>
@@ -755,7 +755,7 @@ export default function InspeksiKetidaksesuaianPage() {
                               key={f.name}
                               className={isWide ? "col-span-1 md:col-span-2" : "col-span-1"}
                             >
-                              <p className="text-[10px] font-semibold text-[#c5c0bb] uppercase tracking-wide mb-1">
+                              <p className="text-[10px] font-semibold text-[#E5E7EB] uppercase tracking-wide mb-1">
                                 {f.label}
                                 {f.labelCn && (
                                   <span className="ml-1 font-normal normal-case tracking-normal">
@@ -763,7 +763,7 @@ export default function InspeksiKetidaksesuaianPage() {
                                   </span>
                                 )}
                               </p>
-                              <p className="text-sm text-[#231f20] leading-relaxed">
+                              <p className="text-sm text-[#1F2937] leading-relaxed">
                                 {f.type === "select" && f.options
                                   ? (() => {
                                       const opt = f.options.find(o => 
@@ -783,17 +783,17 @@ export default function InspeksiKetidaksesuaianPage() {
                     {/* Foto Before-After (Vertikal mobile, Sejajar desktop) */}
                     {(detailPhotoUrl || detailPerbaikanUrl) && (
                       <div className="pt-5 border-t border-[#f2f0ee]">
-                        <p className="text-[10px] font-semibold text-[#c5c0bb] uppercase tracking-wide mb-3">
+                        <p className="text-[10px] font-semibold text-[#E5E7EB] uppercase tracking-wide mb-3">
                           Dokumentasi Foto
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Foto Temuan (Before) */}
                           <div>
-                            <p className="text-xs md:text-[11px] font-semibold text-[#6b6560] mb-2">
+                            <p className="text-xs md:text-[11px] font-semibold text-[#6B7280] mb-2">
                               Foto Temuan (Before)
                             </p>
                             {detailPhotoUrl ? (
-                              <div className="rounded-lg overflow-hidden border border-[#d4cfc9] bg-[#f2f0ee]">
+                              <div className="rounded-lg overflow-hidden border border-[#E5E7EB] bg-[#f2f0ee]">
                                 <img
                                   src={detailPhotoUrl}
                                   alt="Dokumentasi hazard"
@@ -801,15 +801,15 @@ export default function InspeksiKetidaksesuaianPage() {
                                 />
                               </div>
                             ) : (
-                              <div className="rounded-lg border-2 border-dashed border-[#d4cfc9] bg-[#faf9f7] h-48 md:h-64 flex items-center justify-center">
-                                <p className="text-xs text-[#c5c0bb]">Tidak ada foto</p>
+                              <div className="rounded-lg border-2 border-dashed border-[#E5E7EB] bg-[#FAFAFA] h-48 md:h-64 flex items-center justify-center">
+                                <p className="text-xs text-[#E5E7EB]">Tidak ada foto</p>
                               </div>
                             )}
                           </div>
 
                           {/* Foto Perbaikan (After) */}
                           <div>
-                            <p className="text-xs md:text-[11px] font-semibold text-[#6b6560] mb-2">
+                            <p className="text-xs md:text-[11px] font-semibold text-[#6B7280] mb-2">
                               Foto Perbaikan (After)
                             </p>
                             {detailPerbaikanUrl ? (
@@ -821,8 +821,8 @@ export default function InspeksiKetidaksesuaianPage() {
                                 />
                               </div>
                             ) : (
-                              <div className="rounded-lg border-2 border-dashed border-[#d4cfc9] bg-[#faf9f7] h-48 md:h-64 flex items-center justify-center">
-                                <p className="text-xs text-[#c5c0bb]">Belum ada perbaikan</p>
+                              <div className="rounded-lg border-2 border-dashed border-[#E5E7EB] bg-[#FAFAFA] h-48 md:h-64 flex items-center justify-center">
+                                <p className="text-xs text-[#E5E7EB]">Belum ada perbaikan</p>
                               </div>
                             )}
                           </div>
@@ -843,7 +843,7 @@ export default function InspeksiKetidaksesuaianPage() {
                             href={f.fileUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center gap-2 text-xs text-[#f15a22] hover:underline"
+                            className="flex items-center gap-2 text-xs text-[#FF6B1A] hover:underline"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -862,14 +862,14 @@ export default function InspeksiKetidaksesuaianPage() {
               {(panelMode === "new" || panelMode === "edit") && (
                 <>
                   {/* Form header */}
-                  <div className="flex flex-col md:flex-row md:items-center gap-3 px-3 md:px-5 py-3 border-b border-[#d4cfc9] flex-shrink-0">
-                    <span className="text-sm font-semibold text-[#231f20] flex-1">
+                  <div className="flex flex-col md:flex-row md:items-center gap-3 px-3 md:px-5 py-3 border-b border-[#E5E7EB] flex-shrink-0">
+                    <span className="text-sm font-semibold text-[#1F2937] flex-1">
                       {panelMode === "edit" ? "Edit Temuan" : "Tambah Temuan Baru"}
                     </span>
 
                     <div className="flex items-center gap-2 flex-wrap">
                       {/* Status picker */}
-                      <div className="flex items-center gap-1 bg-[#faf9f7] border border-[#d4cfc9] rounded-lg p-0.5">
+                      <div className="flex items-center gap-1 bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg p-0.5">
                         {(["INPG", "CLSD"] as FindingStatus[]).map(s => (
                           <button
                             key={s}
@@ -880,7 +880,7 @@ export default function InspeksiKetidaksesuaianPage() {
                                 ? s === "INPG"
                                   ? "bg-amber-500 text-white"
                                   : "bg-green-600 text-white"
-                                : "text-[#6b6560] hover:text-[#231f20]"
+                                : "text-[#6B7280] hover:text-[#1F2937]"
                             }`}
                           >
                             {s}
@@ -891,7 +891,7 @@ export default function InspeksiKetidaksesuaianPage() {
                       <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="flex items-center justify-center gap-1.5 px-4 py-2.5 md:py-1.5 bg-[#f15a22] text-white text-xs font-bold uppercase rounded-lg hover:bg-[#d14a1a] transition-colors disabled:opacity-50"
+                        className="flex items-center justify-center gap-1.5 px-4 py-2.5 md:py-1.5 bg-[#FF6B1A] text-white text-xs font-bold uppercase rounded-lg hover:bg-[#E85D0F] transition-colors disabled:opacity-50"
                       >
                         {isSaving ? (
                           <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -908,7 +908,7 @@ export default function InspeksiKetidaksesuaianPage() {
 
                       <button
                         onClick={closePanels}
-                        className="p-2.5 md:p-1.5 text-[#c5c0bb] hover:text-[#231f20] transition-colors"
+                        className="p-2.5 md:p-1.5 text-[#E5E7EB] hover:text-[#1F2937] transition-colors"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M18 6 6 18M6 6l12 12"/>

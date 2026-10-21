@@ -102,12 +102,12 @@ export default function SubSubElement644Page() {
   if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-6xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">6. Keamanan Bekerja Berdasarkan SMK3</p>
-          <h1 className="font-bold text-white text-[clamp(22px,4vw,38px)] leading-tight">6.4 Area Terbatas</h1>
-          <p className="text-[#8a8580] text-[13px] mt-1.5">6.4.4 Pemasangan Rambu K3</p>
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">6. Keamanan Bekerja Berdasarkan SMK3</p>
+          <h1 className="font-bold text-[#1F2937] text-[clamp(22px,4vw,38px)] leading-tight">6.4 Area Terbatas</h1>
+          <p className="text-[#6B7280] text-[13px] mt-1.5">6.4.4 Pemasangan Rambu K3</p>
         </div>
       </div>
 
@@ -126,11 +126,11 @@ export default function SubSubElement644Page() {
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
           <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a09b96]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari judul, data, atau pembuat..."
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors" />
+              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors" />
             {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]">
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>
             )}
@@ -138,52 +138,52 @@ export default function SubSubElement644Page() {
         </div>
 
         <div className="flex items-center justify-between mb-3 px-1 flex-wrap gap-2">
-          <p className="text-[12px] text-[#6b6560]">{fetching ? "Memuat data..." : `Menampilkan ${filtered.length} record${search ? ` dari ${dataList.length}` : ""}`}</p>
-          {isAdmin && !fetching && <span className="text-[11px] px-2.5 py-0.5 bg-[#f15a22]/10 text-[#f15a22] rounded-full font-semibold border border-[#f15a22]/20">Mode Admin</span>}
+          <p className="text-[12px] text-[#6B7280]">{fetching ? "Memuat data..." : `Menampilkan ${filtered.length} record${search ? ` dari ${dataList.length}` : ""}`}</p>
+          {isAdmin && !fetching && <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">Mode Admin</span>}
         </div>
 
-        <div className="bg-white rounded-2xl border border-[#e5e0db] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
           {fetching ? (
-            <div className="p-8 space-y-3">{[1,2,3,4].map((i) => <div key={i} className="h-12 bg-[#f1f0ee] rounded-xl animate-pulse" />)}</div>
+            <div className="p-8 space-y-3">{[1,2,3,4].map((i) => <div key={i} className="h-12 bg-[#FAFAFA] rounded-xl animate-pulse" />)}</div>
           ) : fetchError ? (
             <div className="flex flex-col items-center justify-center py-16 text-center px-6">
-              <p className="text-[14px] font-semibold text-[#231f20]">{fetchError}</p>
-              <button onClick={fetchData} className="mt-3 text-[13px] text-[#f15a22] hover:underline">Coba lagi</button>
+              <p className="text-[14px] font-semibold text-[#1F2937]">{fetchError}</p>
+              <button onClick={fetchData} className="mt-3 text-[13px] text-[#FF6B1A] hover:underline">Coba lagi</button>
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center px-6">
-              <div className="w-16 h-16 rounded-2xl bg-[#f1f0ee] flex items-center justify-center mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              <div className="w-16 h-16 rounded-2xl bg-[#FAFAFA] flex items-center justify-center mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               </div>
-              <p className="font-semibold text-[#231f20] text-[14px] mb-1">{search ? "Tidak ada hasil" : "Belum ada data"}</p>
-              <p className="text-[#6b6560] text-[13px]">{search ? "Coba ubah kata kunci" : "Belum ada record yang ditambahkan"}</p>
+              <p className="font-semibold text-[#1F2937] text-[14px] mb-1">{search ? "Tidak ada hasil" : "Belum ada data"}</p>
+              <p className="text-[#6B7280] text-[13px]">{search ? "Coba ubah kata kunci" : "Belum ada record yang ditambahkan"}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#e5e0db] bg-[#faf9f7]">
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide w-10">#</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide">Judul</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden md:table-cell">Status</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden lg:table-cell">Dibuat Oleh</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden lg:table-cell">Tanggal</th>
-                    <th className="text-right py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide">Aksi</th>
+                  <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide w-10">#</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide">Judul</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide hidden md:table-cell">Status</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide hidden lg:table-cell">Dibuat Oleh</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide hidden lg:table-cell">Tanggal</th>
+                    <th className="text-right py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#f1f0ee]">
+                <tbody className="divide-y divide-[#FAFAFA]">
                   {filtered.map((item, idx) => {
                     const fsCfg = item.findingStatus ? findingStatusConfig[item.findingStatus] : null;
                     const isPending = item.findingStatus === "pending_approval";
                     const by = typeof item.createdBy === "object" ? item.createdBy?.nama : item.createdBy;
                     return (
-                      <tr key={item.id} className={`hover:bg-[#faf9f7] transition-colors ${isPending ? "bg-blue-50/30" : ""}`}>
-                        <td className="py-3 px-4 text-[#a09b96]">{idx + 1}</td>
+                      <tr key={item.id} className={`hover:bg-[#FAFAFA] transition-colors ${isPending ? "bg-blue-50/30" : ""}`}>
+                        <td className="py-3 px-4 text-[#9CA3AF]">{idx + 1}</td>
                         <td className="py-3 px-4">
                           <button onClick={() => setViewData(item)} className="text-left">
-                            <p className="font-medium text-[#231f20] hover:text-[#f15a22] transition-colors leading-snug">{item.title}</p>
+                            <p className="font-medium text-[#1F2937] hover:text-[#FF6B1A] transition-colors leading-snug">{item.title}</p>
                             {item.files.length > 0 && (
-                              <span className="inline-flex items-center gap-1 mt-0.5 text-[11px] text-[#a09b96]">
+                              <span className="inline-flex items-center gap-1 mt-0.5 text-[11px] text-[#9CA3AF]">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
                                 {item.files.length} file
                               </span>
@@ -196,13 +196,13 @@ export default function SubSubElement644Page() {
                               <span className={`w-1.5 h-1.5 rounded-full ${fsCfg.dot} ${isPending ? "animate-pulse" : ""}`} />
                               {fsCfg.label}
                             </span>
-                          ) : <span className="text-[#c5c0bb]">—</span>}
+                          ) : <span className="text-[#E5E7EB]">—</span>}
                         </td>
-                        <td className="py-3 px-4 text-[#6b6560] hidden lg:table-cell">{by || "—"}</td>
-                        <td className="py-3 px-4 text-[#6b6560] hidden lg:table-cell whitespace-nowrap">{formatDate(item.createdAt)}</td>
+                        <td className="py-3 px-4 text-[#6B7280] hidden lg:table-cell">{by || "—"}</td>
+                        <td className="py-3 px-4 text-[#6B7280] hidden lg:table-cell whitespace-nowrap">{formatDate(item.createdAt)}</td>
                         <td className="py-3 px-4">
                           <div className="flex items-center justify-end gap-1.5">
-                            <button onClick={() => setViewData(item)} className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-[#f1f0ee] rounded-lg transition-colors" title="Lihat detail">
+                            <button onClick={() => setViewData(item)} className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FAFAFA] rounded-lg transition-colors" title="Lihat detail">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                             {isSupervisor && isPending && (
@@ -217,10 +217,10 @@ export default function SubSubElement644Page() {
                             )}
                             {isAdmin && (
                               <>
-                                <button onClick={() => { setEditData(item); setShowForm(true); }} className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-[#fff4f0] rounded-lg transition-colors" title="Edit">
+                                <button onClick={() => { setEditData(item); setShowForm(true); }} className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors" title="Edit">
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                 </button>
-                                <button onClick={() => handleDelete(item.id)} className="p-1.5 text-[#6b6560] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
+                                <button onClick={() => handleDelete(item.id)} className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                                 </button>
                               </>
@@ -241,12 +241,12 @@ export default function SubSubElement644Page() {
         <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => { setShowForm(false); setEditData(null); }} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">6.4.4</p>
-                <h2 className="font-bold text-[15px] text-[#231f20]">{editData ? "Edit Data" : "Tambah Data"}</h2>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">6.4.4</p>
+                <h2 className="font-bold text-[15px] text-[#1F2937]">{editData ? "Edit Data" : "Tambah Data"}</h2>
               </div>
-              <button onClick={() => { setShowForm(false); setEditData(null); }} className="text-[#6b6560] hover:text-[#231f20] p-1">
+              <button onClick={() => { setShowForm(false); setEditData(null); }} className="text-[#6B7280] hover:text-[#1F2937] p-1">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>
             </div>
@@ -283,22 +283,22 @@ export default function SubSubElement644Page() {
               </div>
             </div>
             <div className="px-6 py-5 space-y-4">
-              <p className="text-[13px] text-[#6b6560]">{approvalModal.action === "approve" ? "Temuan ini akan disetujui dan status berubah menjadi INPG (aktif)." : "Temuan ini akan dikembalikan ke submitter untuk direvisi."}</p>
+              <p className="text-[13px] text-[#6B7280]">{approvalModal.action === "approve" ? "Temuan ini akan disetujui dan status berubah menjadi INPG (aktif)." : "Temuan ini akan dikembalikan ke submitter untuk direvisi."}</p>
               {approvalError && <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-xl text-[12px] text-red-700">{approvalError}</div>}
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+                <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                   {approvalModal.action === "approve" ? "Catatan" : "Alasan Penolakan"}
                   {approvalModal.action === "reject" && <span className="text-red-500 ml-1">*</span>}
-                  {approvalModal.action === "approve" && <span className="ml-1 text-[#6b6560] font-normal normal-case">(opsional)</span>}
+                  {approvalModal.action === "approve" && <span className="ml-1 text-[#6B7280] font-normal normal-case">(opsional)</span>}
                 </label>
                 <textarea value={approvalNote} onChange={(e) => setApprovalNote(e.target.value)} rows={3}
                   placeholder={approvalModal.action === "approve" ? "Catatan tambahan (opsional)..." : "Tuliskan alasan penolakan (wajib)..."}
-                  className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] resize-none transition-colors ${approvalModal.action === "reject" && !approvalNote.trim() ? "border-red-300" : "border-[#c5c0bb]"}`} />
+                  className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] resize-none transition-colors ${approvalModal.action === "reject" && !approvalNote.trim() ? "border-red-300" : "border-[#E5E7EB]"}`} />
               </div>
             </div>
-            <div className="flex gap-3 px-6 py-4 border-t border-[#e5e0db]">
+            <div className="flex gap-3 px-6 py-4 border-t border-[#E5E7EB]">
               <button onClick={() => setApprovalModal({ open: false, id: "", action: "approve", title: "" })} disabled={isApproving}
-                className="flex-1 py-2.5 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors disabled:opacity-50">Batal</button>
+                className="flex-1 py-2.5 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors disabled:opacity-50">Batal</button>
               <button onClick={handleApprovalAction} disabled={isApproving || (approvalModal.action === "reject" && !approvalNote.trim())}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${approvalModal.action === "approve" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}`}>
                 {isApproving

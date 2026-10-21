@@ -780,10 +780,10 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
       {/* ── Hamburger button (MOBILE ONLY) — di luar aside agar selalu terlihat ── */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="md:hidden fixed top-3 left-3 z-[400] bg-[#231f20] text-white rounded-lg p-2.5 border border-[#3a3535] shadow-lg"
+        className="md:hidden fixed top-3 left-3 z-[400] bg-white text-[#1F2937] rounded-xl p-2.5 border border-[#E5E7EB] shadow-md hover:bg-gray-50 active:scale-95 transition-all"
         aria-label="Buka menu sidebar"
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <line x1="3" y1="6" x2="21" y2="6" />
           <line x1="3" y1="12" x2="21" y2="12" />
           <line x1="3" y1="18" x2="21" y2="18" />
@@ -793,7 +793,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
       {/* ── Overlay (mobile) ── */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-[350] md:hidden"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[350] md:hidden transition-opacity"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -802,28 +802,28 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
       <aside
         className={`
           fixed top-0 left-0 h-screen w-[280px] z-[360]
-          bg-[#231f20] text-[#c5c0bb] flex flex-col
-          border-r-[3px] border-r-[#f15a22]
+          bg-white text-[#1F2937] flex flex-col
+          border-r border-[#E5E7EB]
           overflow-y-auto
           transition-transform duration-300
           md:translate-x-0 md:sticky md:top-0 md:h-screen md:z-auto md:flex-shrink-0
-          [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#f15a22] [&::-webkit-scrollbar-thumb]:rounded
-          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+          [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-[#E5E7EB] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#D1D5DB]
+          ${mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
         `}
       >
         {/* Brand + close button (mobile) */}
-        <div className="flex items-center gap-3.5 px-6 py-5 border-b border-[#3a3535] flex-shrink-0">
-          <div className="w-10 h-10 bg-[#f15a22] rounded-lg flex items-center justify-center font-extrabold text-lg text-white flex-shrink-0">
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-[#E5E7EB] flex-shrink-0 bg-white">
+          <div className="w-9 h-9 bg-[#FF6B1A] rounded-xl flex items-center justify-center font-bold text-base text-white flex-shrink-0 shadow-xs ring-2 ring-[#FFF1E8]">
             K3
           </div>
-          <div className="flex-1">
-            <div className="font-bold text-base text-white tracking-wide leading-tight">SMK3 System</div>
-            <div className="text-[10px] text-[#6b6560] tracking-widest uppercase mt-0.5">PT. QMB New Energy Materials</div>
+          <div className="flex-1 min-w-0">
+            <div className="font-bold text-sm text-[#1F2937] tracking-tight leading-tight">SMK3 System</div>
+            <div className="text-[10px] text-[#6B7280] tracking-wider uppercase font-semibold mt-0.5 truncate">PT. QMB New Energy Materials</div>
           </div>
           {/* Close button — hanya terlihat di mobile */}
           <button
             onClick={() => setMobileOpen(false)}
-            className="md:hidden text-[#6b6560] hover:text-white transition-colors p-1 ml-auto"
+            className="md:hidden text-[#9CA3AF] hover:text-[#1F2937] p-1 ml-auto rounded-lg transition-colors"
             aria-label="Tutup sidebar"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -834,10 +834,10 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
         </div>
 
         {/* Search box */}
-        <div className="px-4 py-3 border-b border-[#3a3535] flex-shrink-0">
+        <div className="px-3.5 py-3 border-b border-[#E5E7EB] flex-shrink-0 bg-white">
           <div className="relative">
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b6560] pointer-events-none"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none"
               width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
             >
               <circle cx="11" cy="11" r="8" />
@@ -848,12 +848,12 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari menu..."
-              className="w-full bg-[#2e2a2b] text-[#c5c0bb] text-[12px] placeholder-[#6b6560] pl-8 pr-7 py-2 rounded-lg border border-[#3a3535] focus:outline-none focus:border-[#f15a22] transition-colors"
+              className="w-full bg-[#FAFAFA] text-[#1F2937] text-[12px] placeholder-[#9CA3AF] pl-8 pr-7 py-2 rounded-lg border border-[#E5E7EB] focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/15 transition-all"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6b6560] hover:text-white transition-colors"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937] transition-colors"
                 aria-label="Hapus pencarian"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -866,11 +866,11 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
         </div>
 
         {/* Quick navigation links */}
-        <div className="px-4 py-3 border-b border-[#3a3535] flex-shrink-0 space-y-1">
+        <div className="px-3 py-2 border-b border-[#E5E7EB] flex-shrink-0 space-y-0.5 bg-[#FAFAFA]/50">
           <Link
             href="/"
             onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-md text-[12px] text-[#8a8580] hover:bg-[rgba(241,90,34,0.12)] hover:text-white transition-colors"
+            className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-[#4B5563] hover:bg-white hover:text-[#1F2937] hover:shadow-xs transition-all"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -881,7 +881,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
           <Link
             href="/contact"
             onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-md text-[12px] text-[#8a8580] hover:bg-[rgba(241,90,34,0.12)] hover:text-white transition-colors"
+            className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-[#4B5563] hover:bg-white hover:text-[#1F2937] hover:shadow-xs transition-all"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -894,8 +894,8 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
         <nav className="flex-1 px-3 py-2">
           {filteredMenuItems.length === 0 && q && (
             <div className="px-3 py-6 text-center">
-              <p className="text-[12px] text-[#6b6560]">Tidak ada menu yang cocok</p>
-              <p className="text-[11px] text-[#4a4545] mt-1">&ldquo;{search}&rdquo;</p>
+              <p className="text-[12px] text-[#6B7280]">Tidak ada menu yang cocok</p>
+              <p className="text-[11px] text-[#9CA3AF] mt-1">&ldquo;{search}&rdquo;</p>
             </div>
           )}
           {filteredMenuItems.map((item, index) => {
@@ -924,7 +924,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
 
             return (
               <React.Fragment key={item.id}>
-                {isDivider && <div className="h-px bg-[#3a3535] my-2 mx-2" />}
+                {isDivider && <div className="h-px bg-[#E5E7EB] my-2 mx-2" />}
 
                 <div className="mb-0.5">
                   {/* Menu header */}
@@ -935,8 +935,8 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
                         isMenuActive
-                          ? 'bg-[rgba(241,90,34,0.18)] text-[#f15a22] font-semibold'
-                          : 'text-[#a09b96] hover:bg-[rgba(241,90,34,0.12)] hover:text-white'
+                          ? 'bg-[#FFF1E8] text-[#FF6B1A] font-semibold'
+                          : 'text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#111827]'
                       }`}
                     >
                       <span className="w-5 flex justify-center flex-shrink-0">{item.icon}</span>
@@ -948,8 +948,8 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                       onClick={() => !q && toggleMenu(item.id)}
                       className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-[13px] font-medium transition-colors text-left ${
                         isMenuActive
-                          ? 'bg-[rgba(241,90,34,0.18)] text-[#f15a22] font-semibold'
-                          : 'text-[#a09b96] hover:bg-[rgba(241,90,34,0.12)] hover:text-white'
+                          ? 'bg-[#FFF1E8] text-[#FF6B1A] font-semibold'
+                          : 'text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#111827]'
                       }`}
                     >
                       <span className="w-5 flex justify-center flex-shrink-0">{item.icon}</span>
@@ -959,7 +959,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                           width="11" height="11"
                           viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                          className={`flex-shrink-0 text-[#6b6560] transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
+                          className={`flex-shrink-0 text-[#9CA3AF] transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
                         >
                           <path d="m9 18 6-6-6-6" />
                         </svg>
@@ -988,7 +988,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                             return (
                               <>
                                 {label.slice(0, idx)}
-                                <mark className="bg-[#f15a22]/30 text-white rounded px-0.5">
+                                <mark className="bg-[#FF6B1A]/20 text-[#FF6B1A] rounded px-0.5">
                                   {label.slice(idx, idx + q.length)}
                                 </mark>
                                 {label.slice(idx + q.length)}
@@ -1026,18 +1026,18 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                                     isElemHeader
                                       ? `py-2 px-3 pl-8 font-semibold tracking-wide ${
                                           subGroupActive
-                                            ? 'text-[#f15a22] bg-[rgba(241,90,34,0.08)]'
-                                            : 'text-[#c5c0bb] hover:bg-[rgba(241,90,34,0.08)] hover:text-white'
+                                            ? 'text-[#FF6B1A] bg-[#FFF1E8]/70'
+                                            : 'text-[#374151] hover:bg-gray-100/70 hover:text-[#111827]'
                                         }`
                                       : `py-1.5 px-3 pl-11 ${
                                           subGroupActive
-                                            ? 'text-[#f15a22] bg-[rgba(241,90,34,0.06)]'
-                                            : 'text-[#8a8580] hover:bg-[rgba(241,90,34,0.06)] hover:text-white'
+                                            ? 'text-[#FF6B1A] bg-[#FFF1E8]/60 font-medium'
+                                            : 'text-[#6B7280] hover:bg-gray-100/60 hover:text-[#111827]'
                                         }`
                                   }`}
                                 >
                                   {!isElemHeader && (
-                                    <span className={`w-1 h-1 rounded-full flex-shrink-0 ${subGroupActive ? 'bg-[#f15a22]' : 'bg-[#6b6560]'}`} />
+                                    <span className={`w-1 h-1 rounded-full flex-shrink-0 ${subGroupActive ? 'bg-[#FF6B1A]' : 'bg-gray-300'}`} />
                                   )}
                                   <span className="flex-1">{highlightLabel(sub.label)}</span>
                                   {!q && (
@@ -1045,7 +1045,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                                       width="10" height="10"
                                       viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                       strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                                      className={`flex-shrink-0 text-[#6b6560] transition-transform duration-200 ${subGroupOpen ? 'rotate-90' : ''}`}
+                                      className={`flex-shrink-0 text-[#9CA3AF] transition-transform duration-200 ${subGroupOpen ? 'rotate-90' : ''}`}
                                     >
                                       <path d="m9 18 6-6-6-6" />
                                     </svg>
@@ -1071,18 +1071,18 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                                               onClick={() => !q && toggleLevel3Group(level3Key)}
                                               className={`w-full flex items-center gap-2 rounded-md text-[11.5px] my-px py-1.5 px-3 pl-11 transition-colors text-left ${
                                                 level3Active
-                                                  ? 'text-[#f15a22] bg-[rgba(241,90,34,0.06)]'
-                                                  : 'text-[#8a8580] hover:bg-[rgba(241,90,34,0.06)] hover:text-white'
+                                                  ? 'text-[#FF6B1A] bg-[#FFF1E8]/60 font-medium'
+                                                  : 'text-[#6B7280] hover:bg-gray-100/60 hover:text-[#111827]'
                                               }`}
                                             >
-                                              <span className={`w-1 h-1 rounded-full flex-shrink-0 ${level3Active ? 'bg-[#f15a22]' : 'bg-[#6b6560]'}`} />
+                                              <span className={`w-1 h-1 rounded-full flex-shrink-0 ${level3Active ? 'bg-[#FF6B1A]' : 'bg-gray-300'}`} />
                                               <span className="flex-1">{highlightLabel(subItem.label)}</span>
                                               {!q && (
                                                 <svg
                                                   width="9" height="9"
                                                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                   strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                                                  className={`flex-shrink-0 text-[#6b6560] transition-transform duration-200 ${level3Open ? 'rotate-90' : ''}`}
+                                                  className={`flex-shrink-0 text-[#9CA3AF] transition-transform duration-200 ${level3Open ? 'rotate-90' : ''}`}
                                                 >
                                                   <path d="m9 18 6-6-6-6" />
                                                 </svg>
@@ -1102,11 +1102,11 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                                                       onClick={() => { setMobileOpen(false); setSearch(''); }}
                                                       className={`flex items-center gap-2 rounded-md text-[11px] my-px py-1.5 px-3 pl-14 transition-colors ${
                                                         gcActive
-                                                          ? 'text-[#f15a22] bg-[rgba(241,90,34,0.06)]'
-                                                          : 'text-[#7a7570] hover:bg-[rgba(241,90,34,0.06)] hover:text-white'
+                                                          ? 'text-[#FF6B1A] bg-[#FFF1E8] font-semibold'
+                                                          : 'text-[#6B7280] hover:bg-gray-100 hover:text-[#111827]'
                                                       }`}
                                                     >
-                                                      <span className={`w-1 h-1 rounded-full flex-shrink-0 ${gcActive ? 'bg-[#f15a22]' : 'bg-[#5a5550]'}`} />
+                                                      <span className={`w-1 h-1 rounded-full flex-shrink-0 ${gcActive ? 'bg-[#FF6B1A]' : 'bg-gray-300'}`} />
                                                       {highlightLabel(gc.label)}
                                                     </Link>
                                                   );
@@ -1128,11 +1128,11 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                                             onClick={() => { setMobileOpen(false); setSearch(''); }}
                                             className={`flex items-center gap-2 rounded-md text-[11px] my-px py-1.5 px-3 pl-14 transition-colors ${
                                               childActive
-                                                ? 'text-[#f15a22] bg-[rgba(241,90,34,0.06)]'
-                                                : 'text-[#8a8580] hover:bg-[rgba(241,90,34,0.06)] hover:text-white'
+                                                ? 'text-[#FF6B1A] bg-[#FFF1E8] font-semibold'
+                                                : 'text-[#6B7280] hover:bg-gray-100 hover:text-[#111827]'
                                             }`}
                                           >
-                                            <span className={`w-1 h-1 rounded-full flex-shrink-0 ${childActive ? 'bg-[#f15a22]' : 'bg-[#6b6560]'}`} />
+                                            <span className={`w-1 h-1 rounded-full flex-shrink-0 ${childActive ? 'bg-[#FF6B1A]' : 'bg-gray-300'}`} />
                                             {highlightLabel(gc.label)}
                                           </Link>
                                         );
@@ -1157,18 +1157,18 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
                                 isElementHeader
                                   ? `py-2 px-3 pl-8 font-semibold tracking-wide ${
                                       subActive
-                                        ? 'text-[#f15a22] bg-[rgba(241,90,34,0.08)]'
-                                        : 'text-[#c5c0bb] hover:bg-[rgba(241,90,34,0.08)] hover:text-white'
+                                        ? 'text-[#FF6B1A] bg-[#FFF1E8]/70'
+                                        : 'text-[#374151] hover:bg-gray-100/70 hover:text-[#111827]'
                                     }`
                                   : `py-1.5 px-3 pl-11 ${
                                       subActive
-                                        ? 'text-[#f15a22] bg-[rgba(241,90,34,0.06)]'
-                                        : 'text-[#8a8580] hover:bg-[rgba(241,90,34,0.06)] hover:text-white'
+                                        ? 'text-[#FF6B1A] bg-[#FFF1E8]/60 font-medium'
+                                        : 'text-[#6B7280] hover:bg-gray-100/60 hover:text-[#111827]'
                                     }`
                               }`}
                             >
                               {!isElementHeader && (
-                                <span className={`w-1 h-1 rounded-full flex-shrink-0 ${subActive ? 'bg-[#f15a22]' : 'bg-[#6b6560]'}`} />
+                                <span className={`w-1 h-1 rounded-full flex-shrink-0 ${subActive ? 'bg-[#FF6B1A]' : 'bg-gray-300'}`} />
                               )}
                               {highlightLabel(sub.label)}
                             </Link>
@@ -1184,14 +1184,14 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="flex-shrink-0 border-t border-[#3a3535]">
+        <div className="flex-shrink-0 border-t border-[#E5E7EB] bg-[#FAFAFA]/50 p-2 space-y-0.5">
           <Link
             href="/profile"
             onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 px-5 py-3 text-[13px] font-medium transition-colors border-b border-[#3a3535] ${
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
               pathname === '/profile'
-                ? 'bg-[rgba(241,90,34,0.18)] text-[#f15a22]'
-                : 'text-[#a09b96] hover:bg-[rgba(241,90,34,0.12)] hover:text-white'
+                ? 'bg-[#FFF1E8] text-[#FF6B1A] font-semibold'
+                : 'text-[#4B5563] hover:bg-gray-100 hover:text-[#111827]'
             }`}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1202,10 +1202,10 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
           <Link
             href="/settings"
             onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 px-5 py-3 text-[13px] font-medium transition-colors ${
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
               pathname === '/settings'
-                ? 'bg-[rgba(241,90,34,0.18)] text-[#f15a22]'
-                : 'text-[#a09b96] hover:bg-[rgba(241,90,34,0.12)] hover:text-white'
+                ? 'bg-[#FFF1E8] text-[#FF6B1A] font-semibold'
+                : 'text-[#4B5563] hover:bg-gray-100 hover:text-[#111827]'
             }`}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

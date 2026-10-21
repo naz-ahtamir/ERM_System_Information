@@ -87,14 +87,14 @@ export function RecordFormModal({
       {/* Modal */}
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
-          <h2 className="font-bold text-[16px] text-[#231f20]">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
+          <h2 className="font-bold text-[16px] text-[#1F2937]">{title}</h2>
           <button
             onClick={onClose}
-            className="text-[#6b6560] hover:text-[#231f20] transition-colors p-1"
+            className="text-[#6B7280] hover:text-[#1F2937] transition-colors p-1 rounded-lg hover:bg-[#F3F4F6]"
             aria-label="Tutup"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -105,7 +105,7 @@ export function RecordFormModal({
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
           {/* Title field */}
           <div>
-            <label className="block text-[12px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[12px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">
               Judul Record <span className="text-red-500">*</span>
             </label>
             <input
@@ -113,8 +113,8 @@ export function RecordFormModal({
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
               placeholder="Masukkan judul record..."
-              className={`w-full px-3.5 py-2.5 text-[14px] text-[#231f20] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${
-                errors['title'] ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb] bg-white'
+              className={`w-full px-3.5 py-2.5 text-[14px] text-[#1F2937] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors ${
+                errors['title'] ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB] bg-white'
               }`}
             />
             {errors['title'] && (
@@ -125,7 +125,7 @@ export function RecordFormModal({
           {/* Dynamic fields */}
           {fields.map((field) => (
             <div key={field.key}>
-              <label className="block text-[12px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[12px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">
                 {field.label}
                 {field.required && <span className="text-red-500 ml-0.5">*</span>}
               </label>
@@ -138,8 +138,8 @@ export function RecordFormModal({
                   }
                   placeholder={field.placeholder}
                   rows={3}
-                  className={`w-full px-3.5 py-2.5 text-[14px] text-[#231f20] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors resize-none ${
-                    errors[field.key] ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb] bg-white'
+                  className={`w-full px-3.5 py-2.5 text-[14px] text-[#1F2937] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors resize-none ${
+                    errors[field.key] ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB] bg-white'
                   }`}
                 />
               ) : field.type === 'select' ? (
@@ -148,8 +148,8 @@ export function RecordFormModal({
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, [field.key]: e.target.value }))
                   }
-                  className={`w-full px-3.5 py-2.5 text-[14px] text-[#231f20] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${
-                    errors[field.key] ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb] bg-white'
+                  className={`w-full px-3.5 py-2.5 text-[14px] text-[#1F2937] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors ${
+                    errors[field.key] ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB] bg-white'
                   }`}
                 >
                   <option value="">-- Pilih {field.label} --</option>
@@ -167,8 +167,8 @@ export function RecordFormModal({
                     setFormData((prev) => ({ ...prev, [field.key]: e.target.value }))
                   }
                   placeholder={field.placeholder}
-                  className={`w-full px-3.5 py-2.5 text-[14px] text-[#231f20] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${
-                    errors[field.key] ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb] bg-white'
+                  className={`w-full px-3.5 py-2.5 text-[14px] text-[#1F2937] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors ${
+                    errors[field.key] ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB] bg-white'
                   }`}
                 />
               )}
@@ -181,12 +181,12 @@ export function RecordFormModal({
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="px-5 py-2.5 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-lg hover:bg-[#e5e0db] transition-colors disabled:opacity-50"
+            className="px-5 py-2.5 text-[13px] font-semibold text-[#1F2937] bg-white border border-[#E5E7EB] rounded-lg hover:bg-[#F9FAFB] transition-colors disabled:opacity-50"
           >
             Batal
           </button>
@@ -194,7 +194,7 @@ export function RecordFormModal({
             type="submit"
             onClick={handleSubmit}
             disabled={submitting || isLoading}
-            className="flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold text-white bg-[#f15a22] rounded-lg hover:bg-[#d44d1a] transition-colors disabled:opacity-60"
+            className="flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-lg hover:bg-[#E85D0F] transition-colors shadow-sm disabled:opacity-60"
           >
             {submitting ? (
               <>

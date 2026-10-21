@@ -80,48 +80,48 @@ function resolveFileUrl(record: SafetyRecord, fieldKey: string): string {
 
 function Badge({ value }: { value: string }) {
   const map: Record<string, string> = {
-    memenuhi: 'bg-green-100 text-green-700',
-    aktif: 'bg-green-100 text-green-700',
-    selesai: 'bg-green-100 text-green-700',
-    'tidak memenuhi': 'bg-red-100 text-red-700',
-    kadaluarsa: 'bg-red-100 text-red-700',
-    open: 'bg-red-100 text-red-700',
-    'dalam proses': 'bg-amber-100 text-amber-700',
-    'sebagian memenuhi': 'bg-amber-100 text-amber-700',
-    'akan kadaluarsa': 'bg-amber-100 text-amber-700',
-    ditutup: 'bg-[#e5e0db] text-[#6b6560]',
+    memenuhi: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    aktif: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    selesai: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    'tidak memenuhi': 'bg-rose-50 text-rose-700 border border-rose-200',
+    kadaluarsa: 'bg-rose-50 text-rose-700 border border-rose-200',
+    open: 'bg-[#FFF1E8] text-[#FF6B1A] border border-[#FF6B1A]/30',
+    'dalam proses': 'bg-amber-50 text-amber-700 border border-amber-200',
+    'sebagian memenuhi': 'bg-amber-50 text-amber-700 border border-amber-200',
+    'akan kadaluarsa': 'bg-amber-50 text-amber-700 border border-amber-200',
+    ditutup: 'bg-gray-100 text-gray-700 border border-gray-200',
   };
-  const cls = map[value?.toLowerCase()] ?? 'bg-[#e5e0db] text-[#6b6560]';
-  return <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${cls}`}>{value}</span>;
+  const cls = map[value?.toLowerCase()] ?? 'bg-gray-100 text-gray-700 border border-gray-200';
+  return <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${cls}`}>{value}</span>;
 }
 
 function ApprovalBadge({ status, approvalStatus }: { status: string; approvalStatus?: string }) {
   if (status === 'CLSD' && approvalStatus === 'ACC') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-100 text-green-700">
-        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
         CLSD — ACC ✓
       </span>
     );
   }
   if (status === 'CLSD' && approvalStatus === 'TACC') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-700">
-        <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+        <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
         CLSD — TACC ✗
       </span>
     );
   }
   if (status === 'CLSD') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-100 text-green-700">
-        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
         CLSD — Closed
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
       <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
       INPG — Pending
     </span>
@@ -376,12 +376,12 @@ function FormModal({
 
   return (
     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl border border-[#E5E7EB] w-full max-w-lg max-h-[90vh] flex flex-col">
         {/* header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
-          <h2 className="font-bold text-[15px] text-[#231f20]">{modalTitle}</h2>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
+          <h2 className="font-bold text-[15px] text-[#1F2937]">{modalTitle}</h2>
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F4F6] p-1.5 rounded-lg transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -390,8 +390,8 @@ function FormModal({
 
         {/* Approval mode notice */}
         {enableApproval && (
-          <div className="mx-6 mt-4 px-3 py-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[12px] text-amber-700 flex items-start gap-2 flex-shrink-0">
-            <svg className="flex-shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <div className="mx-6 mt-4 px-3 py-2.5 bg-[#FFF1E8] border border-[#FF6B1A]/20 rounded-xl text-[12px] text-[#E85D0F] flex items-start gap-2 flex-shrink-0">
+            <svg className="flex-shrink-0 mt-0.5 text-[#FF6B1A]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
               <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
@@ -404,13 +404,13 @@ function FormModal({
           {/* Finding Status dropdown */}
           {enableApproval && (
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#374151] mb-1.5">
                 Status Temuan <span className="text-red-500">*</span>
               </label>
               <select
                 value={data['findingStatus'] ?? 'INPG'}
                 onChange={(e) => setData((p) => ({ ...p, findingStatus: e.target.value }))}
-                className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]"
+                className="w-full px-3.5 py-2.5 text-[14px] bg-white text-[#1F2937] border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors"
               >
                 <option value="INPG">INPG — Perbaikan Belum Selesai</option>
                 <option value="CLSD">CLSD — Perbaikan Selesai (wajib foto)</option>
@@ -421,14 +421,14 @@ function FormModal({
           {/* Judul Record — hanya generic pages */}
           {!isK3Policy && !enableApproval && (
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#374151] mb-1.5">
                 Judul Record <span className="text-red-500">*</span>
               </label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Judul singkat yang mendeskripsikan record ini"
-                className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${errors.title ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb]'}`}
+                className={`w-full px-3.5 py-2.5 text-[14px] bg-white text-[#1F2937] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors ${errors.title ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB]'}`}
               />
               {errors.title && <p className="text-red-500 text-[11px] mt-1">{errors.title}</p>}
             </div>
@@ -442,11 +442,11 @@ function FormModal({
 
             return (
               <div key={f.key}>
-                <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-[#374151] mb-1.5">
                   {f.label}
                   {f.required && <span className="text-red-500 ml-0.5">*</span>}
                   {isAutoFilled && (
-                    <span className="ml-1.5 text-[10px] font-normal text-[#f15a22] normal-case">
+                    <span className="ml-1.5 text-[10px] font-semibold text-[#FF6B1A] normal-case">
                       (auto-fill)
                     </span>
                   )}
@@ -456,14 +456,14 @@ function FormModal({
                   <textarea rows={3} value={data[f.key] ?? ''} placeholder={f.placeholder}
                     readOnly={isReadonly}
                     onChange={(e) => !isReadonly && setData((p) => ({ ...p, [f.key]: e.target.value }))}
-                    className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors resize-none ${errors[f.key] ? 'border-red-400 bg-red-50' : isReadonly ? 'border-[#e5e0db] bg-[#faf9f7] text-[#6b6560]' : 'border-[#c5c0bb]'}`}
+                    className={`w-full px-3.5 py-2.5 text-[14px] bg-white text-[#1F2937] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors resize-none ${errors[f.key] ? 'border-red-400 bg-red-50' : isReadonly ? 'border-[#E5E7EB] bg-[#F9FAFB] text-[#6B7280]' : 'border-[#E5E7EB]'}`}
                   />
                 )}
 
                 {f.type === 'select' && (
                   <select value={data[f.key] ?? ''}
                     onChange={(e) => setData((p) => ({ ...p, [f.key]: e.target.value }))}
-                    className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${errors[f.key] ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb]'}`}
+                    className={`w-full px-3.5 py-2.5 text-[14px] bg-white text-[#1F2937] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors ${errors[f.key] ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB]'}`}
                   >
                     <option value="">-- Select {f.label} --</option>
                     {f.options?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -474,16 +474,16 @@ function FormModal({
                   <div>
                     <input type="file" accept={f.accept || '.pdf,.doc,.docx,.jpg,.jpeg,.png'}
                       onChange={handleFileChange(f.key)}
-                      className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#f15a22] file:text-white hover:file:bg-[#d44d1a] focus:outline-none ${errors[f.key] ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb]'}`}
+                      className={`w-full px-3.5 py-2 text-[13px] bg-white text-[#1F2937] border rounded-lg file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-[#FF6B1A] file:text-white hover:file:bg-[#E85D0F] focus:outline-none transition-colors ${errors[f.key] ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB]'}`}
                     />
                     {files[f.key] && files[f.key].type.startsWith('image/') && (
                       <img src={URL.createObjectURL(files[f.key])} alt="Preview"
-                        className="mt-2 max-h-24 rounded-lg border border-[#e5e0db] object-cover" />
+                        className="mt-2 max-h-24 rounded-lg border border-[#E5E7EB] object-cover" />
                     )}
                     {data[f.key] && !files[f.key] && (
-                      <p className="text-[11px] text-[#6b6560] mt-1">
+                      <p className="text-[11px] text-[#6B7280] mt-1">
                         File saat ini:{' '}
-                        <a href={fileUrl(data[f.key])} target="_blank" rel="noopener noreferrer" className="text-[#f15a22] hover:underline">Lihat file</a>
+                        <a href={fileUrl(data[f.key])} target="_blank" rel="noopener noreferrer" className="text-[#FF6B1A] font-medium hover:underline">Lihat file</a>
                       </p>
                     )}
                   </div>
@@ -493,7 +493,7 @@ function FormModal({
                   <input type={f.type} value={data[f.key] ?? ''} placeholder={f.placeholder}
                     readOnly={isReadonly}
                     onChange={(e) => !isReadonly && setData((p) => ({ ...p, [f.key]: e.target.value }))}
-                    className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${errors[f.key] ? 'border-red-400 bg-red-50' : isReadonly ? 'border-[#e5e0db] bg-[#faf9f7] text-[#6b6560]' : 'border-[#c5c0bb]'}`}
+                    className={`w-full px-3.5 py-2.5 text-[14px] bg-white text-[#1F2937] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors ${errors[f.key] ? 'border-red-400 bg-red-50' : isReadonly ? 'border-[#E5E7EB] bg-[#F9FAFB] text-[#6B7280]' : 'border-[#E5E7EB]'}`}
                   />
                 )}
 
@@ -504,13 +504,13 @@ function FormModal({
         </form>
 
         {/* footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           <button onClick={onClose} disabled={saving}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors disabled:opacity-50">
+            className="px-4 py-2 text-[13px] font-semibold text-[#374151] bg-[#F3F4F6] rounded-lg hover:bg-[#E5E7EB] transition-colors disabled:opacity-50">
             Batal
           </button>
           <button onClick={(e) => handleSubmit(e as any)} disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+            className="flex items-center gap-2 px-4 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-lg hover:bg-[#E85D0F] shadow-sm transition-colors disabled:opacity-60">
             {saving ? (
               <><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -557,15 +557,15 @@ function ApprovalModal({ isOpen, record, onClose, onApprove }: ApprovalModalProp
 
   return (
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl border border-[#E5E7EB] w-full max-w-md">
         {/* header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Approval Temuan</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Tutup Temuan (CLSD)</h2>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#FF6B1A] mb-0.5">Approval Temuan</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">Tutup Temuan (CLSD)</h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F4F6] p-1.5 rounded-lg transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -574,14 +574,14 @@ function ApprovalModal({ isOpen, record, onClose, onApprove }: ApprovalModalProp
 
         <div className="px-6 py-5 space-y-4">
           {/* Record info */}
-          <div className="px-4 py-3 bg-[#faf9f7] rounded-xl border border-[#e5e0db]">
-            <p className="text-[11px] text-[#a09b96] mb-0.5">Temuan</p>
-            <p className="font-semibold text-[13px] text-[#231f20]">{record.title}</p>
+          <div className="px-4 py-3 bg-[#F9FAFB] rounded-xl border border-[#E5E7EB]">
+            <p className="text-[11px] text-[#6B7280] mb-0.5">Temuan</p>
+            <p className="font-semibold text-[13px] text-[#1F2937]">{record.title}</p>
           </div>
 
           {/* Pilihan ACC / TACC */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-2">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-[#374151] mb-2">
               Keputusan Approval <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -589,41 +589,41 @@ function ApprovalModal({ isOpen, record, onClose, onApprove }: ApprovalModalProp
                 onClick={() => setApprovalStatus('ACC')}
                 className={`flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl border-2 transition-all ${
                   approvalStatus === 'ACC'
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-[#e5e0db] bg-white hover:border-green-300'
+                    ? 'border-green-500 bg-green-50/70 text-green-700'
+                    : 'border-[#E5E7EB] bg-white hover:border-green-300'
                 }`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={approvalStatus === 'ACC' ? '#16a34a' : '#a09b96'} strokeWidth="2.5">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={approvalStatus === 'ACC' ? '#16a34a' : '#9CA3AF'} strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <span className={`font-bold text-[13px] ${approvalStatus === 'ACC' ? 'text-green-700' : 'text-[#6b6560]'}`}>ACC</span>
-                <span className={`text-[11px] text-center ${approvalStatus === 'ACC' ? 'text-green-600' : 'text-[#a09b96]'}`}>Disetujui / Accepted</span>
+                <span className={`font-bold text-[13px] ${approvalStatus === 'ACC' ? 'text-green-700' : 'text-[#4B5563]'}`}>ACC</span>
+                <span className={`text-[11px] text-center ${approvalStatus === 'ACC' ? 'text-green-600' : 'text-[#6B7280]'}`}>Disetujui / Accepted</span>
               </button>
               <button type="button"
                 onClick={() => setApprovalStatus('TACC')}
                 className={`flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl border-2 transition-all ${
                   approvalStatus === 'TACC'
-                    ? 'border-red-500 bg-red-50'
-                    : 'border-[#e5e0db] bg-white hover:border-red-300'
+                    ? 'border-red-500 bg-red-50/70 text-red-700'
+                    : 'border-[#E5E7EB] bg-white hover:border-red-300'
                 }`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={approvalStatus === 'TACC' ? '#dc2626' : '#a09b96'} strokeWidth="2.5">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={approvalStatus === 'TACC' ? '#dc2626' : '#9CA3AF'} strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-                <span className={`font-bold text-[13px] ${approvalStatus === 'TACC' ? 'text-red-700' : 'text-[#6b6560]'}`}>TACC</span>
-                <span className={`text-[11px] text-center ${approvalStatus === 'TACC' ? 'text-red-600' : 'text-[#a09b96]'}`}>Tidak Disetujui / Rejected</span>
+                <span className={`font-bold text-[13px] ${approvalStatus === 'TACC' ? 'text-red-700' : 'text-[#4B5563]'}`}>TACC</span>
+                <span className={`text-[11px] text-center ${approvalStatus === 'TACC' ? 'text-red-600' : 'text-[#6B7280]'}`}>Tidak Disetujui / Rejected</span>
               </button>
             </div>
           </div>
 
           {/* Catatan */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-[#374151] mb-1.5">
               Catatan {approvalStatus === 'TACC' && <span className="text-red-500">* (wajib untuk TACC)</span>}
             </label>
             <textarea rows={3} value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={approvalStatus === 'ACC' ? 'Catatan tambahan (opsional)...' : 'Tuliskan alasan penolakan (wajib)...'}
-              className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] resize-none transition-colors ${
-                approvalStatus === 'TACC' && !note.trim() ? 'border-red-300' : 'border-[#c5c0bb]'
+              className={`w-full px-3.5 py-2.5 text-[14px] bg-white text-[#1F2937] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] resize-none transition-colors ${
+                approvalStatus === 'TACC' && !note.trim() ? 'border-red-300 ring-2 ring-red-100' : 'border-[#E5E7EB]'
               }`}
             />
             {approvalStatus === 'TACC' && !note.trim() && (
@@ -632,13 +632,13 @@ function ApprovalModal({ isOpen, record, onClose, onApprove }: ApprovalModalProp
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db]">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB]">
           <button onClick={onClose} disabled={saving}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors disabled:opacity-50">
+            className="px-4 py-2 text-[13px] font-semibold text-[#374151] bg-[#F3F4F6] rounded-lg hover:bg-[#E5E7EB] transition-colors disabled:opacity-50">
             Batal
           </button>
           <button onClick={handleSubmit} disabled={saving || (approvalStatus === 'TACC' && !note.trim())}
-            className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${
+            className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-lg shadow-sm transition-colors disabled:opacity-60 ${
               approvalStatus === 'ACC' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
             }`}>
             {saving ? (
@@ -759,8 +759,8 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
     );
 
     // ── Header tabel ──────────────────────────────────────────────────────────
-    const thStyle = `padding:8px 10px;border:1px solid #d1d5db;background:#231f20;color:#fff;font-size:11px;font-weight:700;text-align:left;white-space:nowrap;`;
-    const thPhotoStyle = `padding:8px 10px;border:1px solid #d1d5db;background:#f15a22;color:#fff;font-size:11px;font-weight:700;text-align:center;white-space:nowrap;min-width:150px;`;
+    const thStyle = `padding:8px 10px;border:1px solid #d1d5db;background:#1f2937;color:#fff;font-size:11px;font-weight:700;text-align:left;white-space:nowrap;`;
+    const thPhotoStyle = `padding:8px 10px;border:1px solid #d1d5db;background:#ff6b1a;color:#fff;font-size:11px;font-weight:700;text-align:center;white-space:nowrap;min-width:150px;`;
 
     const headerCols = [
       `<th style="${thStyle}width:32px;">#</th>`,
@@ -799,7 +799,7 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
         </td>`;
       }
       return `<td style="${tdBase}font-size:11px;">
-        <a href="${href}" target="_blank" style="color:#f15a22;">Lihat File</a>
+        <a href="${href}" target="_blank" style="color:#ff6b1a;font-weight:600;">Lihat File</a>
       </td>`;
     };
 
@@ -809,8 +809,8 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
       const fStatus = (rec as any).findingStatus ?? '';
       const aStatus = (rec as any).approvalStatus ?? '';
       const statusLabel = aStatus ? `${fStatus}-${aStatus}` : fStatus || '—';
-      const statusBg = aStatus === 'ACC' ? '#dcfce7' : aStatus === 'TACC' ? '#fee2e2' : fStatus === 'INPG' ? '#fef9c3' : '#f3f4f6';
-      const statusColor = aStatus === 'ACC' ? '#15803d' : aStatus === 'TACC' ? '#b91c1c' : fStatus === 'INPG' ? '#92400e' : '#6b7280';
+      const statusBg = aStatus === 'ACC' ? '#dcfce7' : aStatus === 'TACC' ? '#fee2e2' : fStatus === 'INPG' ? '#fff1e8' : '#f3f4f6';
+      const statusColor = aStatus === 'ACC' ? '#15803d' : aStatus === 'TACC' ? '#b91c1c' : fStatus === 'INPG' ? '#e85d0f' : '#6b7280';
 
       const filesArr = (rec as any).files as PhotoEntry[] | undefined;
       const hazardPhoto = filesArr?.find((f) => f.fieldName === 'dokumentasiHazard');
@@ -849,7 +849,7 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
   <title>${title}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; font-size: 12px; color: #1f2937; padding: 16px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; color: #1f2937; padding: 16px; background: #fff; }
     @media print {
       body { padding: 4mm; font-size: 10px; }
       .no-print { display: none !important; }
@@ -858,16 +858,16 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
       tr { page-break-inside: avoid; page-break-after: auto; }
       img { max-width: 120px !important; max-height: 90px !important; }
     }
-    .header { background: #231f20; color: white; padding: 16px 20px; margin-bottom: 14px; border-radius: 6px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
-    .header h1 { font-size: 18px; margin-bottom: 3px; }
-    .header p { font-size: 11px; color: #9ca3af; }
+    .header { background: #ffffff; border: 1px solid #e5e7eb; color: #1f2937; padding: 16px 20px; margin-bottom: 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+    .header h1 { font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 3px; }
+    .header p { font-size: 11px; color: #6b7280; }
     .stats { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
-    .stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 14px; text-align: center; min-width: 90px; }
-    .stat-num { font-size: 20px; font-weight: 700; color: #f15a22; }
+    .stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 14px; text-align: center; min-width: 90px; }
+    .stat-num { font-size: 20px; font-weight: 700; color: #ff6b1a; }
     .stat-label { font-size: 10px; color: #6b7280; }
-    .print-btn { background: #f15a22; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
-    .print-btn:hover { background: #d44d1a; }
-    .table-wrap { overflow-x: auto; border-radius: 6px; border: 1px solid #d1d5db; }
+    .print-btn { background: #ff6b1a; color: white; border: none; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 14px; transition: background 0.15s; }
+    .print-btn:hover { background: #e85d0f; }
+    .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e5e7eb; }
     table { border-collapse: collapse; width: 100%; min-width: 1200px; }
     thead th { position: sticky; top: 0; }
   </style>
@@ -879,8 +879,8 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
       <p>${dateLabel}</p>
     </div>
     <div style="text-align:right;">
-      <p style="font-size:13px;font-weight:700;color:#f15a22;">${filtered.length} Record</p>
-      <p style="font-size:10px;color:#9ca3af;">SMK3 Safety System</p>
+      <p style="font-size:14px;font-weight:700;color:#ff6b1a;">${filtered.length} Record</p>
+      <p style="font-size:11px;color:#6b7280;">SMK3 Safety System</p>
     </div>
   </div>
   <div class="stats no-print">
@@ -941,14 +941,14 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
 
   return (
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db]">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl border border-[#E5E7EB] w-full max-w-sm">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Export Data</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Download Excel / CSV</h2>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#FF6B1A] mb-0.5">Export Data</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">Download Excel / CSV</h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F4F6] p-1.5 rounded-lg transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -956,64 +956,64 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
         </div>
 
         <div className="px-6 py-5 space-y-4">
-          <p className="text-[13px] text-[#6b6560]">
+          <p className="text-[13px] text-[#6B7280]">
             Kosongkan tanggal untuk export semua record.
           </p>
 
           {/* Format pilihan */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-2">Format Export</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-[#374151] mb-2">Format Export</label>
             <div className="grid grid-cols-2 gap-3">
               <button type="button" onClick={() => setExportFormat('html')}
-                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'html' ? 'border-[#f15a22] bg-orange-50' : 'border-[#e5e0db] hover:border-[#f15a22]/40'}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'html' ? '#f15a22' : '#a09b96'} strokeWidth="2">
+                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'html' ? 'border-[#FF6B1A] bg-[#FFF1E8]' : 'border-[#E5E7EB] bg-white hover:border-[#FF6B1A]/40'}`}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'html' ? '#FF6B1A' : '#9CA3AF'} strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                   <line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/>
                 </svg>
-                <span className={`font-bold text-[12px] ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#6b6560]'}`}>HTML + Foto</span>
-                <span className={`text-[10px] text-center ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#a09b96]'}`}>Print / Save PDF</span>
+                <span className={`font-bold text-[12px] ${exportFormat === 'html' ? 'text-[#FF6B1A]' : 'text-[#4B5563]'}`}>HTML + Foto</span>
+                <span className={`text-[10px] text-center ${exportFormat === 'html' ? 'text-[#E85D0F]' : 'text-[#9CA3AF]'}`}>Print / Save PDF</span>
               </button>
               <button type="button" onClick={() => setExportFormat('csv')}
-                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'csv' ? 'border-green-500 bg-green-50' : 'border-[#e5e0db] hover:border-green-300'}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'csv' ? '#16a34a' : '#a09b96'} strokeWidth="2">
+                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'csv' ? 'border-green-600 bg-green-50' : 'border-[#E5E7EB] bg-white hover:border-green-300'}`}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'csv' ? '#16a34a' : '#9CA3AF'} strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                   <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>
                 </svg>
-                <span className={`font-bold text-[12px] ${exportFormat === 'csv' ? 'text-green-700' : 'text-[#6b6560]'}`}>CSV / Excel</span>
-                <span className={`text-[10px] text-center ${exportFormat === 'csv' ? 'text-green-600' : 'text-[#a09b96]'}`}>Data saja, tanpa foto</span>
+                <span className={`font-bold text-[12px] ${exportFormat === 'csv' ? 'text-green-700' : 'text-[#4B5563]'}`}>CSV / Excel</span>
+                <span className={`text-[10px] text-center ${exportFormat === 'csv' ? 'text-green-600' : 'text-[#9CA3AF]'}`}>Data saja, tanpa foto</span>
               </button>
             </div>
             {exportFormat === 'html' && (
-              <p className="text-[11px] text-[#a09b96] mt-1.5">
+              <p className="text-[11px] text-[#6B7280] mt-1.5">
                 File .html berisi foto temuan before/after. Buka di browser → klik "Print / Save PDF" untuk menyimpan.
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Dari Tanggal</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-[#374151] mb-1.5">Dari Tanggal</label>
             <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+              className="w-full px-3.5 py-2.5 text-[14px] bg-white text-[#1F2937] border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors" />
           </div>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Sampai Tanggal</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-[#374151] mb-1.5">Sampai Tanggal</label>
             <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+              className="w-full px-3.5 py-2.5 text-[14px] bg-white text-[#1F2937] border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 focus:border-[#FF6B1A] transition-colors" />
           </div>
-          <div className="px-3 py-2 bg-[#faf9f7] rounded-xl border border-[#e5e0db]">
-            <p className="text-[12px] text-[#6b6560]">
-              Total record tersedia: <strong className="text-[#231f20]">{records.length}</strong>
+          <div className="px-3 py-2 bg-[#F9FAFB] rounded-xl border border-[#E5E7EB]">
+            <p className="text-[12px] text-[#6B7280]">
+              Total record tersedia: <strong className="text-[#1F2937]">{records.length}</strong>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db]">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB]">
           <button onClick={onClose} disabled={exporting}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+            className="px-4 py-2 text-[13px] font-semibold text-[#374151] bg-[#F3F4F6] rounded-lg hover:bg-[#E5E7EB] transition-colors">
             Batal
           </button>
           <button onClick={handleExport} disabled={exporting}
-            className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${exportFormat === 'html' ? 'bg-[#f15a22] hover:bg-[#d44d1a]' : 'bg-green-600 hover:bg-green-700'}`}>
+            className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-lg shadow-sm transition-colors disabled:opacity-60 ${exportFormat === 'html' ? 'bg-[#FF6B1A] hover:bg-[#E85D0F]' : 'bg-green-600 hover:bg-green-700'}`}>
             {exporting ? (
               <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -1072,13 +1072,13 @@ function DetailPanel({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/30 z-[450]" onClick={onClose} />
-      <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[460] flex flex-col">
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[450]" onClick={onClose} />
+      <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl border-l border-[#E5E7EB] z-[460] flex flex-col">
         {/* header */}
-        <div className="flex items-start justify-between px-6 py-5 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-start justify-between px-6 py-5 border-b border-[#E5E7EB] flex-shrink-0">
           <div className="flex-1 min-w-0 pr-4">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-1">Detail Record</p>
-            <h3 className="font-bold text-[16px] text-[#231f20] leading-snug">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#FF6B1A] mb-1">Detail Record</p>
+            <h3 className="font-bold text-[16px] text-[#1F2937] leading-snug">
               {isK3Policy ? (record as any).judulKebijakan : record.title}
             </h3>
             {enableApproval && findingStatus && (
@@ -1087,7 +1087,7 @@ function DetailPanel({
               </div>
             )}
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] flex-shrink-0 p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F4F6] p-1.5 rounded-lg flex-shrink-0 transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -1099,39 +1099,39 @@ function DetailPanel({
           {/* Meta */}
           <div className="grid grid-cols-2 gap-3 text-[13px]">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Dibuat Oleh</p>
-              <p className="text-[#231f20] font-medium">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] mb-0.5">Dibuat Oleh</p>
+              <p className="text-[#1F2937] font-medium">
                 {isK3Policy ? (record as any).createdBy?.nama : record.createdByName || '—'}
               </p>
             </div>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Tanggal Dibuat</p>
-              <p className="text-[#231f20] font-medium">{formatDate(record.createdAt)}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] mb-0.5">Tanggal Dibuat</p>
+              <p className="text-[#1F2937] font-medium">{formatDate(record.createdAt)}</p>
             </div>
             {enableApproval && findingStatus === 'CLSD' && (record as any).approvedByName && (
               <>
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Disetujui Oleh</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] mb-0.5">Disetujui Oleh</p>
                   <p className={`font-semibold ${approvalStatus === 'TACC' ? 'text-red-700' : 'text-green-700'}`}>
                     {(record as any).approvedByName}
                   </p>
                 </div>
                 {(record as any).approvedAt && (
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Tanggal Approval</p>
-                    <p className="text-[#231f20] font-medium">{formatDate((record as any).approvedAt)}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] mb-0.5">Tanggal Approval</p>
+                    <p className="text-[#1F2937] font-medium">{formatDate((record as any).approvedAt)}</p>
                   </div>
                 )}
               </>
             )}
           </div>
 
-          <hr className="border-[#e5e0db]" />
+          <hr className="border-[#E5E7EB]" />
 
           {/* Approval note */}
           {enableApproval && (record as any).approvalNote && (
             <div className={`px-4 py-3 rounded-xl border ${approvalStatus === 'TACC' ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
-              <p className={`text-[11px] font-bold uppercase tracking-wide mb-1 ${approvalStatus === 'TACC' ? 'text-red-700' : 'text-green-700'}`}>
+              <p className={`text-[11px] font-bold uppercase tracking-wider mb-1 ${approvalStatus === 'TACC' ? 'text-red-700' : 'text-green-700'}`}>
                 Catatan Approval ({approvalStatus})
               </p>
               <p className={`text-[13px] ${approvalStatus === 'TACC' ? 'text-red-800' : 'text-green-800'}`}>
@@ -1143,18 +1143,18 @@ function DetailPanel({
           {/* Files section */}
           {filesArr && filesArr.length > 0 && (
             <div className="space-y-3">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96]">File / Foto</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">File / Foto</p>
               {filesArr.map((f, i) => {
                 const href = fileUrl(f.fileUrl);
                 const isImage = /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(f.fileName);
                 const fieldLabel = fields.find((fd) => fd.key === f.fieldName)?.label ?? f.fieldName;
                 const imgFailed = imgErrors[f.fileUrl];
                 return (
-                  <div key={i} className="border border-[#e5e0db] rounded-xl overflow-hidden">
-                    <div className="flex items-center justify-between px-3 py-2 bg-[#faf9f7] border-b border-[#e5e0db]">
-                      <p className="text-[11px] font-bold text-[#6b6560] uppercase tracking-wide">{fieldLabel}</p>
+                  <div key={i} className="border border-[#E5E7EB] rounded-xl overflow-hidden">
+                    <div className="flex items-center justify-between px-3 py-2 bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                      <p className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">{fieldLabel}</p>
                       <a href={href} target="_blank" rel="noopener noreferrer"
-                        className="text-[11px] text-[#f15a22] hover:underline font-medium flex items-center gap-1">
+                        className="text-[11px] text-[#FF6B1A] hover:underline font-semibold flex items-center gap-1">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
                           <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -1163,7 +1163,7 @@ function DetailPanel({
                       </a>
                     </div>
                     {isImage && !imgFailed ? (
-                      <div className="bg-[#f1f0ee]">
+                      <div className="bg-[#F3F4F6]">
                         <img
                           src={href}
                           alt={fieldLabel}
@@ -1173,23 +1173,23 @@ function DetailPanel({
                         />
                       </div>
                     ) : isImage && imgFailed ? (
-                      <div className="px-3 py-4 flex flex-col items-center gap-2 bg-[#faf9f7]">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+                      <div className="px-3 py-4 flex flex-col items-center gap-2 bg-[#F9FAFB]">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5">
                           <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
                           <polyline points="21 15 16 10 5 21"/>
                         </svg>
-                        <p className="text-[11px] text-[#a09b96] text-center">
+                        <p className="text-[11px] text-[#6B7280] text-center">
                           Gambar tidak dapat ditampilkan.<br />
                           <a href={href} target="_blank" rel="noopener noreferrer"
-                            className="text-[#f15a22] hover:underline font-medium">Klik untuk buka di tab baru</a>
+                            className="text-[#FF6B1A] hover:underline font-medium">Klik untuk buka di tab baru</a>
                         </p>
                       </div>
                     ) : (
                       <div className="px-3 py-2.5">
                         <a href={href} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-[#f15a22] hover:underline text-[13px] font-medium">
+                          className="inline-flex items-center gap-1.5 text-[#FF6B1A] hover:underline text-[13px] font-medium">
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
                             <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                           </svg>
                           {f.fileName}
@@ -1212,19 +1212,19 @@ function DetailPanel({
                 const isStatusField = f.key.toLowerCase().includes('status');
                 return (
                   <div key={f.key}>
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">{f.label}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] mb-0.5">{f.label}</p>
                     {isStatusField ? (
                       <Badge value={String(val)} />
                     ) : f.type === 'textarea' ? (
-                      <p className="text-[#231f20] text-[13px] leading-relaxed whitespace-pre-wrap">{String(val)}</p>
+                      <p className="text-[#1F2937] text-[13px] leading-relaxed whitespace-pre-wrap">{String(val)}</p>
                     ) : f.type === 'date' ? (
-                      <p className="text-[#231f20] font-medium text-[13px]">{formatDate(String(val))}</p>
+                      <p className="text-[#1F2937] font-medium text-[13px]">{formatDate(String(val))}</p>
                     ) : f.type === 'select' ? (
-                      <p className="text-[#231f20] font-medium text-[13px]">
+                      <p className="text-[#1F2937] font-medium text-[13px]">
                         {f.options?.find((o) => o.value === val)?.label ?? String(val)}
                       </p>
                     ) : (
-                      <p className="text-[#231f20] font-medium text-[13px]">{String(val)}</p>
+                      <p className="text-[#1F2937] font-medium text-[13px]">{String(val)}</p>
                     )}
                   </div>
                 );
@@ -1233,10 +1233,10 @@ function DetailPanel({
         </div>
 
         {/* footer */}
-        <div className="flex flex-col gap-2 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex flex-col gap-2 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           {/* Info: INPG belum bisa approve */}
           {enableApproval && isInpg && isSupervisor && (
-            <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl text-[12px] text-amber-700 flex items-center gap-2">
+            <div className="px-3 py-2 bg-[#FFF1E8] border border-[#FF6B1A]/20 rounded-xl text-[12px] text-[#E85D0F] flex items-center gap-2">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                 <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -1266,7 +1266,7 @@ function DetailPanel({
           <div className="flex items-center gap-2 flex-wrap">
             {canApprove && (
               <button onClick={onOpenApproval}
-                className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors">
+                className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
@@ -1275,7 +1275,7 @@ function DetailPanel({
             )}
             {(!enableApproval || isInpg || isAdmin) && (
               <button onClick={onEdit}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors">
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-lg hover:bg-[#E85D0F] transition-colors shadow-sm">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                   <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -1285,7 +1285,7 @@ function DetailPanel({
             )}
             {isAdmin && (
               <button onClick={onDelete}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
+                className="flex items-center justify-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <polyline points="3 6 5 6 21 6"/>
                   <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
@@ -1496,21 +1496,21 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
   const tableCols = config.fields.filter((f) => f.showInTable !== false && f.type !== 'file').slice(0, 3);
 
   const STATUS_TABS: { value: StatusFilter; label: string; color: string; activeColor: string }[] = [
-    { value: '', label: 'ALL', color: 'border-[#e5e0db] text-[#6b6560] hover:border-[#c5c0bb]', activeColor: 'bg-[#231f20] text-white border-[#231f20]' },
-    { value: 'INPG', label: '⏳ INPG', color: 'border-[#e5e0db] text-[#6b6560] hover:border-amber-300', activeColor: 'bg-amber-500 text-white border-amber-500' },
-    { value: 'CLSD', label: '🔒 CLSD (Pending)', color: 'border-[#e5e0db] text-[#6b6560] hover:border-blue-300', activeColor: 'bg-blue-600 text-white border-blue-600' },
-    { value: 'CLSD-ACC', label: '✅ CLSD-ACC', color: 'border-[#e5e0db] text-[#6b6560] hover:border-green-300', activeColor: 'bg-green-600 text-white border-green-600' },
-    { value: 'CLSD-TACC', label: '❌ CLSD-TACC', color: 'border-[#e5e0db] text-[#6b6560] hover:border-red-300', activeColor: 'bg-red-600 text-white border-red-600' },
+    { value: '', label: 'Semua Status', color: 'border-[#E5E7EB] text-[#4B5563] hover:border-gray-300', activeColor: 'bg-[#FF6B1A] text-white border-[#FF6B1A] shadow-xs' },
+    { value: 'INPG', label: '⏳ INPG', color: 'border-[#E5E7EB] text-[#4B5563] hover:border-amber-300', activeColor: 'bg-amber-500 text-white border-amber-500 shadow-xs' },
+    { value: 'CLSD', label: '🔒 CLSD (Pending)', color: 'border-[#E5E7EB] text-[#4B5563] hover:border-gray-400', activeColor: 'bg-[#1F2937] text-white border-[#1F2937] shadow-xs' },
+    { value: 'CLSD-ACC', label: '✅ CLSD-ACC', color: 'border-[#E5E7EB] text-[#4B5563] hover:border-emerald-300', activeColor: 'bg-emerald-600 text-white border-emerald-600 shadow-xs' },
+    { value: 'CLSD-TACC', label: '❌ CLSD-TACC', color: 'border-[#E5E7EB] text-[#4B5563] hover:border-rose-300', activeColor: 'bg-rose-600 text-white border-rose-600 shadow-xs' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
+    <div className="min-h-screen bg-[#FAFAFA]">
       {/* Page Header */}
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+      <div className="bg-white px-6 md:px-10 py-7 border-b border-[#E5E7EB] shadow-xs">
         <div className="max-w-6xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">{config.parentLabel}</p>
-          <h1 className="font-bold text-white text-[clamp(22px,4vw,38px)] leading-tight">{config.title}</h1>
-          <p className="text-[#8a8580] text-[13px] mt-1.5">{config.description}</p>
+          <p className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#FF6B1A] mb-1.5">{config.parentLabel}</p>
+          <h1 className="font-bold text-[#1F2937] text-2xl md:text-3xl tracking-tight leading-tight">{config.title}</h1>
+          <p className="text-[#6B7280] text-sm mt-1">{config.description}</p>
         </div>
       </div>
 
@@ -1520,14 +1520,14 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
           {/* Search */}
           <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a09b96]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
               placeholder={`Cari ${config.title}...`}
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors" />
+              className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-xl text-[#1F2937] placeholder-gray-400 focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-all shadow-xs" />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]">
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#1F2937]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -1536,7 +1536,7 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
           </div>
           {/* Export button */}
           <button onClick={() => setExportOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#c5c0bb] text-[#231f20] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap">
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#374151] text-xs font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors whitespace-nowrap shadow-xs">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -1545,7 +1545,7 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
           </button>
           {/* Add button */}
           <button onClick={() => { setEditTarget(null); setModalOpen(true); }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors whitespace-nowrap">
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-xs font-semibold rounded-xl hover:bg-[#E85D0F] transition-all whitespace-nowrap shadow-xs hover:shadow">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
             </svg>
@@ -1558,7 +1558,7 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
           <div className="flex items-center gap-2 mb-4 flex-wrap">
             {STATUS_TABS.map((tab) => (
               <button key={tab.value} onClick={() => setStatusFilter(tab.value)}
-                className={`px-3.5 py-1.5 rounded-lg text-[12px] font-semibold transition-colors border ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${
                   statusFilter === tab.value ? tab.activeColor : `bg-white ${tab.color}`
                 }`}>
                 {tab.label}
@@ -1572,72 +1572,72 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
 
         {/* Info bar */}
         <div className="flex items-center justify-between mb-3 px-1 flex-wrap gap-2">
-          <p className="text-[12px] text-[#6b6560]">
+          <p className="text-xs text-[#6B7280]">
             {loading ? 'Memuat data...' : `Menampilkan ${filtered.length} record${search ? ` dari ${records.length}` : ''}`}
             {isRegularUser && !loading && (
-              <span className="ml-1.5 text-[#a09b96]">(hanya record Anda)</span>
+              <span className="ml-1.5 text-gray-400">(hanya record Anda)</span>
             )}
           </p>
           {isAdmin && !loading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#f15a22]/10 text-[#f15a22] rounded-full font-semibold border border-[#f15a22]/20">Mode Admin</span>
+            <span className="text-[11px] px-2.5 py-0.5 bg-[#FFF1E8] text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">Mode Admin</span>
           )}
           {isSupervisor && !isAdmin && !loading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-blue-50 text-blue-600 rounded-full font-semibold border border-blue-200">Mode Supervisor</span>
+            <span className="text-[11px] px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full font-semibold border border-blue-200">Mode Supervisor</span>
           )}
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-2xl border border-[#e5e0db] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs overflow-hidden">
           {loading ? (
             <div className="p-8 space-y-3">
-              {[1,2,3,4].map((i) => <div key={i} className="h-12 bg-[#f1f0ee] rounded-xl animate-pulse" />)}
+              {[1,2,3,4].map((i) => <div key={i} className="h-12 bg-gray-50 rounded-xl animate-pulse" />)}
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-[#f1f0ee] flex items-center justify-center mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+              <div className="w-16 h-16 rounded-2xl bg-[#FFF1E8] flex items-center justify-center mb-4 text-[#FF6B1A]">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                   <polyline points="14 2 14 8 20 8" />
                   <line x1="12" y1="18" x2="12" y2="12" /><line x1="9" y1="15" x2="15" y2="15" />
                 </svg>
               </div>
-              <p className="font-semibold text-[#231f20] text-[14px] mb-1">
+              <p className="font-semibold text-[#1F2937] text-sm mb-1">
                 {search ? 'Tidak ada hasil pencarian' : 'Belum ada record'}
               </p>
-              <p className="text-[#6b6560] text-[13px]">
+              <p className="text-[#6B7280] text-xs">
                 {search ? `Tidak ditemukan record untuk "${search}"` : 'Klik "Tambah Record" untuk menambahkan data pertama.'}
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-[13px]">
+              <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b border-[#e5e0db] bg-[#faf9f7]">
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide w-10">#</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide">Judul</th>
+                  <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider w-10">#</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Judul</th>
                     {tableCols.map((f) => (
-                      <th key={f.key} className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden md:table-cell">{f.label}</th>
+                      <th key={f.key} className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider hidden md:table-cell">{f.label}</th>
                     ))}
                     {enableApproval && (
-                      <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden md:table-cell">Status</th>
+                      <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider hidden md:table-cell">Status</th>
                     )}
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden lg:table-cell">Dibuat Oleh</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden lg:table-cell">Tanggal</th>
-                    <th className="text-right py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide">Aksi</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider hidden lg:table-cell">Dibuat Oleh</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider hidden lg:table-cell">Tanggal</th>
+                    <th className="text-right py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#f1f0ee]">
+                <tbody className="divide-y divide-[#F3F4F6]">
                   {filtered.map((rec, idx) => {
                     const isK3 = config.categoryId === 'sc-k3-policy';
                     const displayTitle = isK3 ? (rec as any).judulKebijakan : rec.title;
                     const fStatus = (rec as any).findingStatus as string | undefined;
                     const aStatus = (rec as any).approvalStatus as string | undefined;
                     return (
-                      <tr key={rec.id} className="hover:bg-[#faf9f7] transition-colors">
-                        <td className="py-3 px-4 text-[#a09b96]">{idx + 1}</td>
+                      <tr key={rec.id} className="hover:bg-[#FFF9F5]/70 transition-colors">
+                        <td className="py-3 px-4 text-[#9CA3AF]">{idx + 1}</td>
                         <td className="py-3 px-4">
                           <button onClick={() => setDetailRecord(rec)}
-                            className="font-medium text-[#231f20] hover:text-[#f15a22] text-left transition-colors leading-snug">
+                            className="font-medium text-[#1F2937] hover:text-[#FF6B1A] text-left transition-colors leading-snug">
                             {displayTitle}
                           </button>
                         </td>
@@ -1648,42 +1648,42 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
                             <td key={f.key} className="py-3 px-4 hidden md:table-cell max-w-[160px]">
                               {val ? (
                                 isStatus ? <Badge value={String(val)} /> : (
-                                  <span className="text-[#6b6560] truncate block">{
+                                  <span className="text-[#4B5563] truncate block">{
                                     f.type === 'select'
                                       ? (f.options?.find((o) => o.value === val)?.label ?? String(val))
                                       : String(val)
                                   }</span>
                                 )
-                              ) : <span className="text-[#c5c0bb]">—</span>}
+                              ) : <span className="text-gray-300">—</span>}
                             </td>
                           );
                         })}
                         {enableApproval && (
                           <td className="py-3 px-4 hidden md:table-cell">
-                            {fStatus ? <ApprovalBadge status={fStatus} approvalStatus={aStatus} /> : <span className="text-[#c5c0bb]">—</span>}
+                            {fStatus ? <ApprovalBadge status={fStatus} approvalStatus={aStatus} /> : <span className="text-gray-300">—</span>}
                           </td>
                         )}
-                        <td className="py-3 px-4 text-[#6b6560] hidden lg:table-cell">
+                        <td className="py-3 px-4 text-[#6B7280] hidden lg:table-cell">
                           {isK3 ? (rec as any).createdBy?.nama : rec.createdByName || '—'}
                         </td>
-                        <td className="py-3 px-4 text-[#6b6560] hidden lg:table-cell whitespace-nowrap">
+                        <td className="py-3 px-4 text-[#6B7280] hidden lg:table-cell whitespace-nowrap">
                           {formatDate(rec.createdAt)}
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center justify-end gap-1.5">
-                            <button onClick={() => setDetailRecord(rec)} className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-[#f1f0ee] rounded-lg" title="Lihat detail">
+                            <button onClick={() => setDetailRecord(rec)} className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors" title="Lihat detail">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                               </svg>
                             </button>
-                            <button onClick={() => { setEditTarget(rec); setModalOpen(true); }} className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-[#f1f0ee] rounded-lg" title="Edit">
+                            <button onClick={() => { setEditTarget(rec); setModalOpen(true); }} className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors" title="Edit">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                               </svg>
                             </button>
                             {isAdmin && (
-                              <button onClick={() => handleDelete(rec)} className="p-1.5 text-[#6b6560] hover:text-red-500 hover:bg-red-50 rounded-lg" title="Hapus">
+                              <button onClick={() => handleDelete(rec)} className="p-1.5 text-[#6B7280] hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Hapus">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <polyline points="3 6 5 6 21 6"/>
                                   <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>

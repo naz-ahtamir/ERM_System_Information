@@ -153,7 +153,7 @@ function FindingsListContent() {
                   onClick={() => handleStatusChange(filter.value)}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     selectedStatus === filter.value
-                      ? 'bg-[#f15a22] text-white'
+                      ? 'bg-[#FF6B1A] text-white'
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                   }`}
                 >
@@ -215,7 +215,7 @@ function FindingsListContent() {
                           <td className="px-6 py-4 text-sm text-gray-900 font-medium">
                             <Link 
                               href={`/findings/${finding.id}`}
-                              className="text-[#f15a22] hover:underline"
+                              className="text-[#FF6B1A] hover:underline"
                             >
                               {finding.title}
                             </Link>

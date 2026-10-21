@@ -237,7 +237,7 @@ export default function SMK3DataList({
           </div>
 
           <div className="p-6 space-y-4">
-            <p className="text-sm text-[#6b6560]">
+            <p className="text-sm text-[#6B7280]">
               {isApprove
                 ? "Temuan ini akan disetujui dan status akan berubah menjadi INPG (aktif). Tindakan perbaikan perlu dilakukan."
                 : "Temuan ini akan dikembalikan ke submitter untuk direvisi. Berikan alasan penolakan."}
@@ -250,11 +250,11 @@ export default function SMK3DataList({
             )}
 
             <div>
-              <label className="block font-barlow-condensed font-semibold text-sm text-[#231f20] mb-2 uppercase tracking-wide">
+              <label className="block font-barlow-condensed font-semibold text-sm text-[#1F2937] mb-2 uppercase tracking-wide">
                 {isApprove ? "Catatan Persetujuan" : "Alasan Penolakan"}
-                {!isApprove && <span className="text-[#f15a22] ml-1">*</span>}
+                {!isApprove && <span className="text-[#FF6B1A] ml-1">*</span>}
                 {isApprove && (
-                  <span className="text-[#6b6560] font-normal normal-case tracking-normal ml-1">
+                  <span className="text-[#6B7280] font-normal normal-case tracking-normal ml-1">
                     (opsional)
                   </span>
                 )}
@@ -268,12 +268,12 @@ export default function SMK3DataList({
                     : "Jelaskan alasan penolakan..."
                 }
                 rows={3}
-                className="w-full px-4 py-2.5 border border-[#d4cfc9] rounded focus:outline-none focus:ring-2 focus:ring-[#f15a22] focus:border-transparent resize-none text-sm"
+                className="w-full px-4 py-2.5 border border-[#E5E7EB] rounded focus:outline-none focus:ring-2 focus:ring-[#FF6B1A] focus:border-transparent resize-none text-sm"
               />
             </div>
           </div>
 
-          <div className="bg-[#faf9f7] px-6 py-4 flex gap-3">
+          <div className="bg-[#FAFAFA] px-6 py-4 flex gap-3">
             <button
               onClick={() =>
                 setApprovalModal({
@@ -284,7 +284,7 @@ export default function SMK3DataList({
                 })
               }
               disabled={isApproving}
-              className="flex-1 px-4 py-2.5 border border-[#d4cfc9] text-[#6b6560] font-barlow-condensed font-bold text-sm tracking-wider uppercase rounded hover:bg-[#d4cfc9]/30 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 border border-[#E5E7EB] text-[#6B7280] font-barlow-condensed font-bold text-sm tracking-wider uppercase rounded hover:bg-[#E5E7EB]/30 transition-colors disabled:opacity-50"
             >
               Batal
             </button>
@@ -335,8 +335,8 @@ export default function SMK3DataList({
   if (isLoading) {
     return (
       <div className="text-center py-12">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#f15a22] border-t-transparent" />
-        <p className="text-[#6b6560] mt-4">Memuat data...</p>
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#FF6B1A] border-t-transparent" />
+        <p className="text-[#6B7280] mt-4">Memuat data...</p>
       </div>
     );
   }
@@ -397,10 +397,10 @@ export default function SMK3DataList({
               placeholder="Cari data..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2.5 pl-10 border border-[#d4cfc9] rounded focus:outline-none focus:ring-2 focus:ring-[#f15a22] focus:border-transparent text-sm"
+              className="w-full px-4 py-2.5 pl-10 border border-[#E5E7EB] rounded focus:outline-none focus:ring-2 focus:ring-[#FF6B1A] focus:border-transparent text-sm"
             />
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b6560]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -418,7 +418,7 @@ export default function SMK3DataList({
           <select
             value={filterStatus}
             onChange={e => setFilterStatus(e.target.value)}
-            className="px-4 py-2.5 border border-[#d4cfc9] rounded focus:outline-none focus:ring-2 focus:ring-[#f15a22] focus:border-transparent text-sm bg-white"
+            className="px-4 py-2.5 border border-[#E5E7EB] rounded focus:outline-none focus:ring-2 focus:ring-[#FF6B1A] focus:border-transparent text-sm bg-white"
           >
             <option value="all">Semua Status</option>
             <option value="CLSD">CLSD</option>
@@ -428,9 +428,9 @@ export default function SMK3DataList({
         </div>
 
         {/* Count */}
-        <p className="text-sm text-[#6b6560]">
+        <p className="text-sm text-[#6B7280]">
           Menampilkan{" "}
-          <span className="font-semibold text-[#231f20]">
+          <span className="font-semibold text-[#1F2937]">
             {filteredData.length}
           </span>{" "}
           dari {dataList.length} data
@@ -438,9 +438,9 @@ export default function SMK3DataList({
 
         {/* Empty State */}
         {filteredData.length === 0 ? (
-          <div className="text-center py-12 bg-[#faf9f7] rounded-lg border border-[#d4cfc9]">
+          <div className="text-center py-12 bg-[#FAFAFA] rounded-lg border border-[#E5E7EB]">
             <svg
-              className="mx-auto h-12 w-12 text-[#d4cfc9]"
+              className="mx-auto h-12 w-12 text-[#E5E7EB]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -452,7 +452,7 @@ export default function SMK3DataList({
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <p className="text-[#6b6560] mt-4">
+            <p className="text-[#6B7280] mt-4">
               {searchQuery || filterStatus !== "all"
                 ? "Tidak ada data yang sesuai filter"
                 : "Belum ada data"}
@@ -472,14 +472,14 @@ export default function SMK3DataList({
                   className={`bg-white border rounded-lg p-5 hover:shadow-md transition-shadow ${
                     isPending
                       ? "border-blue-300 shadow-sm shadow-blue-100"
-                      : "border-[#d4cfc9]"
+                      : "border-[#E5E7EB]"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       {/* Title + Status Badge */}
                       <div className="flex items-start gap-3 flex-wrap mb-2">
-                        <h4 className="font-barlow-condensed font-bold text-lg text-[#231f20]">
+                        <h4 className="font-barlow-condensed font-bold text-lg text-[#1F2937]">
                           {item.title}
                         </h4>
                         {fsCfg && (
@@ -501,7 +501,7 @@ export default function SMK3DataList({
                         {Object.entries(item.data)
                           .slice(0, 3)
                           .map(([key, value]) => (
-                            <p key={key} className="text-sm text-[#6b6560]">
+                            <p key={key} className="text-sm text-[#6B7280]">
                               <span className="font-semibold capitalize">
                                 {key.replace(/([A-Z])/g, " $1").trim()}:
                               </span>{" "}
@@ -562,7 +562,7 @@ export default function SMK3DataList({
                               href={file.fileUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-[#f15a22]/10 text-[#f15a22] text-xs font-semibold rounded hover:bg-[#f15a22]/20 transition-colors"
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-[#FF6B1A]/10 text-[#FF6B1A] text-xs font-semibold rounded hover:bg-[#FF6B1A]/20 transition-colors"
                             >
                               <svg
                                 className="w-3.5 h-3.5"
@@ -584,7 +584,7 @@ export default function SMK3DataList({
                       )}
 
                       {/* Meta */}
-                      <div className="flex flex-wrap gap-3 text-xs text-[#6b6560]">
+                      <div className="flex flex-wrap gap-3 text-xs text-[#6B7280]">
                         <span>Oleh: {typeof item.createdBy === 'object' ? item.createdBy?.nama : item.createdBy}</span>
                         <span>·</span>
                         <span>
@@ -602,7 +602,7 @@ export default function SMK3DataList({
                       {/* View */}
                       <button
                         onClick={() => onView?.(item)}
-                        className="p-2 text-[#f15a22] hover:bg-[#f15a22]/10 rounded transition-colors"
+                        className="p-2 text-[#FF6B1A] hover:bg-[#FF6B1A]/10 rounded transition-colors"
                         title="Lihat Detail"
                       >
                         <svg

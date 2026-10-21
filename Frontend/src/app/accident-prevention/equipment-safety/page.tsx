@@ -252,24 +252,24 @@ function FormModal({ isOpen, onClose, onSaved, editing, departments }: FormModal
   };
 
   const inputCls =
-    'w-full px-3 py-2 text-[13px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 bg-white';
-  const labelCls = 'block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1.5';
+    'w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 bg-white';
+  const labelCls = 'block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1.5';
 
   return (
     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] z-10">
+        <div className="sticky top-0 bg-white flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] z-10">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">
               Manajemen Objek K3
             </p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">
+            <h2 className="font-bold text-[15px] text-[#1F2937]">
               {isEdit ? 'Edit Objek K3' : 'Tambah Objek K3 Baru'}
             </h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -286,7 +286,7 @@ function FormModal({ isOpen, onClose, onSaved, editing, departments }: FormModal
 
           {/* ── Identitas ── */}
           <section>
-            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#f15a22] mb-3 border-b border-[#e5e0db] pb-1">
+            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#FF6B1A] mb-3 border-b border-[#E5E7EB] pb-1">
               Identitas Alat
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -336,7 +336,7 @@ function FormModal({ isOpen, onClose, onSaved, editing, departments }: FormModal
 
           {/* ── Spesifikasi ── */}
           <section>
-            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#f15a22] mb-3 border-b border-[#e5e0db] pb-1">
+            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#FF6B1A] mb-3 border-b border-[#E5E7EB] pb-1">
               Spesifikasi
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -365,7 +365,7 @@ function FormModal({ isOpen, onClose, onSaved, editing, departments }: FormModal
 
           {/* ── Pengujian & Status ── */}
           <section>
-            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#f15a22] mb-3 border-b border-[#e5e0db] pb-1">
+            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#FF6B1A] mb-3 border-b border-[#E5E7EB] pb-1">
               Pengujian & Status Kelayakan
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -426,7 +426,7 @@ function FormModal({ isOpen, onClose, onSaved, editing, departments }: FormModal
 
           {/* ── LHU ── */}
           <section>
-            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#f15a22] mb-3 border-b border-[#e5e0db] pb-1">
+            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#FF6B1A] mb-3 border-b border-[#E5E7EB] pb-1">
               LHU (Laporan Hasil Uji)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -442,9 +442,9 @@ function FormModal({ isOpen, onClose, onSaved, editing, departments }: FormModal
                 <label className={labelCls}>
                   File LHU (PDF) {form.lhu === 'ADA' && <span className="text-red-500">*</span>}
                 </label>
-                <input type="file" accept=".pdf" ref={refs.fileLHU} className="w-full text-[13px] text-[#231f20] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#f1f0ee] file:text-[#231f20] hover:file:bg-[#e5e0db]" />
+                <input type="file" accept=".pdf" ref={refs.fileLHU} className="w-full text-[13px] text-[#1F2937] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#FAFAFA] file:text-[#1F2937] hover:file:bg-[#E5E7EB]" />
                 {form.fileLHU && (
-                  <a href={resolveFileUrl(form.fileLHU)} target="_blank" rel="noreferrer" className="text-[11px] text-[#f15a22] hover:underline mt-1 block">
+                  <a href={resolveFileUrl(form.fileLHU)} target="_blank" rel="noreferrer" className="text-[11px] text-[#FF6B1A] hover:underline mt-1 block">
                     📎 File tersimpan
                   </a>
                 )}
@@ -466,43 +466,43 @@ function FormModal({ isOpen, onClose, onSaved, editing, departments }: FormModal
 
           {/* ── Dokumen ── */}
           <section>
-            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#f15a22] mb-3 border-b border-[#e5e0db] pb-1">
+            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#FF6B1A] mb-3 border-b border-[#E5E7EB] pb-1">
               Dokumen & Foto
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Pengesahan Gambar (PDF)</label>
-                <input type="file" accept=".pdf,.jpg,.jpeg,.png" ref={refs.pengesahanGambar} className="w-full text-[13px] text-[#231f20] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#f1f0ee] file:text-[#231f20] hover:file:bg-[#e5e0db]" />
+                <input type="file" accept=".pdf,.jpg,.jpeg,.png" ref={refs.pengesahanGambar} className="w-full text-[13px] text-[#1F2937] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#FAFAFA] file:text-[#1F2937] hover:file:bg-[#E5E7EB]" />
                 {form.pengesahanGambar && (
-                  <a href={resolveFileUrl(form.pengesahanGambar)} target="_blank" rel="noreferrer" className="text-[11px] text-[#f15a22] hover:underline mt-1 block">📎 File tersimpan</a>
+                  <a href={resolveFileUrl(form.pengesahanGambar)} target="_blank" rel="noreferrer" className="text-[11px] text-[#FF6B1A] hover:underline mt-1 block">📎 File tersimpan</a>
                 )}
               </div>
               <div>
                 <label className={labelCls}>Sertifikat (PDF, Opsional)</label>
-                <input type="file" accept=".pdf" ref={refs.sertifikat} className="w-full text-[13px] text-[#231f20] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#f1f0ee] file:text-[#231f20] hover:file:bg-[#e5e0db]" />
+                <input type="file" accept=".pdf" ref={refs.sertifikat} className="w-full text-[13px] text-[#1F2937] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#FAFAFA] file:text-[#1F2937] hover:file:bg-[#E5E7EB]" />
                 {form.sertifikat && (
-                  <a href={resolveFileUrl(form.sertifikat)} target="_blank" rel="noreferrer" className="text-[11px] text-[#f15a22] hover:underline mt-1 block">📎 File tersimpan</a>
+                  <a href={resolveFileUrl(form.sertifikat)} target="_blank" rel="noreferrer" className="text-[11px] text-[#FF6B1A] hover:underline mt-1 block">📎 File tersimpan</a>
                 )}
               </div>
               <div>
                 <label className={labelCls}>Laporan Pemeriksaan (PDF, Opsional)</label>
-                <input type="file" accept=".pdf" ref={refs.laporanPemeriksaan} className="w-full text-[13px] text-[#231f20] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#f1f0ee] file:text-[#231f20] hover:file:bg-[#e5e0db]" />
+                <input type="file" accept=".pdf" ref={refs.laporanPemeriksaan} className="w-full text-[13px] text-[#1F2937] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#FAFAFA] file:text-[#1F2937] hover:file:bg-[#E5E7EB]" />
                 {form.laporanPemeriksaan && (
-                  <a href={resolveFileUrl(form.laporanPemeriksaan)} target="_blank" rel="noreferrer" className="text-[11px] text-[#f15a22] hover:underline mt-1 block">📎 File tersimpan</a>
+                  <a href={resolveFileUrl(form.laporanPemeriksaan)} target="_blank" rel="noreferrer" className="text-[11px] text-[#FF6B1A] hover:underline mt-1 block">📎 File tersimpan</a>
                 )}
               </div>
               <div>
                 <label className={labelCls}>Foto Alat</label>
-                <input type="file" accept=".jpg,.jpeg,.png,.webp" ref={refs.fotoAlat} className="w-full text-[13px] text-[#231f20] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#f1f0ee] file:text-[#231f20] hover:file:bg-[#e5e0db]" />
+                <input type="file" accept=".jpg,.jpeg,.png,.webp" ref={refs.fotoAlat} className="w-full text-[13px] text-[#1F2937] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#FAFAFA] file:text-[#1F2937] hover:file:bg-[#E5E7EB]" />
                 {form.fotoAlat && (
-                  <a href={resolveFileUrl(form.fotoAlat)} target="_blank" rel="noreferrer" className="text-[11px] text-[#f15a22] hover:underline mt-1 block">🖼 Foto tersimpan</a>
+                  <a href={resolveFileUrl(form.fotoAlat)} target="_blank" rel="noreferrer" className="text-[11px] text-[#FF6B1A] hover:underline mt-1 block">🖼 Foto tersimpan</a>
                 )}
               </div>
               <div>
                 <label className={labelCls}>Foto Tagging</label>
-                <input type="file" accept=".jpg,.jpeg,.png,.webp" ref={refs.fotoTagging} className="w-full text-[13px] text-[#231f20] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#f1f0ee] file:text-[#231f20] hover:file:bg-[#e5e0db]" />
+                <input type="file" accept=".jpg,.jpeg,.png,.webp" ref={refs.fotoTagging} className="w-full text-[13px] text-[#1F2937] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#FAFAFA] file:text-[#1F2937] hover:file:bg-[#E5E7EB]" />
                 {form.fotoTagging && (
-                  <a href={resolveFileUrl(form.fotoTagging)} target="_blank" rel="noreferrer" className="text-[11px] text-[#f15a22] hover:underline mt-1 block">🖼 Foto tersimpan</a>
+                  <a href={resolveFileUrl(form.fotoTagging)} target="_blank" rel="noreferrer" className="text-[11px] text-[#FF6B1A] hover:underline mt-1 block">🖼 Foto tersimpan</a>
                 )}
               </div>
             </div>
@@ -510,7 +510,7 @@ function FormModal({ isOpen, onClose, onSaved, editing, departments }: FormModal
 
           {/* ── Catatan ── */}
           <section>
-            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#f15a22] mb-3 border-b border-[#e5e0db] pb-1">
+            <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#FF6B1A] mb-3 border-b border-[#E5E7EB] pb-1">
               Catatan
             </h3>
             <textarea
@@ -523,13 +523,13 @@ function FormModal({ isOpen, onClose, onSaved, editing, departments }: FormModal
           </section>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#e5e0db]">
+          <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#E5E7EB]">
             <button type="button" onClick={onClose} disabled={saving}
-              className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+              className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">
               Batal
             </button>
             <button type="submit" disabled={saving}
-              className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+              className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60">
               {saving && (
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -610,27 +610,27 @@ function DetailModal({
 
   const Row = ({ label, value }: { label: string; value?: React.ReactNode }) => (
     <div className="flex gap-2 text-[13px]">
-      <span className="text-[#a09b96] min-w-[160px] shrink-0">{label}</span>
-      <span className="text-[#231f20] font-medium">{value || '—'}</span>
+      <span className="text-[#9CA3AF] min-w-[160px] shrink-0">{label}</span>
+      <span className="text-[#1F2937] font-medium">{value || '—'}</span>
     </div>
   );
 
-  const inputCls = 'w-full px-3 py-2 text-[13px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 bg-white';
+  const inputCls = 'w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 bg-white';
 
   return (
     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white px-6 py-4 border-b border-[#e5e0db] flex items-start justify-between z-10">
+        <div className="sticky top-0 bg-white px-6 py-4 border-b border-[#E5E7EB] flex items-start justify-between z-10">
           <div>
-            <p className="text-[11px] font-bold text-[#f15a22] uppercase tracking-wide mb-0.5">
+            <p className="text-[11px] font-bold text-[#FF6B1A] uppercase tracking-wide mb-0.5">
               {kategoriLabel(obj.kategori)}
             </p>
-            <h2 className="font-bold text-[16px] text-[#231f20]">{obj.namaAlat}</h2>
-            <p className="text-[12px] text-[#6b6560]">{obj.noSeri} · {obj.perusahaan}</p>
+            <h2 className="font-bold text-[16px] text-[#1F2937]">{obj.namaAlat}</h2>
+            <p className="text-[12px] text-[#6B7280]">{obj.noSeri} · {obj.perusahaan}</p>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1 ml-3 shrink-0">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1 ml-3 shrink-0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -646,7 +646,7 @@ function DetailModal({
           </div>
 
           {/* Info Grid */}
-          <div className="bg-[#faf9f7] rounded-xl p-4 space-y-2.5 border border-[#e5e0db]">
+          <div className="bg-[#FAFAFA] rounded-xl p-4 space-y-2.5 border border-[#E5E7EB]">
             <Row label="Departemen" value={obj.departemen.name} />
             <Row label="Lokasi" value={obj.lokasi} />
             <Row label="Jumlah" value={`${obj.jumlah} unit`} />
@@ -655,7 +655,7 @@ function DetailModal({
           </div>
 
           {/* Status Kelayakan Detail */}
-          <div className="bg-[#faf9f7] rounded-xl p-4 space-y-2.5 border border-[#e5e0db]">
+          <div className="bg-[#FAFAFA] rounded-xl p-4 space-y-2.5 border border-[#E5E7EB]">
             <Row label="No. Suket" value={obj.noSuket} />
             <Row label="Tgl Riksa Uji Terakhir" value={formatTanggal(obj.tanggalRiksaUjiTerakhir)} />
             <Row label="Tanggal Berlaku" value={formatTanggal(obj.tanggalBerlaku)} />
@@ -676,12 +676,12 @@ function DetailModal({
           {/* Dokumen Links */}
           {(obj.pengesahanGambar || obj.fileLHU || obj.sertifikat || obj.laporanPemeriksaan) && (
             <div className="space-y-1.5">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[#6b6560]">Dokumen</p>
+              <p className="text-[11px] font-bold uppercase tracking-wide text-[#6B7280]">Dokumen</p>
               <div className="flex flex-wrap gap-2">
-                {obj.pengesahanGambar && <a href={resolveFileUrl(obj.pengesahanGambar)} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-[12px] font-semibold bg-[#f1f0ee] text-[#231f20] rounded-lg hover:bg-[#e5e0db]">📄 Pengesahan Gambar</a>}
-                {obj.fileLHU && <a href={resolveFileUrl(obj.fileLHU)} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-[12px] font-semibold bg-[#f1f0ee] text-[#231f20] rounded-lg hover:bg-[#e5e0db]">📄 LHU</a>}
-                {obj.sertifikat && <a href={resolveFileUrl(obj.sertifikat)} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-[12px] font-semibold bg-[#f1f0ee] text-[#231f20] rounded-lg hover:bg-[#e5e0db]">📄 Sertifikat</a>}
-                {obj.laporanPemeriksaan && <a href={resolveFileUrl(obj.laporanPemeriksaan)} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-[12px] font-semibold bg-[#f1f0ee] text-[#231f20] rounded-lg hover:bg-[#e5e0db]">📄 Laporan</a>}
+                {obj.pengesahanGambar && <a href={resolveFileUrl(obj.pengesahanGambar)} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-[12px] font-semibold bg-[#FAFAFA] text-[#1F2937] rounded-lg hover:bg-[#E5E7EB]">📄 Pengesahan Gambar</a>}
+                {obj.fileLHU && <a href={resolveFileUrl(obj.fileLHU)} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-[12px] font-semibold bg-[#FAFAFA] text-[#1F2937] rounded-lg hover:bg-[#E5E7EB]">📄 LHU</a>}
+                {obj.sertifikat && <a href={resolveFileUrl(obj.sertifikat)} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-[12px] font-semibold bg-[#FAFAFA] text-[#1F2937] rounded-lg hover:bg-[#E5E7EB]">📄 Sertifikat</a>}
+                {obj.laporanPemeriksaan && <a href={resolveFileUrl(obj.laporanPemeriksaan)} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-[12px] font-semibold bg-[#FAFAFA] text-[#1F2937] rounded-lg hover:bg-[#E5E7EB]">📄 Laporan</a>}
               </div>
             </div>
           )}
@@ -689,18 +689,18 @@ function DetailModal({
           {/* Foto */}
           {(obj.fotoAlat || obj.fotoTagging) && (
             <div className="space-y-2">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[#6b6560]">Foto</p>
+              <p className="text-[11px] font-bold uppercase tracking-wide text-[#6B7280]">Foto</p>
               <div className="flex gap-3 flex-wrap">
                 {obj.fotoAlat && (
                   <div>
-                    <p className="text-[10px] text-[#a09b96] mb-1">Foto Alat</p>
-                    <img src={resolveFileUrl(obj.fotoAlat)} alt="Foto Alat" className="w-28 h-28 object-cover rounded-xl border border-[#e5e0db]" />
+                    <p className="text-[10px] text-[#9CA3AF] mb-1">Foto Alat</p>
+                    <img src={resolveFileUrl(obj.fotoAlat)} alt="Foto Alat" className="w-28 h-28 object-cover rounded-xl border border-[#E5E7EB]" />
                   </div>
                 )}
                 {obj.fotoTagging && (
                   <div>
-                    <p className="text-[10px] text-[#a09b96] mb-1">Foto Tagging</p>
-                    <img src={resolveFileUrl(obj.fotoTagging)} alt="Foto Tagging" className="w-28 h-28 object-cover rounded-xl border border-[#e5e0db]" />
+                    <p className="text-[10px] text-[#9CA3AF] mb-1">Foto Tagging</p>
+                    <img src={resolveFileUrl(obj.fotoTagging)} alt="Foto Tagging" className="w-28 h-28 object-cover rounded-xl border border-[#E5E7EB]" />
                   </div>
                 )}
               </div>
@@ -718,13 +718,13 @@ function DetailModal({
           {/* ── Riwayat Pemeriksaan ── */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[12px] font-bold uppercase tracking-wide text-[#231f20]">
+              <p className="text-[12px] font-bold uppercase tracking-wide text-[#1F2937]">
                 Riwayat Pemeriksaan ({obj.riwayatPemeriksaan.length})
               </p>
               {isAdmin && (
                 <button
                   onClick={() => setAddingRiwayat((v) => !v)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-white bg-[#f15a22] rounded-lg hover:bg-[#d44d1a] transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-white bg-[#FF6B1A] rounded-lg hover:bg-[#E85D0F] transition-colors"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -736,15 +736,15 @@ function DetailModal({
 
             {/* Add riwayat form */}
             {addingRiwayat && (
-              <form onSubmit={handleAddRiwayat} className="bg-[#faf9f7] border border-[#e5e0db] rounded-xl p-4 mb-3 space-y-3">
+              <form onSubmit={handleAddRiwayat} className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-4 mb-3 space-y-3">
                 {riwayatError && <p className="text-[12px] text-red-600">{riwayatError}</p>}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1">Tanggal *</label>
+                    <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1">Tanggal *</label>
                     <input type="date" value={riwayatForm.tanggal} onChange={(e) => setRiwayatForm((p) => ({ ...p, tanggal: e.target.value }))} className={inputCls} required />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1">Hasil *</label>
+                    <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1">Hasil *</label>
                     <select value={riwayatForm.hasil} onChange={(e) => setRiwayatForm((p) => ({ ...p, hasil: e.target.value }))} className={inputCls} required>
                       <option value="">— Pilih —</option>
                       <option value="LAYAK">Layak</option>
@@ -754,16 +754,16 @@ function DetailModal({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1">Catatan</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1">Catatan</label>
                   <input type="text" value={riwayatForm.catatan} onChange={(e) => setRiwayatForm((p) => ({ ...p, catatan: e.target.value }))} className={inputCls} placeholder="Opsional" />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1">File Laporan (PDF)</label>
-                  <input type="file" accept=".pdf" ref={riwayatFileRef} className="w-full text-[13px] text-[#231f20] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#e5e0db] file:text-[#231f20]" />
+                  <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1">File Laporan (PDF)</label>
+                  <input type="file" accept=".pdf" ref={riwayatFileRef} className="w-full text-[13px] text-[#1F2937] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-semibold file:bg-[#E5E7EB] file:text-[#1F2937]" />
                 </div>
                 <div className="flex justify-end gap-2">
-                  <button type="button" onClick={() => setAddingRiwayat(false)} className="px-3 py-1.5 text-[12px] font-semibold bg-[#f1f0ee] text-[#231f20] rounded-lg hover:bg-[#e5e0db]">Batal</button>
-                  <button type="submit" disabled={savingRiwayat} className="px-3 py-1.5 text-[12px] font-semibold text-white bg-[#f15a22] rounded-lg hover:bg-[#d44d1a] disabled:opacity-60">
+                  <button type="button" onClick={() => setAddingRiwayat(false)} className="px-3 py-1.5 text-[12px] font-semibold bg-[#FAFAFA] text-[#1F2937] rounded-lg hover:bg-[#E5E7EB]">Batal</button>
+                  <button type="submit" disabled={savingRiwayat} className="px-3 py-1.5 text-[12px] font-semibold text-white bg-[#FF6B1A] rounded-lg hover:bg-[#E85D0F] disabled:opacity-60">
                     {savingRiwayat ? 'Menyimpan...' : 'Simpan'}
                   </button>
                 </div>
@@ -772,14 +772,14 @@ function DetailModal({
 
             {/* Riwayat list */}
             {obj.riwayatPemeriksaan.length === 0 ? (
-              <p className="text-[13px] text-[#a09b96] text-center py-4">Belum ada riwayat pemeriksaan</p>
+              <p className="text-[13px] text-[#9CA3AF] text-center py-4">Belum ada riwayat pemeriksaan</p>
             ) : (
               <div className="space-y-2">
                 {obj.riwayatPemeriksaan.map((r) => (
-                  <div key={r.id} className="flex items-start justify-between gap-3 p-3 bg-[#faf9f7] border border-[#e5e0db] rounded-xl">
+                  <div key={r.id} className="flex items-start justify-between gap-3 p-3 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[12px] font-bold text-[#231f20]">{formatTanggal(r.tanggal)}</span>
+                        <span className="text-[12px] font-bold text-[#1F2937]">{formatTanggal(r.tanggal)}</span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           r.hasil === 'LAYAK' ? 'bg-green-100 text-green-700' :
                           r.hasil === 'TIDAK_LAYAK' ? 'bg-red-100 text-red-700' :
@@ -788,9 +788,9 @@ function DetailModal({
                           {r.hasil.replace(/_/g, ' ')}
                         </span>
                       </div>
-                      {r.catatan && <p className="text-[12px] text-[#6b6560] truncate">{r.catatan}</p>}
+                      {r.catatan && <p className="text-[12px] text-[#6B7280] truncate">{r.catatan}</p>}
                       {r.fileLaporan && (
-                        <a href={resolveFileUrl(r.fileLaporan)} target="_blank" rel="noreferrer" className="text-[11px] text-[#f15a22] hover:underline">📎 Laporan</a>
+                        <a href={resolveFileUrl(r.fileLaporan)} target="_blank" rel="noreferrer" className="text-[11px] text-[#FF6B1A] hover:underline">📎 Laporan</a>
                       )}
                     </div>
                     {isAdmin && (
@@ -834,19 +834,19 @@ function ObjekK3Card({
     obj.statusKelayakan === 'LAYAK' ? 'bg-green-500' :
     obj.statusKelayakan === 'TIDAK_LAYAK' ? 'bg-red-500' :
     obj.statusKelayakan === 'PERLU_PERBAIKAN' ? 'bg-yellow-500' :
-    'bg-[#c5c0bb]';
+    'bg-[#E5E7EB]';
 
   return (
-    <div className="bg-white rounded-2xl border border-[#e5e0db] shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       <div className={`h-1 ${accentColor}`} />
       <div className="p-4">
         {/* Header */}
         <div className="mb-2.5">
-          <p className="text-[10px] font-bold text-[#f15a22] uppercase tracking-wide mb-0.5">
+          <p className="text-[10px] font-bold text-[#FF6B1A] uppercase tracking-wide mb-0.5">
             {kategoriLabel(obj.kategori)}
           </p>
-          <p className="font-bold text-[14px] text-[#231f20] leading-snug">{obj.namaAlat}</p>
-          <p className="text-[12px] text-[#6b6560]">{obj.noSeri} · {obj.perusahaan}</p>
+          <p className="font-bold text-[14px] text-[#1F2937] leading-snug">{obj.namaAlat}</p>
+          <p className="text-[12px] text-[#6B7280]">{obj.noSeri} · {obj.perusahaan}</p>
         </div>
 
         {/* Badges */}
@@ -856,7 +856,7 @@ function ObjekK3Card({
         </div>
 
         {/* Info */}
-        <div className="space-y-1 text-[12px] text-[#6b6560] mb-3">
+        <div className="space-y-1 text-[12px] text-[#6B7280] mb-3">
           <div className="flex items-center gap-1.5">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
@@ -873,10 +873,10 @@ function ObjekK3Card({
 
         {/* Sisa Hari */}
         {obj.tanggalBerlaku && (
-          <div className="bg-[#faf9f7] border border-[#e5e0db] rounded-xl px-3 py-2 mb-3 flex items-center justify-between">
-            <span className="text-[11px] text-[#a09b96]">Berlaku s.d.</span>
+          <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl px-3 py-2 mb-3 flex items-center justify-between">
+            <span className="text-[11px] text-[#9CA3AF]">Berlaku s.d.</span>
             <div className="text-right">
-              <p className="text-[12px] font-semibold text-[#231f20]">{formatTanggal(obj.tanggalBerlaku)}</p>
+              <p className="text-[12px] font-semibold text-[#1F2937]">{formatTanggal(obj.tanggalBerlaku)}</p>
               {obj.sisaHari != null && (
                 <p className={`text-[11px] font-bold ${sisaHariColor(obj.sisaHari)}`}>
                   {obj.sisaHari < 0 ? `Kadaluarsa ${Math.abs(obj.sisaHari)}h` : `${obj.sisaHari} hari lagi`}
@@ -889,13 +889,13 @@ function ObjekK3Card({
         {/* Actions */}
         <div className="flex gap-2">
           <button onClick={onDetail}
-            className="flex-1 py-2 text-[12px] font-semibold text-white bg-[#231f20] rounded-xl hover:bg-[#3d3838] transition-colors">
+            className="flex-1 py-2 text-[12px] font-semibold text-white bg-[#1F2937] rounded-xl hover:bg-[#3d3838] transition-colors">
             Detail
           </button>
           {isAdmin && (
             <>
               <button onClick={onEdit}
-                className="px-2.5 py-2 text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors" title="Edit">
+                className="px-2.5 py-2 text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors" title="Edit">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                   <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -1037,16 +1037,16 @@ function EquipmentSafetyPageInner() {
     <style>
       body{font-family:Arial,sans-serif;font-size:11px;color:#1f2937;padding:16px}
       @media print{body{padding:4mm;font-size:10px}.no-print{display:none!important}@page{margin:8mm;size:A3 landscape}}
-      .header{background:#231f20;color:white;padding:14px 18px;margin-bottom:12px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
+      .header{background:#1F2937;color:white;padding:14px 18px;margin-bottom:12px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
       .header h1{font-size:16px;margin:0 0 3px}.header p{font-size:10px;color:#9ca3af;margin:0}
-      .print-btn{background:#f15a22;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-bottom:12px}
+      .print-btn{background:#FF6B1A;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-bottom:12px}
       table{border-collapse:collapse;width:100%;min-width:900px}
-      th{background:#231f20;color:white;padding:8px 10px;text-align:left;font-size:11px;position:sticky;top:0}
+      th{background:#1F2937;color:white;padding:8px 10px;text-align:left;font-size:11px;position:sticky;top:0}
       td{padding:7px 10px;border-bottom:1px solid #e5e7eb;vertical-align:middle}
     </style></head><body>
     <div class="header">
       <div><h1>Daftar Objek K3</h1><p>Dicetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p></div>
-      <div style="text-align:right"><p style="font-size:14px;font-weight:700;color:#f15a22">${items.length} Objek</p><p>SMK3 Safety System</p></div>
+      <div style="text-align:right"><p style="font-size:14px;font-weight:700;color:#FF6B1A">${items.length} Objek</p><p>SMK3 Safety System</p></div>
     </div>
     <button class="print-btn no-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
     <table>
@@ -1063,19 +1063,19 @@ function EquipmentSafetyPageInner() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
+    <div className="min-h-screen bg-[#FAFAFA]">
       {/* ── Dark Header ── */}
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">
             Accident Prevention
           </p>
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="font-bold text-white text-[clamp(22px,4vw,38px)] leading-tight">
+              <h1 className="font-bold text-[#1F2937] text-[clamp(22px,4vw,38px)] leading-tight">
                 Manajemen Objek K3
               </h1>
-              <p className="text-[#8a8580] text-[13px] mt-1.5">
+              <p className="text-[#6B7280] text-[13px] mt-1.5">
                 Kelola aset K3 wajib sertifikasi: riksa uji berkala, dokumen kelayakan, dan riwayat pemeriksaan.
               </p>
             </div>
@@ -1091,17 +1091,17 @@ function EquipmentSafetyPageInner() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
           {/* Search */}
           <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a09b96]" width="15" height="15"
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" width="15" height="15"
               viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input
               type="text" value={search} onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari nama alat, no seri, lokasi..."
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]">
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -1112,7 +1112,7 @@ function EquipmentSafetyPageInner() {
           {/* Export */}
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#c5c0bb] text-[#231f20] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -1125,7 +1125,7 @@ function EquipmentSafetyPageInner() {
           {isAdmin && (
             <button
               onClick={() => { setEditing(null); setShowForm(true); }}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors whitespace-nowrap"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors whitespace-nowrap"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -1140,7 +1140,7 @@ function EquipmentSafetyPageInner() {
           <select
             value={filters.kategori ?? ''}
             onChange={(e) => setFilter('kategori', e.target.value)}
-            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] transition-colors"
+            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] transition-colors"
           >
             <option value="">Semua Kategori</option>
             {KATEGORI_OPTIONS.map((k) => (
@@ -1151,7 +1151,7 @@ function EquipmentSafetyPageInner() {
           <select
             value={filters.perusahaan ?? ''}
             onChange={(e) => setFilter('perusahaan', e.target.value)}
-            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] transition-colors"
+            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] transition-colors"
           >
             <option value="">Semua Perusahaan</option>
             {PERUSAHAAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -1160,7 +1160,7 @@ function EquipmentSafetyPageInner() {
           <select
             value={filters.statusKelayakan ?? ''}
             onChange={(e) => setFilter('statusKelayakan', e.target.value)}
-            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] transition-colors"
+            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] transition-colors"
           >
             <option value="">Semua Status Kelayakan</option>
             <option value="LAYAK">Layak</option>
@@ -1173,28 +1173,28 @@ function EquipmentSafetyPageInner() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white rounded-2xl border border-[#e5e0db] h-52 animate-pulse" />
+              <div key={i} className="bg-white rounded-2xl border border-[#E5E7EB] h-52 animate-pulse" />
             ))}
           </div>
         ) : loadError ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-[14px] font-semibold text-[#231f20] mb-2">{loadError}</p>
-            <button onClick={load} className="text-[13px] text-[#f15a22] hover:underline">Coba lagi</button>
+            <p className="text-[14px] font-semibold text-[#1F2937] mb-2">{loadError}</p>
+            <button onClick={load} className="text-[13px] text-[#FF6B1A] hover:underline">Coba lagi</button>
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#f1f0ee] flex items-center justify-center mb-4">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+            <div className="w-16 h-16 rounded-2xl bg-[#FAFAFA] flex items-center justify-center mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
                 <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
                 <line x1="12" y1="12" x2="12" y2="16"/>
                 <line x1="10" y1="14" x2="14" y2="14"/>
               </svg>
             </div>
-            <p className="font-semibold text-[#231f20] text-[14px] mb-1">
+            <p className="font-semibold text-[#1F2937] text-[14px] mb-1">
               {search || Object.values(filters).some(Boolean) ? 'Tidak ada hasil' : 'Belum ada objek K3'}
             </p>
-            <p className="text-[#6b6560] text-[13px]">
+            <p className="text-[#6B7280] text-[13px]">
               {search || Object.values(filters).some(Boolean) ? 'Coba ubah filter atau kata kunci' : 'Klik "Tambah Objek K3" untuk mulai'}
             </p>
           </div>

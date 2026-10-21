@@ -6,8 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "Safety Complain", href: "/contact" },
+  { name: "HOME", href: "/" },
+  { name: "SAFETY COMPLAIN", href: "/contact" },
 ];
 
 export function Navbar() {
@@ -57,42 +57,39 @@ export function Navbar() {
   const userInitial = user?.name?.charAt(0).toUpperCase() ?? "U";
 
   const linkClass = (href: string) =>
-    `font-barlow-condensed text-[12px] tracking-[0.1em] uppercase px-3 py-2 transition-colors ${
+    `text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors ${
       isActive(href)
-        ? "text-[#f15a22]"
-        : "text-[#c5c0bb] hover:text-white"
+        ? "text-[#FF6B1A] bg-[#FFF1E8]"
+        : "text-[#4B5563] hover:text-[#111827] hover:bg-gray-100"
     }`;
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#231f20] border-b-[3px] border-b-[#f15a22]">
-        <div className="h-[72px] flex items-center justify-between px-5 md:px-10">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] shadow-xs">
+        <div className="h-[72px] flex items-center justify-between px-5 md:px-10 max-w-7xl mx-auto">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 flex-shrink-0">
-            <div className="w-9 h-9 bg-[#f15a22] flex items-center justify-center
-                            text-white font-barlow-condensed font-extrabold text-base">
-              
-            </div>
+          <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
+            {/* <div className="w-9 h-9 bg-[#FF6B1A] rounded-xl flex items-center justify-center
+                            text-white font-bold text-sm shadow-xs ring-2 ring-[#FFF1E8]">
+              K3
+            </div> */}
             <div className="hidden sm:block">
-              <div className="font-barlow-condensed font-bold text-sm text-white
-                              uppercase tracking-wider leading-tight">
-                ERM Department
+              <div className="font-bold text-sm text-[#1F2937] leading-tight group-hover:text-[#FF6B1A] transition-colors">
+                ERM DEPARTMENT
               </div>
-              <div className="font-barlow-condensed text-[10px] text-[#c5c0bb]
-                              tracking-[0.12em] uppercase">
+              <div className="text-[10px] text-[#6B7280] font-medium tracking-wide uppercase">
                 PT. QMB New Energy Materials
               </div>
             </div>
             {/* Mobile fallback */}
-            <div className="sm:hidden font-barlow-condensed font-bold text-xs
-                            text-white uppercase tracking-wider">
-              ERM Department
+            <div className="sm:hidden font-bold text-xs text-[#1F2937] uppercase tracking-wider">
+              ERM DEPARTMENT
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1.5">
 
             {/* Nav links */}
             {navLinks.map(link => (
@@ -102,17 +99,15 @@ export function Navbar() {
             ))}
 
             {/* Divider */}
-            <div className="w-px h-5 bg-[#3a3535] mx-2" />
+            <div className="w-px h-5 bg-[#E5E7EB] mx-2" />
 
             {/* Auth area */}
             {isAuthenticated ? (
               <div className="flex items-center gap-2 ml-1">
-                {/* Tombol Dashboard — jelas dan mudah ditemukan */}
+                {/* Tombol Dashboard */}
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-1.5 font-barlow-condensed text-[12px]
-                             tracking-[0.08em] uppercase px-3 py-1.5 bg-[#f15a22]
-                             text-white hover:bg-[#f7941d] transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 bg-[#FF6B1A] text-white hover:bg-[#E85D0F] rounded-lg shadow-xs hover:shadow transition-all"
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
@@ -125,64 +120,56 @@ export function Navbar() {
                 <div className="relative" ref={avatarRef}>
                   <button
                     onClick={() => setAvatarOpen(prev => !prev)}
-                    className="w-8 h-8 rounded-full bg-[#3a3535] border border-[#5a5555] flex items-center
-                               justify-center text-white font-barlow-condensed
-                               font-bold text-sm hover:border-[#f15a22] transition-colors"
+                    className="w-8 h-8 rounded-full bg-[#FFF1E8] border border-[#FF6B1A]/30 flex items-center
+                               justify-center text-[#FF6B1A] font-bold text-xs hover:border-[#FF6B1A] transition-colors shadow-xs"
+                    aria-label="User menu"
                   >
                     {userInitial}
                   </button>
 
                   {avatarOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-52
-                                    bg-[#231f20] border border-[#3a3535]
-                                    shadow-lg py-1 z-50">
+                    <div className="absolute top-full right-0 mt-2 w-56
+                                    bg-white border border-[#E5E7EB] rounded-2xl
+                                    shadow-xl py-1.5 z-50 animate-slide-in">
                       {/* User info */}
-                      <div className="px-4 py-2.5 border-b border-[#3a3535]">
-                        <div className="font-barlow-condensed font-bold text-[12px]
-                                        text-white uppercase tracking-wide truncate">
+                      <div className="px-4 py-3 bg-[#FAFAFA] border-b border-[#E5E7EB] mb-1">
+                        <div className="font-bold text-xs text-[#1F2937] truncate">
                           {user?.name}
                         </div>
-                        <div className="text-[11px] text-[#6b6560] truncate">
+                        <div className="text-[11px] text-[#6B7280] truncate mt-0.5">
                           {user?.role} · {user?.email}
                         </div>
                       </div>
 
-                      <Link
-                        href="/dashboard"
-                        className="flex items-center gap-2 px-4 py-2.5
-                                   font-barlow-condensed text-[12px] tracking-[0.08em]
-                                   uppercase text-[#c5c0bb] hover:text-white
-                                   hover:bg-white/5 transition-colors"
-                      >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                        </svg>
-                        Dashboard
-                      </Link>
-
-                      {isAdmin && (
+                      <div className="p-1 space-y-0.5">
                         <Link
-                          href="/admin"
-                          className="flex items-center gap-2 px-4 py-2.5
-                                     font-barlow-condensed text-[12px] tracking-[0.08em]
-                                     uppercase text-[#f15a22] hover:bg-white/5
-                                     transition-colors"
+                          href="/dashboard"
+                          className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-[#4B5563] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
                         >
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/>
+                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
                           </svg>
-                          Admin Panel
+                          Dashboard
                         </Link>
-                      )}
 
-                      <div className="border-t border-[#3a3535] mt-1 pt-1">
+                        {isAdmin && (
+                          <Link
+                            href="/admin"
+                            className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/>
+                            </svg>
+                            Admin Panel
+                          </Link>
+                        )}
+                      </div>
+
+                      <div className="border-t border-[#E5E7EB] pt-1 px-1">
                         <button
                           onClick={handleLogout}
-                          className="flex items-center gap-2 w-full px-4 py-2.5
-                                     font-barlow-condensed text-[12px] tracking-[0.08em]
-                                     uppercase text-[#c5c0bb] hover:text-white
-                                     hover:bg-white/5 transition-colors"
+                          className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -199,60 +186,65 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="font-barlow-condensed text-[12px] tracking-[0.1em]
-                           uppercase text-[#f15a22] px-3 py-2
-                           hover:text-white transition-colors ml-1"
+                className="text-xs font-semibold text-[#1F2937] px-4 py-2 rounded-lg border border-[#E5E7EB] hover:border-[#FF6B1A] hover:text-[#FF6B1A] hover:bg-[#FFF1E8]/40 transition-all ml-1 shadow-xs"
               >
-                Login
+                LOGIN
               </Link>
             )}
           </div>
 
           {/* Hamburger */}
           <button
-            className="lg:hidden flex flex-col gap-1.5 p-2 z-50"
+            className="lg:hidden p-2 rounded-lg text-[#1F2937] hover:bg-gray-100 transition-colors z-50"
             aria-label="Toggle menu"
             onClick={() => setMobileOpen(prev => !prev)}
           >
-            <span className={`block w-6 h-0.5 bg-white transition-all duration-300
-                              ${mobileOpen ? "rotate-45 translate-y-2" : ""}`} />
-            <span className={`block w-6 h-0.5 bg-white transition-all duration-300
-                              ${mobileOpen ? "opacity-0" : ""}`} />
-            <span className={`block w-6 h-0.5 bg-white transition-all duration-300
-                              ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              {mobileOpen ? (
+                <>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </>
+              ) : (
+                <>
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </>
+              )}
+            </svg>
           </button>
         </div>
       </nav>
 
       {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300
+        className={`fixed inset-0 bg-black/40 backdrop-blur-xs z-40 lg:hidden transition-opacity duration-300
                     ${mobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={() => setMobileOpen(false)}
       />
 
       {/* Mobile drawer */}
       <div
-        className={`fixed top-[72px] right-0 bottom-0 w-[280px] bg-[#231f20] z-40
-                    lg:hidden transform transition-transform duration-300 overflow-y-auto
+        className={`fixed top-[72px] right-0 bottom-0 w-[280px] bg-white border-l border-[#E5E7EB] z-40
+                    lg:hidden transform transition-transform duration-300 overflow-y-auto shadow-2xl
                     ${mobileOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="py-4">
 
           {/* User info jika login */}
           {isAuthenticated && (
-            <div className="px-5 pb-4 mb-2 border-b border-[#3a3535]">
+            <div className="px-5 pb-4 mb-2 border-b border-[#E5E7EB]">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-[#f15a22] rounded-full flex items-center
-                                justify-content text-white font-barlow-condensed
-                                font-bold text-sm flex-shrink-0 justify-center">
+                <div className="w-9 h-9 bg-[#FFF1E8] border border-[#FF6B1A]/30 rounded-full flex items-center
+                                justify-center text-[#FF6B1A] font-bold text-sm flex-shrink-0 shadow-xs">
                   {userInitial}
                 </div>
                 <div className="overflow-hidden">
-                  <div className="font-barlow-condensed font-bold text-sm text-white truncate">
+                  <div className="font-bold text-sm text-[#1F2937] truncate">
                     {user?.name}
                   </div>
-                  <div className="text-[11px] text-[#6b6560] truncate">
+                  <div className="text-[11px] text-[#6B7280] truncate">
                     {user?.email}
                   </div>
                 </div>
@@ -261,34 +253,31 @@ export function Navbar() {
           )}
 
           {/* Nav links */}
-          <div className="px-3 space-y-0.5">
+          <div className="px-3 space-y-1">
             {navLinks.map(link => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`block font-barlow-condensed font-semibold text-sm
-                            tracking-wider uppercase py-2.5 px-4 transition-all
+                className={`block font-semibold text-sm py-2.5 px-4 rounded-lg transition-all
                             ${isActive(link.href)
-                              ? "bg-[#f15a22] text-white"
-                              : "text-[#c5c0bb] hover:bg-white/5 hover:text-white"
+                              ? "bg-[#FFF1E8] text-[#FF6B1A]"
+                              : "text-[#4B5563] hover:bg-gray-100 hover:text-[#1F2937]"
                             }`}
               >
                 {link.name}
               </Link>
             ))}
-
           </div>
 
           {/* Auth */}
-          <div className="mt-4 pt-4 border-t border-[#3a3535] px-3 space-y-0.5">
+          <div className="mt-4 pt-4 border-t border-[#E5E7EB] px-3 space-y-1.5">
             {isAuthenticated ? (
               <>
-                {/* Tombol Dashboard — prominent */}
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-2 font-barlow-condensed font-semibold
-                             text-sm tracking-wider uppercase py-2.5 px-4
-                             bg-[#f15a22] text-white hover:bg-[#f7941d] transition-all rounded-sm mb-2"
+                  className="flex items-center justify-center gap-2 font-semibold
+                             text-sm py-2.5 px-4 bg-[#FF6B1A] text-white hover:bg-[#E85D0F]
+                             transition-all rounded-lg shadow-xs"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
@@ -299,18 +288,14 @@ export function Navbar() {
                 {isAdmin && (
                   <Link
                     href="/admin"
-                    className="block font-barlow-condensed font-semibold text-sm
-                               tracking-wider uppercase py-2.5 px-4 text-[#f15a22]
-                               hover:bg-white/5 transition-all"
+                    className="block font-semibold text-sm py-2.5 px-4 text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-all"
                   >
                     Admin Panel
                   </Link>
                 )}
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left font-barlow-condensed font-semibold
-                             text-sm tracking-wider uppercase py-2.5 px-4 text-[#c5c0bb]
-                             hover:bg-white/5 hover:text-white transition-all"
+                  className="block w-full text-left font-semibold text-sm py-2.5 px-4 text-red-600 hover:bg-red-50 rounded-lg transition-all"
                 >
                   Logout
                 </button>
@@ -318,11 +303,9 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="block font-barlow-condensed font-semibold text-sm
-                           tracking-wider uppercase py-2.5 px-4 text-[#f15a22]
-                           hover:bg-white/5 transition-all"
+                className="block text-center font-semibold text-sm py-2.5 px-4 bg-[#FF6B1A] text-white hover:bg-[#E85D0F] rounded-lg transition-all shadow-xs"
               >
-                Login
+                Sign In
               </Link>
             )}
           </div>

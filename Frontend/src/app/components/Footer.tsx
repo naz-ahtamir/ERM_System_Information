@@ -2,30 +2,33 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="bg-[#231f20] border-t-[3px] border-t-[#f15a22] pt-12 pb-8 px-5 md:px-10">
+    <footer className="bg-[#FAFAFA] border-t border-[#E5E7EB] pt-14 pb-8 px-5 md:px-10">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-10 md:gap-16 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-10 md:gap-16 mb-12">
           <div>
-            <div className="font-display font-bold text-lg uppercase text-white tracking-wider mb-4">
-              ERM Department
-              <span className="block font-normal text-[11px] text-[#c5c0bb] tracking-wider">
-                PT. QMB New Energy Materials
-              </span>
+            <div className="flex items-center gap-2.5 mb-3">
+              {/* <div className="w-8 h-8 rounded-lg bg-[#FF6B1A] flex items-center justify-center text-white font-bold text-xs shadow-xs">
+                K3
+              </div> */}
+              <span className="font-bold text-base text-[#1F2937] tracking-tight">ERM DEPARTMENT</span>
             </div>
-            <p className="text-sm text-[#c5c0bb] max-w-xs leading-relaxed">
+            <p className="font-medium text-xs text-[#6B7280] uppercase tracking-wider mb-3">
+              PT. QMB New Energy Materials
+            </p>
+            <p className="text-sm text-[#6B7280] max-w-sm leading-relaxed">
               Committed to zero fatality and zero harm across all smelting
               operations. Transparent public reporting since 2019.
             </p>
           </div>
           <div>
-            <div className="font-display text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-5">
+            <div className="text-xs font-bold tracking-wider uppercase text-[#FF6B1A] mb-4">
               Navigation
             </div>
             <ul className="space-y-2.5">
               <li>
                 <Link
                   href="/about"
-                  className="text-sm text-[#c5c0bb] hover:text-white transition"
+                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
                 >
                   About & Policy
                 </Link>
@@ -33,7 +36,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/programs"
-                  className="text-sm text-[#c5c0bb] hover:text-white transition"
+                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
                 >
                   Programs
                 </Link>
@@ -41,7 +44,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/gallery"
-                  className="text-sm text-[#c5c0bb] hover:text-white transition"
+                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
                 >
                   Gallery & Resources
                 </Link>
@@ -49,7 +52,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/dashboard"
-                  className="text-sm text-[#c5c0bb] hover:text-white transition"
+                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
                 >
                   KPI Dashboard
                 </Link>
@@ -57,7 +60,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-sm text-[#c5c0bb] hover:text-white transition"
+                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
                 >
                   Report a Concern
                 </Link>
@@ -65,14 +68,14 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <div className="font-display text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-5">
+            <div className="text-xs font-bold tracking-wider uppercase text-[#FF6B1A] mb-4">
               Quick Downloads
             </div>
             <ul className="space-y-2.5">
               <li>
                 <a
                   href="/ohs-policy.pdf"
-                  className="text-sm text-[#c5c0bb] hover:text-white transition"
+                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
                 >
                   OHS Policy Document
                 </a>
@@ -80,7 +83,7 @@ export function Footer() {
               <li>
                 <a
                   href="/annual-report-2024.pdf"
-                  className="text-sm text-[#c5c0bb] hover:text-white transition"
+                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
                 >
                   Annual Report 2024
                 </a>
@@ -88,7 +91,7 @@ export function Footer() {
               <li>
                 <a
                   href="/esg-report-2024.pdf"
-                  className="text-sm text-[#c5c0bb] hover:text-white transition"
+                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
                 >
                   ESG Report 2024
                 </a>
@@ -96,7 +99,7 @@ export function Footer() {
               <li>
                 <a
                   href="/safety-alert.pdf"
-                  className="text-sm text-[#c5c0bb] hover:text-white transition"
+                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
                 >
                   Safety Alert Poster
                 </a>
@@ -104,13 +107,13 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t border-[#3a3535]">
-          <p className="text-xs text-[#6b6560]">
-            © 2025 ERM Department. All rights reserved.
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t border-[#E5E7EB]">
+          <p className="text-xs text-[#6B7280]">
+            © 2026 ERM Department. All rights reserved.
           </p>
-          <span className="font-display text-[11px] font-bold tracking-wide text-[#f7941d]">
-            Compliant: PP No. 55/2010 • ISO 45001:2018
-          </span>
+          {/* <span className="text-xs font-semibold tracking-wide text-[#6B7280]">
+            Compliant: <span className="text-[#FF6B1A]">PP No. 50/2012 • ISO 45001:2018</span>
+          </span> */}
         </div>
       </div>
     </footer>

@@ -305,7 +305,7 @@ export default function NotificationsPage() {
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllAsRead}
-              className="px-3 py-1.5 text-sm text-[#f15a22] border border-[#f15a22] rounded-lg hover:bg-[#f15a22] hover:text-white transition-colors font-medium"
+              className="px-3 py-1.5 text-sm text-[#FF6B1A] border border-[#FF6B1A] rounded-lg hover:bg-[#FF6B1A] hover:text-white transition-colors font-medium shadow-xs"
             >
               Tandai semua dibaca
             </button>
@@ -323,7 +323,7 @@ export default function NotificationsPage() {
               onClick={() => setFilterRead(f)}
               className={`px-3 py-1.5 font-medium transition-colors ${
                 filterRead === f
-                  ? 'bg-[#f15a22] text-white'
+                  ? 'bg-[#FF6B1A] text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -422,7 +422,7 @@ export default function NotificationsPage() {
             {(filterRead !== 'all' || filterType !== 'all') && (
               <button
                 onClick={() => { setFilterRead('all'); setFilterType('all'); }}
-                className="mt-3 text-sm text-[#f15a22] hover:underline"
+                className="mt-3 text-sm text-[#FF6B1A] hover:underline"
               >
                 Reset filter
               </button>

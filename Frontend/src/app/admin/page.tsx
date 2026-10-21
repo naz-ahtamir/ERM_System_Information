@@ -88,20 +88,20 @@ function EditUserModal({
     }
   };
 
-  const inputCls = "w-full px-3.5 py-2.5 bg-white border border-[#c5c0bb] text-[14px] text-[#231f20] rounded-lg focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]";
-  const labelCls = "block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1.5";
+  const inputCls = "w-full px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[14px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] transition-colors";
+  const labelCls = "block text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full max-w-lg bg-white rounded-xl shadow-2xl border border-[#e5e0db] max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-lg bg-white rounded-xl shadow-2xl border border-[#E5E7EB] max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] sticky top-0 bg-white z-10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] sticky top-0 bg-white z-10">
           <div>
-            <h2 className="font-bold text-[16px] text-[#231f20]">Edit Profil User</h2>
-            <p className="text-[12px] text-[#6b6560] mt-0.5">{user.idKaryawan} &middot; {user.nama}</p>
+            <h2 className="font-bold text-[16px] text-[#1F2937]">Edit Profil User</h2>
+            <p className="text-[12px] text-[#6B7280] mt-0.5">{user.idKaryawan} &middot; {user.nama}</p>
           </div>
           <button onClick={onClose}
-            className="p-2 text-[#6b6560] hover:text-[#231f20] hover:bg-[#f1f0ee] rounded-lg transition-colors">
+            className="p-2 text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F4F6] rounded-lg transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -133,7 +133,7 @@ function EditUserModal({
 
           {/* ── Organisasi — dropdown bertingkat FK ── */}
           <div className="pt-2 border-t border-gray-100">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-3">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-3">
               Penempatan Organisasi (FK)
             </p>
 
@@ -195,11 +195,11 @@ function EditUserModal({
 
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={saving}
-              className="flex-1 py-2.5 bg-[#f15a22] text-white font-bold text-[13px] rounded-lg hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+              className="flex-1 py-2.5 bg-[#FF6B1A] text-white font-semibold text-[13px] rounded-lg hover:bg-[#E85D0F] transition-colors disabled:opacity-60 shadow-xs">
               {saving ? "Menyimpan..." : "Simpan Perubahan"}
             </button>
             <button type="button" onClick={onClose}
-              className="flex-1 py-2.5 bg-[#e5e0db] text-[#231f20] font-bold text-[13px] rounded-lg hover:bg-[#d0cbc6] transition-colors">
+              className="flex-1 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] font-semibold text-[13px] rounded-lg hover:bg-[#F9FAFB] transition-colors">
               Batal
             </button>
           </div>
@@ -243,16 +243,16 @@ function AssignSupervisorModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-2xl border border-[#e5e0db]">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-2xl border border-[#E5E7EB]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
           <div>
-            <h2 className="font-bold text-[16px] text-[#231f20]">Assign Supervisor</h2>
-            <p className="text-[12px] text-[#6b6560] mt-0.5">{user.idKaryawan} · {user.nama}</p>
+            <h2 className="font-bold text-[16px] text-[#1F2937]">Assign Supervisor</h2>
+            <p className="text-[12px] text-[#6B7280] mt-0.5">{user.idKaryawan} · {user.nama}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-[#6b6560] hover:text-[#231f20] hover:bg-[#f1f0ee] rounded-lg transition-colors"
+            className="p-2 text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F4F6] rounded-lg transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -263,24 +263,24 @@ function AssignSupervisorModal({
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Info supervisor saat ini */}
-          <div className="p-3 bg-[#faf9f7] border border-[#e5e0db] rounded-lg text-[12px]">
-            <span className="text-[#6b6560] font-semibold uppercase tracking-wide text-[10px]">Supervisor Saat Ini</span>
-            <p className="text-[#231f20] font-medium mt-1">
+          <div className="p-3 bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg text-[12px]">
+            <span className="text-[#6B7280] font-semibold uppercase tracking-wider text-[10px]">Supervisor Saat Ini</span>
+            <p className="text-[#1F2937] font-medium mt-1">
               {currentSupervisor
                 ? `${currentSupervisor.nama} (${currentSupervisor.idKaryawan})`
-                : <span className="text-[#6b6560] italic">Belum ada supervisor</span>}
+                : <span className="text-[#6B7280] italic">Belum ada supervisor</span>}
             </p>
           </div>
 
           {/* Dropdown pilih supervisor */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1.5">
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">
               Pilih Supervisor Baru
             </label>
             <select
               value={selected}
               onChange={(e) => setSelected(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-white border border-[#c5c0bb] text-[14px] text-[#231f20] rounded-lg focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+              className="w-full px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[14px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] transition-colors"
             >
               <option value="">— Tidak ada supervisor —</option>
               {supervisors
@@ -308,14 +308,14 @@ function AssignSupervisorModal({
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 py-2.5 bg-[#f15a22] text-white font-bold text-[13px] rounded-lg hover:bg-[#d44d1a] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex-1 py-2.5 bg-[#FF6B1A] text-white font-semibold text-[13px] rounded-lg hover:bg-[#E85D0F] transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-xs"
             >
               {saving ? "Menyimpan..." : "Simpan Supervisor"}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 bg-[#e5e0db] text-[#231f20] font-bold text-[13px] rounded-lg hover:bg-[#d0cbc6] transition-colors"
+              className="flex-1 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] font-semibold text-[13px] rounded-lg hover:bg-[#F9FAFB] transition-colors"
             >
               Batal
             </button>
@@ -546,9 +546,9 @@ export default function AdminPage() {
     return (
       <div className="p-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 w-48 bg-[#e5e0db] rounded" />
-          <div className="h-4 w-72 bg-[#e5e0db] rounded" />
-          <div className="h-64 bg-[#e5e0db] rounded-lg mt-6" />
+          <div className="h-8 w-48 bg-[#E5E7EB] rounded" />
+          <div className="h-4 w-72 bg-[#E5E7EB] rounded" />
+          <div className="h-64 bg-[#E5E7EB] rounded-lg mt-6" />
         </div>
       </div>
     );
@@ -557,7 +557,7 @@ export default function AdminPage() {
   if (!isAuthenticated || user?.role !== "admin") return null;
 
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
+    <div className="min-h-screen bg-[#FAFAFA]">
       {/* Toast */}
       {toast && (
         <div
@@ -589,10 +589,10 @@ export default function AdminPage() {
       )}
 
       {/* Page Header */}
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-2 text-[11px] text-[#6b6560] mb-4 flex-wrap">
-            <Link href="/" className="hover:text-[#f15a22] transition-colors flex items-center gap-1">
+          <div className="flex items-center gap-2 text-[12px] text-[#6B7280] mb-4 flex-wrap">
+            <Link href="/" className="hover:text-[#FF6B1A] transition-colors flex items-center gap-1">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
@@ -600,26 +600,26 @@ export default function AdminPage() {
               Home
             </Link>
             <span>/</span>
-            <Link href="/dashboard" className="hover:text-[#f15a22] transition-colors">Dashboard</Link>
+            <Link href="/dashboard" className="hover:text-[#FF6B1A] transition-colors">Dashboard</Link>
             <span>/</span>
-            <span className="text-[#f15a22]">Admin Panel</span>
+            <span className="text-[#FF6B1A] font-medium">Admin Panel</span>
           </div>
 
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">Admin Panel</div>
-              <h1 className="font-bold text-white text-[clamp(28px,5vw,48px)] leading-tight">
+              <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">Admin Panel</div>
+              <h1 className="font-bold text-[#1F2937] text-[clamp(24px,4vw,36px)] leading-tight">
                 User Management
               </h1>
-              <p className="text-[#8a8580] text-[13px] mt-1">
+              <p className="text-[#6B7280] text-[13px] mt-1">
                 Kelola pengguna dan persetujuan akun sistem SMK3
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <Link href="/dashboard" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#3a3535] text-[#c5c0bb] text-[12px] font-medium rounded-lg hover:bg-[#f15a22] hover:text-white transition-colors">
+              <Link href="/dashboard" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-[#E5E7EB] text-[#1F2937] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
                 Dashboard
               </Link>
-              <Link href="/" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#3a3535] text-[#c5c0bb] text-[12px] font-medium rounded-lg hover:bg-[#f15a22] hover:text-white transition-colors">
+              <Link href="/" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-[#E5E7EB] text-[#1F2937] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
                 Home
               </Link>
             </div>
@@ -633,27 +633,27 @@ export default function AdminPage() {
 
           {/* Stats Row */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-white rounded-xl border border-[#e5e0db] p-4 text-center">
-              <div className="text-[28px] font-bold text-[#231f20]">{users.length}</div>
-              <div className="text-[11px] text-[#6b6560] font-semibold uppercase tracking-wide mt-0.5">Total User</div>
+            <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 text-center shadow-xs">
+              <div className="text-[28px] font-bold text-[#1F2937]">{users.length}</div>
+              <div className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider mt-0.5">Total User</div>
             </div>
-            <div className="bg-white rounded-xl border border-[#e5e0db] p-4 text-center">
-              <div className="text-[28px] font-bold text-green-600">{activeCount}</div>
-              <div className="text-[11px] text-[#6b6560] font-semibold uppercase tracking-wide mt-0.5">Aktif</div>
+            <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 text-center shadow-xs">
+              <div className="text-[28px] font-bold text-emerald-600">{activeCount}</div>
+              <div className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider mt-0.5">Aktif</div>
             </div>
-            <div className="bg-white rounded-xl border border-[#e5e0db] p-4 text-center">
-              <div className="text-[28px] font-bold text-[#f15a22]">{inactiveCount}</div>
-              <div className="text-[11px] text-[#6b6560] font-semibold uppercase tracking-wide mt-0.5">Nonaktif</div>
+            <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 text-center shadow-xs">
+              <div className="text-[28px] font-bold text-[#FF6B1A]">{inactiveCount}</div>
+              <div className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider mt-0.5">Nonaktif</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-[#e5e0db]">
+          <div className="bg-white rounded-xl shadow-xs border border-[#E5E7EB]">
             {/* Panel Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[#e5e0db] flex-wrap gap-3">
-              <h2 className="font-bold text-[18px] text-[#231f20]">Daftar Pengguna</h2>
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[#E5E7EB] flex-wrap gap-3">
+              <h2 className="font-bold text-[18px] text-[#1F2937]">Daftar Pengguna</h2>
               <button
                 onClick={() => { setShowAddForm(!showAddForm); setError(""); }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white font-bold text-[13px] rounded-lg hover:bg-[#d44d1a] transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white font-semibold text-[13px] rounded-lg hover:bg-[#E85D0F] transition-colors shadow-xs"
               >
                 {showAddForm ? (
                   <>
@@ -675,8 +675,8 @@ export default function AdminPage() {
 
             {/* Add User Form */}
             {showAddForm && (
-              <div className="px-6 py-6 bg-[#faf9f7] border-b border-[#e5e0db]">
-                <h3 className="font-bold text-[15px] text-[#231f20] mb-4">Tambah Pengguna Baru</h3>
+              <div className="px-6 py-6 bg-[#FAFAFA] border-b border-[#E5E7EB]">
+                <h3 className="font-bold text-[15px] text-[#1F2937] mb-4">Tambah Pengguna Baru</h3>
                 <form onSubmit={handleAddUser} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
@@ -687,23 +687,23 @@ export default function AdminPage() {
                       { label: "Password *", field: "password", type: "password", placeholder: "Password" },
                     ].map(({ label, field, type, placeholder }) => (
                       <div key={field}>
-                        <label className="block text-[12px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">{label}</label>
+                        <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">{label}</label>
                         <input
                           type={type}
                           required
                           value={(newUser as any)[field]}
                           onChange={(e) => setNewUser({ ...newUser, [field]: e.target.value })}
-                          className="w-full px-3.5 py-2.5 bg-white border border-[#c5c0bb] text-[14px] text-[#231f20] rounded-lg focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                          className="w-full px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[14px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] transition-colors"
                           placeholder={placeholder}
                         />
                       </div>
                     ))}
                     <div>
-                      <label className="block text-[12px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Role *</label>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">Role *</label>
                       <select
                         value={newUser.role}
                         onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                        className="w-full px-3.5 py-2.5 bg-white border border-[#c5c0bb] text-[14px] text-[#231f20] rounded-lg focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22]"
+                        className="w-full px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[14px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] transition-colors"
                       >
                         <option value="user">User</option>
                         <option value="supervisor">Supervisor</option>
@@ -717,11 +717,11 @@ export default function AdminPage() {
                   )}
 
                   <div className="flex gap-3">
-                    <button type="submit" className="px-6 py-2.5 bg-[#f15a22] text-white font-bold text-[13px] rounded-lg hover:bg-[#d44d1a] transition-colors">
+                    <button type="submit" className="px-6 py-2.5 bg-[#FF6B1A] text-white font-semibold text-[13px] rounded-lg hover:bg-[#E85D0F] transition-colors shadow-xs">
                       Buat Pengguna
                     </button>
                     <button type="button" onClick={() => { setShowAddForm(false); setError(""); }}
-                      className="px-6 py-2.5 bg-[#e5e0db] text-[#231f20] font-bold text-[13px] rounded-lg hover:bg-[#d0cbc6] transition-colors">
+                      className="px-6 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] font-semibold text-[13px] rounded-lg hover:bg-[#F9FAFB] transition-colors">
                       Batal
                     </button>
                   </div>
@@ -729,12 +729,12 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* ── TASK 10 & 11: Filter + Search Bar ── */}
-            <div className="px-6 py-4 border-b border-[#e5e0db] flex flex-wrap items-center gap-3">
+            {/* Filter + Search Bar */}
+            <div className="px-6 py-4 border-b border-[#E5E7EB] flex flex-wrap items-center gap-3">
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
                 <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c5c0bb]"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
                   width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                 >
                   <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -744,10 +744,10 @@ export default function AdminPage() {
                   placeholder="Cari nama, ID karyawan, departemen..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-[#faf9f7] border border-[#e5e0db] text-[13px] text-[#231f20] rounded-lg focus:outline-none focus:border-[#f15a22] focus:ring-1 focus:ring-[#f15a22] placeholder:text-[#c5c0bb]"
+                  className="w-full pl-9 pr-4 py-2 bg-white border border-[#E5E7EB] text-[13px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] placeholder:text-[#9CA3AF] transition-colors"
                 />
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#c5c0bb] hover:text-[#231f20]">
+                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
@@ -756,15 +756,15 @@ export default function AdminPage() {
               </div>
 
               {/* Filter tabs */}
-              <div className="flex rounded-lg border border-[#e5e0db] overflow-hidden text-[12px] font-semibold">
+              <div className="flex rounded-lg border border-[#E5E7EB] overflow-hidden text-[12px] font-semibold">
                 {(["all", "active", "inactive"] as FilterStatus[]).map((f) => (
                   <button
                     key={f}
                     onClick={() => setFilterStatus(f)}
                     className={`px-4 py-2 transition-colors ${
                       filterStatus === f
-                        ? "bg-[#f15a22] text-white"
-                        : "bg-white text-[#6b6560] hover:bg-[#faf9f7]"
+                        ? "bg-[#FF6B1A] text-white"
+                        : "bg-white text-[#6B7280] hover:bg-[#FAFAFA]"
                     }`}
                   >
                     {f === "all" ? `Semua (${users.length})` : f === "active" ? `Aktif (${activeCount})` : `Nonaktif (${inactiveCount})`}
@@ -773,51 +773,51 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* ── User Table ── */}
+            {/* User Table */}
             <div className="p-6">
               {filteredUsers.length === 0 ? (
-                <div className="text-center py-12 text-[#6b6560] text-[13px]">
+                <div className="text-center py-12 text-[#6B7280] text-[13px]">
                   {searchQuery ? `Tidak ada hasil untuk "${searchQuery}"` : "Tidak ada pengguna ditemukan"}
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-[13px]">
                     <thead>
-                      <tr className="border-b border-[#e5e0db]">
+                      <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
                         {["Nama", "ID Karyawan", "Jabatan", "Departemen", "Supervisor", "Role", "Status", "Aksi"].map((h) => (
-                          <th key={h} className="text-left py-2 px-3 font-semibold text-[#6b6560] text-[11px] uppercase tracking-wide">
+                          <th key={h} className="text-left py-3 px-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wider">
                             {h}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#f1f0ee]">
+                    <tbody className="divide-y divide-[#E5E7EB]">
                       {filteredUsers.map((u) => {
                         const supervisorName = u.supervisorId
                           ? users.find((s) => s.id === u.supervisorId)?.nama
                           : null;
                         return (
-                        <tr key={u.id} className={`hover:bg-[#faf9f7] transition-colors ${!u.approved ? "opacity-60" : ""}`}>
-                          <td className="py-3 px-3 font-medium text-[#231f20]">{u.nama}</td>
-                          <td className="py-3 px-3 text-[#6b6560] font-mono text-[12px]">{u.idKaryawan}</td>
-                          <td className="py-3 px-3 text-[#6b6560]">{u.jabatan || "—"}</td>
-                          <td className="py-3 px-3 text-[#6b6560]">{u.departemen || "—"}</td>
+                        <tr key={u.id} className={`hover:bg-[#FAFAFA] transition-colors ${!u.approved ? "opacity-60" : ""}`}>
+                          <td className="py-3 px-3 font-medium text-[#1F2937]">{u.nama}</td>
+                          <td className="py-3 px-3 text-[#6B7280] font-mono text-[12px]">{u.idKaryawan}</td>
+                          <td className="py-3 px-3 text-[#6B7280]">{u.jabatan || "—"}</td>
+                          <td className="py-3 px-3 text-[#6B7280]">{u.departemen || "—"}</td>
                           {/* Kolom Supervisor */}
                           <td className="py-3 px-3">
                             {supervisorName ? (
-                              <span className="inline-flex items-center gap-1 text-[12px] text-[#231f20]">
-                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                              <span className="inline-flex items-center gap-1 text-[12px] text-[#1F2937]">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                                 {supervisorName}
                               </span>
                             ) : (
-                              <span className="text-[11px] text-[#c5c0bb] italic">Belum diset</span>
+                              <span className="text-[11px] text-[#9CA3AF] italic">Belum diset</span>
                             )}
                           </td>
                           <td className="py-3 px-3">
                             <select
                               value={u.role}
                               onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                              className="px-2.5 py-1.5 bg-white border border-[#c5c0bb] text-[12px] text-[#231f20] rounded focus:outline-none focus:border-[#f15a22]"
+                              className="px-2.5 py-1.5 bg-white border border-[#E5E7EB] text-[12px] text-[#1F2937] rounded focus:outline-none focus:border-[#FF6B1A] transition-colors"
                             >
                               <option value="user">User</option>
                               <option value="supervisor">Supervisor</option>
@@ -841,7 +841,7 @@ export default function AdminPage() {
                               <button
                                 onClick={() => setEditingUser(u)}
                                 title="Edit profil"
-                                className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-[#f15a22]/10 rounded-lg transition-colors"
+                                className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
                               >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -852,7 +852,7 @@ export default function AdminPage() {
                               <button
                                 onClick={() => setAssigningSupervisorUser(u)}
                                 title="Assign supervisor"
-                                className="p-1.5 text-[#6b6560] hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                className="p-1.5 text-[#6B7280] hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                               >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -867,8 +867,8 @@ export default function AdminPage() {
                                 title={u.approved ? "Nonaktifkan user" : "Aktifkan user"}
                                 className={`p-1.5 rounded-lg transition-colors ${
                                   u.approved
-                                    ? "text-[#6b6560] hover:text-red-600 hover:bg-red-50"
-                                    : "text-[#6b6560] hover:text-green-600 hover:bg-green-50"
+                                    ? "text-[#6B7280] hover:text-red-600 hover:bg-red-50"
+                                    : "text-[#6B7280] hover:text-green-600 hover:bg-green-50"
                                 }`}
                               >
                                 {u.approved ? (
@@ -895,7 +895,7 @@ export default function AdminPage() {
 
               {/* Result count */}
               {filteredUsers.length > 0 && (
-                <div className="mt-4 text-[12px] text-[#6b6560]">
+                <div className="mt-4 text-[12px] text-[#6B7280]">
                   Menampilkan {filteredUsers.length} dari {users.length} pengguna
                 </div>
               )}
@@ -905,9 +905,9 @@ export default function AdminPage() {
           {/* Quick links — menu admin lainnya */}
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link href="/admin/org-structure"
-              className="flex items-center gap-4 p-4 bg-white border border-[#e5e0db] rounded-xl hover:border-[#f15a22] hover:shadow-md transition-all group">
-              <div className="w-10 h-10 rounded-xl bg-[#f15a22]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#f15a22] transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f15a22" strokeWidth="2" className="group-hover:stroke-white transition-colors">
+              className="flex items-center gap-4 p-4 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#FF6B1A] hover:shadow-xs transition-all group">
+              <div className="w-10 h-10 rounded-xl bg-[#FFF1E8] flex items-center justify-center flex-shrink-0 group-hover:bg-[#FF6B1A] transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF6B1A" strokeWidth="2" className="group-hover:stroke-white transition-colors">
                   <rect x="2" y="7" width="20" height="14" rx="2"/>
                   <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
                   <line x1="12" y1="12" x2="12" y2="16"/>
@@ -915,17 +915,17 @@ export default function AdminPage() {
                 </svg>
               </div>
               <div>
-                <p className="font-bold text-[14px] text-[#231f20] group-hover:text-[#f15a22] transition-colors">Struktur Organisasi</p>
-                <p className="text-[12px] text-[#6b6560] mt-0.5">Kelola Pusat, Departemen, Divisi &amp; PIC</p>
+                <p className="font-bold text-[14px] text-[#1F2937] group-hover:text-[#FF6B1A] transition-colors">Struktur Organisasi</p>
+                <p className="text-[12px] text-[#6B7280] mt-0.5">Kelola Pusat, Departemen, Divisi &amp; PIC</p>
               </div>
-              <svg className="ml-auto text-[#c5c0bb] group-hover:text-[#f15a22] transition-colors flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="ml-auto text-[#9CA3AF] group-hover:text-[#FF6B1A] transition-colors flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="m9 18 6-6-6-6"/>
               </svg>
             </Link>
 
             <Link href="/admin/master-data"
-              className="flex items-center gap-4 p-4 bg-white border border-[#e5e0db] rounded-xl hover:border-[#f15a22] hover:shadow-md transition-all group">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-500 transition-colors">
+              className="flex items-center gap-4 p-4 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#FF6B1A] hover:shadow-xs transition-all group">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600 transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" className="group-hover:stroke-white transition-colors">
                   <ellipse cx="12" cy="5" rx="9" ry="3"/>
                   <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
@@ -933,10 +933,10 @@ export default function AdminPage() {
                 </svg>
               </div>
               <div>
-                <p className="font-bold text-[14px] text-[#231f20] group-hover:text-[#f15a22] transition-colors">Master Data</p>
-                <p className="text-[12px] text-[#6b6560] mt-0.5">Kelola data referensi sistem</p>
+                <p className="font-bold text-[14px] text-[#1F2937] group-hover:text-[#FF6B1A] transition-colors">Master Data</p>
+                <p className="text-[12px] text-[#6B7280] mt-0.5">Kelola data referensi sistem</p>
               </div>
-              <svg className="ml-auto text-[#c5c0bb] group-hover:text-[#f15a22] transition-colors flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="ml-auto text-[#9CA3AF] group-hover:text-[#FF6B1A] transition-colors flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="m9 18 6-6-6-6"/>
               </svg>
             </Link>
@@ -944,7 +944,7 @@ export default function AdminPage() {
 
           {/* Bottom navigation */}
           <div className="mt-6 flex items-center gap-3 flex-wrap">
-            <Link href="/dashboard" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#c5c0bb] text-[13px] text-[#231f20] font-medium rounded-lg hover:border-[#f15a22] hover:text-[#f15a22] transition-colors">
+            <Link href="/dashboard" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E5E7EB] text-[13px] text-[#1F2937] font-semibold rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m12 19-7-7 7-7" /><path d="M19 12H5" />
               </svg>

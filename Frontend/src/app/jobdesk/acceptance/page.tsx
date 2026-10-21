@@ -214,41 +214,41 @@ export default function JobDeskAcceptancePage() {
 
   return (
     <>
-      <div className="bg-[#231f20] py-[calc(72px+64px)] px-5 md:px-10 border-b-[4px] border-b-[#f15a22]">
+      <div className="bg-white py-[calc(72px+40px)] px-5 md:px-10 border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto">
-          <h1 className="font-barlow-condensed font-extrabold text-white uppercase text-[clamp(32px,5vw,56px)]">
+          <h1 className="font-barlow-condensed font-extrabold text-[#1F2937] uppercase text-[clamp(32px,5vw,56px)]">
             Penerimaan Job Desk
           </h1>
-          <p className="text-[#c5c0bb] text-lg mt-2">
+          <p className="text-[#E5E7EB] text-lg mt-2">
             Isi data diri Anda, lalu tanda tangani sebagai bukti penerimaan job
             desk.
           </p>
         </div>
       </div>
 
-      <section className="py-12 px-5 md:px-10 bg-[#faf9f7]">
+      <section className="py-12 px-5 md:px-10 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Form */}
-          <div className="bg-white rounded-xl shadow-lg p-8 border border-[#d4cfc9]">
-            <h2 className="font-barlow-condensed font-bold text-2xl text-[#231f20] mb-6">
+          <div className="bg-white rounded-xl shadow-lg p-8 border border-[#E5E7EB]">
+            <h2 className="font-barlow-condensed font-bold text-2xl text-[#1F2937] mb-6">
               Form Penerimaan
             </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block font-barlow-condensed font-bold text-sm text-[#231f20] mb-1">
+                <label className="block font-barlow-condensed font-bold text-sm text-[#1F2937] mb-1">
                   Nama Lengkap *
                 </label>
                 <input
                   type="text"
                   value={nama}
                   onChange={(e) => setNama(e.target.value)}
-                  className="w-full border border-[#d4cfc9] rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#f15a22]"
+                  className="w-full border border-[#E5E7EB] rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-barlow-condensed font-bold text-sm text-[#231f20] mb-1">
+                <label className="block font-barlow-condensed font-bold text-sm text-[#1F2937] mb-1">
                   Departemen *
                 </label>
                 <select
@@ -257,7 +257,7 @@ export default function JobDeskAcceptancePage() {
                     setDepartemen(e.target.value);
                     setJabatan("");
                   }}
-                  className="w-full border border-[#d4cfc9] rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#f15a22]"
+                  className="w-full border border-[#E5E7EB] rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]"
                   required
                 >
                   <option value="">Pilih Departemen</option>
@@ -270,13 +270,13 @@ export default function JobDeskAcceptancePage() {
               </div>
 
               <div>
-                <label className="block font-barlow-condensed font-bold text-sm text-[#231f20] mb-1">
+                <label className="block font-barlow-condensed font-bold text-sm text-[#1F2937] mb-1">
                   Jabatan *
                 </label>
                 <select
                   value={jabatan}
                   onChange={(e) => setJabatan(e.target.value)}
-                  className="w-full border border-[#d4cfc9] rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#f15a22]"
+                  className="w-full border border-[#E5E7EB] rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]"
                   disabled={!departemen}
                   required
                 >
@@ -290,8 +290,8 @@ export default function JobDeskAcceptancePage() {
               </div>
 
               {selectedJob && (
-                <div className="bg-[#f2f0ee] p-4 rounded border border-[#d4cfc9] max-h-48 overflow-y-auto text-sm">
-                  <h3 className="font-bold text-[#231f20]">
+                <div className="bg-[#f2f0ee] p-4 rounded border border-[#E5E7EB] max-h-48 overflow-y-auto text-sm">
+                  <h3 className="font-bold text-[#1F2937]">
                     {selectedJob.jabatan}
                   </h3>
                   <p className="mt-1">
@@ -317,7 +317,7 @@ export default function JobDeskAcceptancePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#f15a22] text-white font-barlow-condensed font-bold text-lg uppercase tracking-wider py-4 rounded hover:bg-[#d14a1a] transition disabled:opacity-50"
+                className="w-full bg-[#FF6B1A] text-white font-barlow-condensed font-bold text-lg uppercase tracking-wider py-4 rounded hover:bg-[#E85D0F] transition disabled:opacity-50"
               >
                 {loading ? "Memproses..." : "Terima & Buat PDF"}
               </button>
@@ -326,14 +326,14 @@ export default function JobDeskAcceptancePage() {
 
           {/* List Records — admin only */}
           {isAdmin && (
-            <div className="bg-white rounded-xl shadow-lg p-8 border border-[#d4cfc9]">
+            <div className="bg-white rounded-xl shadow-lg p-8 border border-[#E5E7EB]">
               <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
-                <h2 className="font-barlow-condensed font-bold text-2xl text-[#231f20]">
+                <h2 className="font-barlow-condensed font-bold text-2xl text-[#1F2937]">
                   Riwayat Penerimaan
                 </h2>
                 <button
                   onClick={fetchRecords}
-                  className="text-sm text-[#f15a22] hover:underline"
+                  className="text-sm text-[#FF6B1A] hover:underline"
                 >
                   Refresh
                 </button>
@@ -344,11 +344,11 @@ export default function JobDeskAcceptancePage() {
                 placeholder="Cari nama, jabatan, atau departemen..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full border border-[#d4cfc9] rounded px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-[#f15a22]"
+                className="w-full border border-[#E5E7EB] rounded px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]"
               />
 
               <div className="flex flex-wrap gap-2 mb-4 text-sm">
-                <span className="text-[#6b6560]">Sort by:</span>
+                <span className="text-[#6B7280]">Sort by:</span>
                 {(["nama", "jabatan", "departemen", "acceptedAt"] as SortField[]).map(
                   (f) => (
                     <button
@@ -357,7 +357,7 @@ export default function JobDeskAcceptancePage() {
                         setSortField(f);
                         setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                       }}
-                      className={`px-2 py-1 rounded ${sortField === f ? "bg-[#f15a22] text-white" : "bg-[#f2f0ee]"}`}
+                      className={`px-2 py-1 rounded ${sortField === f ? "bg-[#FF6B1A] text-white" : "bg-[#f2f0ee]"}`}
                     >
                       {f === "acceptedAt" ? "Tanggal" : f.charAt(0).toUpperCase() + f.slice(1)}
                       {sortField === f && (sortOrder === "asc" ? " ↑" : " ↓")}
@@ -367,11 +367,11 @@ export default function JobDeskAcceptancePage() {
               </div>
 
               {loadingRecords ? (
-                <div className="text-center py-8 text-[#6b6560]">
+                <div className="text-center py-8 text-[#6B7280]">
                   Memuat data...
                 </div>
               ) : filteredRecords.length === 0 ? (
-                <div className="text-center py-8 text-[#6b6560]">
+                <div className="text-center py-8 text-[#6B7280]">
                   {searchTerm
                     ? "Tidak ada data yang cocok"
                     : "Belum ada record penerimaan"}
@@ -390,7 +390,7 @@ export default function JobDeskAcceptancePage() {
                     </thead>
                     <tbody className="divide-y divide-[#f2f0ee]">
                       {filteredRecords.map((record) => (
-                        <tr key={record.id} className="hover:bg-[#faf9f7]">
+                        <tr key={record.id} className="hover:bg-[#FAFAFA]">
                           <td className="px-3 py-2">{record.nama}</td>
                           <td className="px-3 py-2">{record.jabatan}</td>
                           <td className="px-3 py-2">{record.departemen}</td>
@@ -412,7 +412,7 @@ export default function JobDeskAcceptancePage() {
                       ))}
                     </tbody>
                   </table>
-                  <p className="text-xs text-[#6b6560] mt-2">
+                  <p className="text-xs text-[#6B7280] mt-2">
                     Total: {filteredRecords.length} record
                   </p>
                 </div>

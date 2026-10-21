@@ -46,30 +46,30 @@ export default function InspeksiSaranaPrasaranaPage() {
   return (
     <>
       {/* Page Header */}
-      <div className="bg-[#231f20] py-8 px-5 md:px-10 border-b-[4px] border-b-[#f15a22]">
+      <div className="bg-[#1F2937] py-8 px-5 md:px-10 border-b-[4px] border-b-[#FF6B1A]">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb */}
           <div className="flex items-center gap-3 mb-6 flex-wrap">
-            <Link href="/smk3" className="text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <Link href="/smk3" className="text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m12 19-7-7 7-7" />
                 <path d="M19 12H5" />
               </svg>
             </Link>
-            <div className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#c5c0bb]">SMK3</div>
-            <div className="text-[#c5c0bb]">/</div>
-            <Link href="/smk3/pemantauan" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <div className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#E5E7EB]">SMK3</div>
+            <div className="text-[#E5E7EB]">/</div>
+            <Link href="/smk3/pemantauan" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               Elemen 7
             </Link>
-            <div className="text-[#c5c0bb]">/</div>
-            <Link href="/smk3/pemantauan/7-1" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <div className="text-[#E5E7EB]">/</div>
+            <Link href="/smk3/pemantauan/7-1" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               Sub-Elemen 7.1
             </Link>
-            <div className="text-[#c5c0bb]">/</div>
-            <Link href="/smk3/pemantauan/7-1/7-1-1" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#c5c0bb] hover:text-[#f15a22] transition-colors">
+            <div className="text-[#E5E7EB]">/</div>
+            <Link href="/smk3/pemantauan/7-1/7-1-1" className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#E5E7EB] hover:text-[#FF6B1A] transition-colors">
               7.1.1
             </Link>
-            <div className="text-[#c5c0bb]">/</div>
+            <div className="text-[#E5E7EB]">/</div>
             <div className="font-barlow-condensed text-[11px] font-bold tracking-[0.2em] uppercase text-[#3a86ff]">Inspeksi Sarana Prasarana</div>
           </div>
 
@@ -79,23 +79,23 @@ export default function InspeksiSaranaPrasaranaPage() {
               7.1.1.2
             </div>
             <div className="flex-1">
-              <h1 className="font-barlow-condensed font-extrabold text-white uppercase leading-[0.95] tracking-[-0.01em] text-[clamp(24px,4vw,40px)]">
+              <h1 className="font-barlow-condensed font-extrabold text-[#1F2937] uppercase leading-[0.95] tracking-[-0.01em] text-[clamp(24px,4vw,40px)]">
                 Inspeksi Sarana Prasarana
               </h1>
             </div>
           </div>
-          <p className="text-[#c5c0bb] text-[14px] max-w-3xl">
+          <p className="text-[#E5E7EB] text-[14px] max-w-3xl">
             Pemeriksaan berkala terhadap fasilitas dan infrastruktur untuk memastikan keselamatan dan kenyamanan kerja
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <section className="py-16 md:py-24 px-5 md:px-10 bg-[#faf9f7]">
+      <section className="py-16 md:py-24 px-5 md:px-10 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto">
           {/* Action Bar */}
           <div className="flex items-center justify-between mb-8">
-            <h2 className="font-barlow-condensed font-extrabold text-[#231f20] uppercase text-[clamp(24px,3vw,32px)]">
+            <h2 className="font-barlow-condensed font-extrabold text-[#1F2937] uppercase text-[clamp(24px,3vw,32px)]">
               Kelola Data Inspeksi Sarana Prasarana
             </h2>
             <button

@@ -24,14 +24,14 @@ interface UserOption {
 
 // ── UI primitives ──────────────────────────────────────────────────────────
 
-const inputCls = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:border-[#f15a22] transition-colors bg-white';
+const inputCls = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] transition-colors bg-white';
 
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-          <h3 className="text-[16px] font-bold text-[#231f20]">{title}</h3>
+          <h3 className="text-[16px] font-bold text-[#1F2937]">{title}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -62,7 +62,7 @@ function ModalActions({ onCancel, onSave, saving }: { onCancel: () => void; onSa
         Batal
       </button>
       <button onClick={onSave} disabled={saving}
-        className="px-5 py-2 bg-[#f15a22] text-white text-[13px] font-semibold rounded-lg hover:bg-[#d94e1a] disabled:opacity-60 flex items-center gap-2">
+        className="px-5 py-2 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-lg hover:bg-[#E85D0F] transition-colors shadow-xs disabled:opacity-60 flex items-center gap-2">
         {saving && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
         {saving ? 'Menyimpan…' : 'Simpan'}
       </button>
@@ -71,7 +71,7 @@ function ModalActions({ onCancel, onSave, saving }: { onCancel: () => void; onSa
 }
 
 function Spinner() {
-  return <div className="flex items-center justify-center py-16"><div className="w-7 h-7 border-2 border-[#f15a22] border-t-transparent rounded-full animate-spin" /></div>;
+  return <div className="flex items-center justify-center py-16"><div className="w-7 h-7 border-2 border-[#FF6B1A] border-t-transparent rounded-full animate-spin" /></div>;
 }
 
 function EmptyState({ text }: { text: string }) {
@@ -114,7 +114,7 @@ const AddIcon = () => (
 function AddButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <button onClick={onClick}
-      className="inline-flex items-center gap-1.5 bg-[#f15a22] text-white px-4 py-2 rounded-lg text-[13px] font-semibold hover:bg-[#d94e1a] transition-colors shadow-sm">
+      className="inline-flex items-center gap-1.5 bg-[#FF6B1A] text-white px-4 py-2 rounded-lg text-[13px] font-semibold hover:bg-[#E85D0F] transition-colors shadow-xs">
       <AddIcon />{label}
     </button>
   );
@@ -262,7 +262,7 @@ function TabDepartemen({ centers }: { centers: Center[] }) {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
           <select value={filterCenter} onChange={e => setFilterCenter(e.target.value)}
-            className="border border-gray-200 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:border-[#f15a22] bg-white min-w-[180px]">
+            className="border border-gray-200 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] bg-white min-w-[180px] transition-colors">
             <option value="">Semua Pusat</option>
             {centers.map(c => <option key={c.id} value={c.id}>{c.code} — {c.name}</option>)}
           </select>
@@ -546,9 +546,9 @@ export default function MasterDataPage() {
         <div className="flex items-center gap-1.5 text-[12px] text-gray-400 mb-1">
           <span>Admin</span>
           <span>/</span>
-          <span className="text-[#f15a22] font-medium">Master Data</span>
+          <span className="text-[#FF6B1A] font-medium">Master Data</span>
         </div>
-        <h1 className="text-xl font-bold text-[#231f20]">Master Data Organisasi</h1>
+        <h1 className="text-xl font-bold text-[#1F2937]">Master Data Organisasi</h1>
         <p className="text-[13px] text-gray-500 mt-0.5">
           Kelola hierarki Pusat &rarr; Departemen &rarr; Divisi beserta PIC
         </p>
@@ -562,7 +562,7 @@ export default function MasterDataPage() {
             <button key={t.key} onClick={() => setActiveTab(t.key)}
               className={`px-6 py-3.5 text-[13px] font-medium transition-all border-b-2 -mb-px ${
                 activeTab === t.key
-                  ? 'text-[#f15a22] border-[#f15a22] bg-orange-50/40'
+                  ? 'text-[#FF6B1A] border-[#FF6B1A] bg-[#FFF1E8]/50'
                   : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50'
               }`}>
               {t.label}

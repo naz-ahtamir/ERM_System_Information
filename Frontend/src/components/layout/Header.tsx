@@ -23,7 +23,7 @@ export function Header({ title, breadcrumbs, actions }: HeaderProps) {
                     </svg>
                   )}
                   {crumb.href ? (
-                    <a href={crumb.href} className="hover:text-[#f15a22]">
+                    <a href={crumb.href} className="hover:text-[#FF6B1A] transition-colors">
                       {crumb.label}
                     </a>
                   ) : (

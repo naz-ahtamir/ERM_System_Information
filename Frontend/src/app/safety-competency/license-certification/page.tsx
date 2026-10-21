@@ -167,11 +167,11 @@ function getToken() {
 function ReadonlyField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+      <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
         {label}
-        <span className="ml-1.5 text-[10px] font-normal text-[#f15a22] normal-case">(auto)</span>
+        <span className="ml-1.5 text-[10px] font-normal text-[#FF6B1A] normal-case">(auto)</span>
       </label>
-      <div className="w-full px-3.5 py-2.5 text-[14px] border border-[#e5e0db] rounded-xl bg-[#faf9f7] text-[#6b6560]">
+      <div className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl bg-[#FAFAFA] text-[#6B7280]">
         {value || <span className="italic text-[#b0a9a3]">—</span>}
       </div>
     </div>
@@ -351,16 +351,16 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[92vh] flex flex-col">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#f15a22] mb-0.5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#FF6B1A] mb-0.5">
               License & Certification
             </p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">
+            <h2 className="font-bold text-[15px] text-[#1F2937]">
               {isEdit ? 'Edit Record' : 'Tambah Record Baru'}
             </h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -372,11 +372,11 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
 
           {/* ── ID Karyawan lookup ── */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               ID Karyawan <span className="text-red-500">*</span>
             </label>
             {isEdit ? (
-              <div className="w-full px-3.5 py-2.5 text-[14px] border border-[#e5e0db] rounded-xl bg-[#faf9f7] text-[#6b6560]">
+              <div className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl bg-[#FAFAFA] text-[#6B7280]">
                 {idKaryawanInput}
               </div>
             ) : (
@@ -386,17 +386,17 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
                   value={idKaryawanInput}
                   onChange={(e) => setIdKaryawanInput(e.target.value)}
                   placeholder="Masukkan ID Karyawan..."
-                  className={`w-full px-3.5 py-2.5 pr-10 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${
+                  className={`w-full px-3.5 py-2.5 pr-10 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] transition-colors ${
                     errors.idKaryawan ? 'border-red-400 bg-red-50' :
                     lookupStatus === 'found' ? 'border-green-400 bg-green-50' :
                     lookupStatus === 'not_found' ? 'border-red-400 bg-red-50' :
-                    'border-[#c5c0bb]'
+                    'border-[#E5E7EB]'
                   }`}
                 />
                 {/* Status indicator */}
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   {lookupStatus === 'loading' && (
-                    <svg className="animate-spin w-4 h-4 text-[#f15a22]" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin w-4 h-4 text-[#FF6B1A]" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
@@ -432,11 +432,11 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
           <ReadonlyField label="Perusahaan" value={lookupUser?.perusahaan ?? ''} />
 
           {/* ── Divider ── */}
-          <div className="border-t border-[#e5e0db] pt-1" />
+          <div className="border-t border-[#E5E7EB] pt-1" />
 
           {/* ── No. Sertifikat ── */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               No. Sertifikat <span className="text-red-500">*</span>
             </label>
             <input
@@ -444,8 +444,8 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
               value={noSertifikat}
               onChange={(e) => setNoSertifikat(e.target.value)}
               placeholder="Nomor sertifikat resmi..."
-              className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${
-                errors.noSertifikat ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb]'
+              className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] transition-colors ${
+                errors.noSertifikat ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB]'
               }`}
             />
             {errors.noSertifikat && <p className="text-red-500 text-[11px] mt-1">{errors.noSertifikat}</p>}
@@ -453,7 +453,7 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
 
           {/* ── Lembaga Sertifikasi ── */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               Lembaga Sertifikasi <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-3">
@@ -464,8 +464,8 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
                   onClick={() => setLembaga(opt)}
                   className={`flex-1 py-2.5 rounded-xl border-2 font-bold text-[13px] transition-all ${
                     lembaga === opt
-                      ? 'border-[#f15a22] bg-[#fff4f0] text-[#f15a22]'
-                      : 'border-[#e5e0db] bg-white text-[#6b6560] hover:border-[#f15a22]/40'
+                      ? 'border-[#FF6B1A] bg-[#FFF1E8] text-[#FF6B1A]'
+                      : 'border-[#E5E7EB] bg-white text-[#6B7280] hover:border-[#FF6B1A]/40'
                   }`}
                 >
                   {opt}
@@ -477,14 +477,14 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
 
           {/* ── Jenis Sertifikat ── */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               Jenis Sertifikat <span className="text-red-500">*</span>
             </label>
             <select
               value={jenis}
               onChange={(e) => setJenis(e.target.value)}
-              className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${
-                errors.jenis ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb]'
+              className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] transition-colors ${
+                errors.jenis ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB]'
               }`}
             >
               <option value="">-- Pilih Jenis Sertifikat --</option>
@@ -498,29 +498,29 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
           {/* ── Tanggal ── */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Tanggal Pelatihan <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
                 value={tanggalPelatihan}
                 onChange={(e) => setTanggalPelatihan(e.target.value)}
-                className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${
-                  errors.tanggalPelatihan ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb]'
+                className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] transition-colors ${
+                  errors.tanggalPelatihan ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB]'
                 }`}
               />
               {errors.tanggalPelatihan && <p className="text-red-500 text-[11px] mt-1">{errors.tanggalPelatihan}</p>}
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
                 Akhir Pelatihan <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
                 value={akhirPelatihan}
                 onChange={(e) => setAkhirPelatihan(e.target.value)}
-                className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors ${
-                  errors.akhirPelatihan ? 'border-red-400 bg-red-50' : 'border-[#c5c0bb]'
+                className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] transition-colors ${
+                  errors.akhirPelatihan ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB]'
                 }`}
               />
               {errors.akhirPelatihan && <p className="text-red-500 text-[11px] mt-1">{errors.akhirPelatihan}</p>}
@@ -529,9 +529,9 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
 
           {/* ── Masa Berlaku (tanggal kedaluwarsa) ── */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               Masa Berlaku (Kedaluwarsa)
-              <span className="ml-1 font-normal text-[#6b6560] normal-case text-[10px]">
+              <span className="ml-1 font-normal text-[#6B7280] normal-case text-[10px]">
                 — untuk notifikasi otomatis
               </span>
             </label>
@@ -539,24 +539,24 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
               type="date"
               value={masaBerlaku}
               onChange={(e) => setMasaBerlaku(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22] transition-colors"
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] transition-colors"
             />
-            <p className="text-[10px] text-[#a09b96] mt-1">
+            <p className="text-[10px] text-[#9CA3AF] mt-1">
               Notifikasi akan dikirim ke pemilik, atasan, dan admin saat 30 hari sebelum & setelah kedaluwarsa.
             </p>
           </div>
 
           {/* ── Upload file ── */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
               File Sertifikat
-              <span className="ml-1 font-normal text-[#6b6560] normal-case">(PDF / JPG / PNG)</span>
+              <span className="ml-1 font-normal text-[#6B7280] normal-case">(PDF / JPG / PNG)</span>
             </label>
             <input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#f15a22] file:text-white hover:file:bg-[#d44d1a] focus:outline-none"
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#FF6B1A] file:text-white hover:file:bg-[#E85D0F] focus:outline-none"
             />
             {file && (
               <p className="text-[11px] text-green-600 mt-1">
@@ -565,13 +565,13 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
             )}
             {/* Tampilkan file existing saat edit */}
             {isEdit && !file && (initialValues as any)?.files?.length > 0 && (
-              <p className="text-[11px] text-[#6b6560] mt-1">
+              <p className="text-[11px] text-[#6B7280] mt-1">
                 File saat ini:{' '}
                 <a
                   href={fileUrl((initialValues as any).files[0].fileUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#f15a22] hover:underline"
+                  className="text-[#FF6B1A] hover:underline"
                 >
                   Lihat file
                 </a>
@@ -581,12 +581,12 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors disabled:opacity-50"
           >
             Batal
           </button>
@@ -594,7 +594,7 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
             type="submit"
             onClick={handleSubmit}
             disabled={saving || (!isEdit && lookupStatus !== 'found')}
-            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-50"
           >
             {saving ? (
               <>
@@ -639,12 +639,12 @@ function DetailModal({
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#f15a22] mb-0.5">Detail Sertifikat</p>
-            <h2 className="font-bold text-[15px] text-[#231f20] line-clamp-1">{record.title}</h2>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#FF6B1A] mb-0.5">Detail Sertifikat</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937] line-clamp-1">{record.title}</h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -654,47 +654,47 @@ function DetailModal({
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
 
           {/* Identitas karyawan */}
-          <div className="bg-[#faf9f7] rounded-xl border border-[#e5e0db] p-4 space-y-2">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#f15a22] mb-3">Identitas Karyawan</p>
+          <div className="bg-[#FAFAFA] rounded-xl border border-[#E5E7EB] p-4 space-y-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#FF6B1A] mb-3">Identitas Karyawan</p>
             <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[13px]">
-              <div><span className="text-[#a09b96]">ID Karyawan</span><p className="font-semibold text-[#231f20]">{d.idKaryawan || '—'}</p></div>
-              <div><span className="text-[#a09b96]">Nama</span><p className="font-semibold text-[#231f20]">{d.nama || '—'}</p></div>
-              <div><span className="text-[#a09b96]">Jabatan</span><p className="font-semibold text-[#231f20]">{d.jabatan || '—'}</p></div>
-              <div><span className="text-[#a09b96]">Departemen</span><p className="font-semibold text-[#231f20]">{d.departemen || '—'}</p></div>
-              <div><span className="text-[#a09b96]">Divisi</span><p className="font-semibold text-[#231f20]">{d.divisi || '—'}</p></div>
-              <div><span className="text-[#a09b96]">Perusahaan</span><p className="font-semibold text-[#231f20]">{d.perusahaan || '—'}</p></div>
+              <div><span className="text-[#9CA3AF]">ID Karyawan</span><p className="font-semibold text-[#1F2937]">{d.idKaryawan || '—'}</p></div>
+              <div><span className="text-[#9CA3AF]">Nama</span><p className="font-semibold text-[#1F2937]">{d.nama || '—'}</p></div>
+              <div><span className="text-[#9CA3AF]">Jabatan</span><p className="font-semibold text-[#1F2937]">{d.jabatan || '—'}</p></div>
+              <div><span className="text-[#9CA3AF]">Departemen</span><p className="font-semibold text-[#1F2937]">{d.departemen || '—'}</p></div>
+              <div><span className="text-[#9CA3AF]">Divisi</span><p className="font-semibold text-[#1F2937]">{d.divisi || '—'}</p></div>
+              <div><span className="text-[#9CA3AF]">Perusahaan</span><p className="font-semibold text-[#1F2937]">{d.perusahaan || '—'}</p></div>
             </div>
           </div>
 
           {/* Info sertifikat */}
           <div className="space-y-3">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#f15a22]">Informasi Sertifikat</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#FF6B1A]">Informasi Sertifikat</p>
             <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-[13px]">
               <div className="col-span-2">
-                <span className="text-[#a09b96] text-[11px]">Jenis Sertifikat</span>
-                <p className="font-semibold text-[#231f20]">{d.jenisSertifikat || '—'}</p>
+                <span className="text-[#9CA3AF] text-[11px]">Jenis Sertifikat</span>
+                <p className="font-semibold text-[#1F2937]">{d.jenisSertifikat || '—'}</p>
               </div>
               <div>
-                <span className="text-[#a09b96] text-[11px]">No. Sertifikat</span>
-                <p className="font-semibold text-[#231f20] font-mono">{d.noSertifikat || '—'}</p>
+                <span className="text-[#9CA3AF] text-[11px]">No. Sertifikat</span>
+                <p className="font-semibold text-[#1F2937] font-mono">{d.noSertifikat || '—'}</p>
               </div>
               <div>
-                <span className="text-[#a09b96] text-[11px]">Lembaga Sertifikasi</span>
-                <p className="font-semibold text-[#231f20]">{d.lembagaSertifikasi || '—'}</p>
+                <span className="text-[#9CA3AF] text-[11px]">Lembaga Sertifikasi</span>
+                <p className="font-semibold text-[#1F2937]">{d.lembagaSertifikasi || '—'}</p>
               </div>
               <div>
-                <span className="text-[#a09b96] text-[11px]">Tanggal Pelatihan</span>
-                <p className="font-semibold text-[#231f20]">{formatDate(d.tanggalPelatihan)}</p>
+                <span className="text-[#9CA3AF] text-[11px]">Tanggal Pelatihan</span>
+                <p className="font-semibold text-[#1F2937]">{formatDate(d.tanggalPelatihan)}</p>
               </div>
               <div>
-                <span className="text-[#a09b96] text-[11px]">Akhir Pelatihan</span>
-                <p className="font-semibold text-[#231f20]">{formatDate(d.akhirPelatihan)}</p>
+                <span className="text-[#9CA3AF] text-[11px]">Akhir Pelatihan</span>
+                <p className="font-semibold text-[#1F2937]">{formatDate(d.akhirPelatihan)}</p>
               </div>
               {/* Masa Berlaku */}
               <div className="col-span-2">
-                <span className="text-[#a09b96] text-[11px]">Masa Berlaku (Kedaluwarsa)</span>
+                <span className="text-[#9CA3AF] text-[11px]">Masa Berlaku (Kedaluwarsa)</span>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <p className="font-semibold text-[#231f20]">{d.masaBerlaku ? formatDate(d.masaBerlaku) : '—'}</p>
+                  <p className="font-semibold text-[#1F2937]">{d.masaBerlaku ? formatDate(d.masaBerlaku) : '—'}</p>
                   {d.masaBerlaku && <ExpiryBadge masaBerlaku={d.masaBerlaku} />}
                 </div>
               </div>
@@ -733,13 +733,13 @@ function DetailModal({
           {/* File sertifikat */}
           {certFile && (
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#f15a22] mb-2">File Sertifikat</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#FF6B1A] mb-2">File Sertifikat</p>
               {/\.(jpg|jpeg|png)$/i.test(certFile.fileName) ? (
                 <a href={fileUrl(certFile.fileUrl)} target="_blank" rel="noopener noreferrer">
                   <img
                     src={fileUrl(certFile.fileUrl)}
                     alt="Sertifikat"
-                    className="max-h-48 rounded-xl border border-[#e5e0db] object-contain"
+                    className="max-h-48 rounded-xl border border-[#E5E7EB] object-contain"
                   />
                 </a>
               ) : (
@@ -747,7 +747,7 @@ function DetailModal({
                   href={fileUrl(certFile.fileUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#faf9f7] border border-[#e5e0db] rounded-xl text-[13px] font-semibold text-[#f15a22] hover:bg-[#fff4f0] transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl text-[13px] font-semibold text-[#FF6B1A] hover:bg-[#FFF1E8] transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -760,14 +760,14 @@ function DetailModal({
           )}
 
           {/* Meta */}
-          <div className="text-[11px] text-[#a09b96] border-t border-[#e5e0db] pt-3">
+          <div className="text-[11px] text-[#9CA3AF] border-t border-[#E5E7EB] pt-3">
             Ditambahkan oleh {record.createdByName} · {formatDate(record.createdAt)}
           </div>
         </div>
 
         {/* Footer actions — admin only */}
         {isAdmin && (
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
             <button
               onClick={onDelete}
               className="px-4 py-2 text-[13px] font-semibold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors"
@@ -776,7 +776,7 @@ function DetailModal({
             </button>
             <button
               onClick={onEdit}
-              className="px-4 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors"
+              className="px-4 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors"
             >
               Edit
             </button>
@@ -810,12 +810,12 @@ function ConfirmDeleteModal({
             <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </div>
-        <h3 className="font-bold text-[15px] text-[#231f20] text-center mb-2">Hapus Record?</h3>
-        <p className="text-[13px] text-[#6b6560] text-center mb-5 line-clamp-2">
+        <h3 className="font-bold text-[15px] text-[#1F2937] text-center mb-2">Hapus Record?</h3>
+        <p className="text-[13px] text-[#6B7280] text-center mb-5 line-clamp-2">
           "{title}" akan dihapus permanen dan tidak bisa dikembalikan.
         </p>
         <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 py-2.5 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+          <button onClick={onCancel} className="flex-1 py-2.5 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">
             Batal
           </button>
           <button onClick={onConfirm} className="flex-1 py-2.5 text-[13px] font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors">
@@ -921,8 +921,8 @@ function LicenseExportModal({ isOpen, onClose, records }: LicenseExportModalProp
     const expiryCounters = { active: 0, soon: 0, expired: 0, unknown: 0 };
     filtered.forEach((r) => { expiryCounters[getExpiryStatus(r.data.masaBerlaku)]++; });
 
-    const statusBg = { expired: '#fee2e2', soon: '#fef9c3', active: '#dcfce7', unknown: '#f1f0ee' };
-    const statusColor = { expired: '#b91c1c', soon: '#a16207', active: '#15803d', unknown: '#6b6560' };
+    const statusBg = { expired: '#fee2e2', soon: '#fef9c3', active: '#dcfce7', unknown: '#FAFAFA' };
+    const statusColor = { expired: '#b91c1c', soon: '#a16207', active: '#15803d', unknown: '#6B7280' };
     const statusLabel = { expired: 'Kedaluwarsa', soon: 'Segera Berakhir', active: 'Aktif', unknown: '—' };
 
     const rows = filtered.map((rec, i) => {
@@ -937,7 +937,7 @@ function LicenseExportModal({ isOpen, onClose, records }: LicenseExportModalProp
         if (/\.(jpg|jpeg|png)$/i.test(certFile.fileName)) {
           imgHtml = `<img src="${src}" alt="Sertifikat" style="max-width:100px;max-height:70px;object-fit:contain;border-radius:4px;border:1px solid #e5e7eb;" />`;
         } else {
-          imgHtml = `<a href="${fullUrl}" style="font-size:10px;color:#f15a22;">PDF</a>`;
+          imgHtml = `<a href="${fullUrl}" style="font-size:10px;color:#FF6B1A;">PDF</a>`;
         }
       }
       return `<tr style="background:${i % 2 === 0 ? '#fff' : '#f9fafb'};">
@@ -972,14 +972,14 @@ function LicenseExportModal({ isOpen, onClose, records }: LicenseExportModalProp
       tr { page-break-inside: avoid; }
       img { max-width: 80px !important; max-height: 60px !important; }
     }
-    .header { background: #231f20; color: white; padding: 16px 20px; margin-bottom: 14px; border-radius: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .header { background: #1F2937; color: white; padding: 16px 20px; margin-bottom: 14px; border-radius: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .header h1 { font-size: 18px; margin-bottom: 3px; }
     .header p { font-size: 11px; color: #9ca3af; }
     .stats { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
     .stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 14px; text-align: center; min-width: 90px; }
-    .stat-num { font-size: 20px; font-weight: 700; color: #f15a22; }
+    .stat-num { font-size: 20px; font-weight: 700; color: #FF6B1A; }
     .stat-label { font-size: 10px; color: #6b7280; }
-    .print-btn { background: #f15a22; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+    .print-btn { background: #FF6B1A; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
     .table-wrap { overflow-x: auto; border-radius: 6px; border: 1px solid #d1d5db; }
     table { border-collapse: collapse; width: 100%; min-width: 1400px; }
     thead th { background: #1f2937; color: #9ca3af; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; padding: 9px 10px; text-align: left; position: sticky; top: 0; }
@@ -989,7 +989,7 @@ function LicenseExportModal({ isOpen, onClose, records }: LicenseExportModalProp
 <body>
   <div class="header">
     <div><h1>License &amp; Certification</h1><p>${dateLabel}</p></div>
-    <div style="text-align:right;"><p style="font-size:13px;font-weight:700;color:#f15a22;">${filtered.length} Record</p><p style="font-size:10px;color:#9ca3af;">SMK3 Safety System</p></div>
+    <div style="text-align:right;"><p style="font-size:13px;font-weight:700;color:#FF6B1A;">${filtered.length} Record</p><p style="font-size:10px;color:#9ca3af;">SMK3 Safety System</p></div>
   </div>
   <div class="stats no-print">
     <div class="stat"><div class="stat-num">${filtered.length}</div><div class="stat-label">Total</div></div>
@@ -1032,63 +1032,63 @@ function LicenseExportModal({ isOpen, onClose, records }: LicenseExportModalProp
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Export Data</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Download Rekap License</h2>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">Export Data</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">Download Rekap License</h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
         <div className="px-6 py-5 space-y-4">
-          <p className="text-[13px] text-[#6b6560]">Kosongkan tanggal untuk export semua record.</p>
+          <p className="text-[13px] text-[#6B7280]">Kosongkan tanggal untuk export semua record.</p>
           {/* Format */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-2">Format Export</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-2">Format Export</label>
             <div className="grid grid-cols-2 gap-3">
               <button type="button" onClick={() => setExportFormat('html')}
-                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'html' ? 'border-[#f15a22] bg-orange-50' : 'border-[#e5e0db] hover:border-[#f15a22]/40'}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'html' ? '#f15a22' : '#a09b96'} strokeWidth="2">
+                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'html' ? 'border-[#FF6B1A] bg-orange-50' : 'border-[#E5E7EB] hover:border-[#FF6B1A]/40'}`}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'html' ? '#FF6B1A' : '#9CA3AF'} strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                 </svg>
-                <span className={`font-bold text-[12px] ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#6b6560]'}`}>HTML + Foto</span>
-                <span className={`text-[10px] text-center ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#a09b96]'}`}>Print / Save PDF</span>
+                <span className={`font-bold text-[12px] ${exportFormat === 'html' ? 'text-[#FF6B1A]' : 'text-[#6B7280]'}`}>HTML + Foto</span>
+                <span className={`text-[10px] text-center ${exportFormat === 'html' ? 'text-[#FF6B1A]' : 'text-[#9CA3AF]'}`}>Print / Save PDF</span>
               </button>
               <button type="button" onClick={() => setExportFormat('csv')}
-                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'csv' ? 'border-green-500 bg-green-50' : 'border-[#e5e0db] hover:border-green-300'}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'csv' ? '#16a34a' : '#a09b96'} strokeWidth="2">
+                className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 transition-all ${exportFormat === 'csv' ? 'border-green-500 bg-green-50' : 'border-[#E5E7EB] hover:border-green-300'}`}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'csv' ? '#16a34a' : '#9CA3AF'} strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                   <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>
                 </svg>
-                <span className={`font-bold text-[12px] ${exportFormat === 'csv' ? 'text-green-700' : 'text-[#6b6560]'}`}>CSV / Excel</span>
-                <span className={`text-[10px] text-center ${exportFormat === 'csv' ? 'text-green-600' : 'text-[#a09b96]'}`}>Data saja</span>
+                <span className={`font-bold text-[12px] ${exportFormat === 'csv' ? 'text-green-700' : 'text-[#6B7280]'}`}>CSV / Excel</span>
+                <span className={`text-[10px] text-center ${exportFormat === 'csv' ? 'text-green-600' : 'text-[#9CA3AF]'}`}>Data saja</span>
               </button>
             </div>
           </div>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Dari Tanggal</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Dari Tanggal</label>
             <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A]" />
           </div>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Sampai Tanggal</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Sampai Tanggal</label>
             <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A]" />
           </div>
-          <div className="px-3 py-2 bg-[#faf9f7] rounded-xl border border-[#e5e0db]">
-            <p className="text-[12px] text-[#6b6560]">Total record tersedia: <strong className="text-[#231f20]">{records.length}</strong></p>
+          <div className="px-3 py-2 bg-[#FAFAFA] rounded-xl border border-[#E5E7EB]">
+            <p className="text-[12px] text-[#6B7280]">Total record tersedia: <strong className="text-[#1F2937]">{records.length}</strong></p>
           </div>
         </div>
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db]">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB]">
           <button onClick={onClose} disabled={exporting}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">
             Batal
           </button>
           <button onClick={handleExport} disabled={exporting}
-            className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${exportFormat === 'html' ? 'bg-[#f15a22] hover:bg-[#d44d1a]' : 'bg-green-600 hover:bg-green-700'}`}>
+            className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${exportFormat === 'html' ? 'bg-[#FF6B1A] hover:bg-[#E85D0F]' : 'bg-green-600 hover:bg-green-700'}`}>
             {exporting ? (
               <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -1232,18 +1232,18 @@ export default function LicenseCertificationPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* ── Dark Page Header (CrudPage style) ── */}
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-6xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">
             Safety Competency
           </p>
-          <h1 className="font-bold text-white text-[clamp(22px,4vw,38px)] leading-tight">
+          <h1 className="font-bold text-[#1F2937] text-[clamp(22px,4vw,38px)] leading-tight">
             License & Certification
           </h1>
-          <p className="text-[#8a8580] text-[13px] mt-1.5">
+          <p className="text-[#6B7280] text-[13px] mt-1.5">
             Inventaris lisensi K3, sertifikat kompetensi operator, dan izin kerja khusus.
             {!isAdmin && ' Hanya menampilkan record milik Anda.'}
           </p>
@@ -1257,16 +1257,16 @@ export default function LicenseCertificationPage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
           {/* Search */}
           <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a09b96]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input
               type="text" value={search} onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari nama, ID, no. sertifikat, departemen..."
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]">
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -1276,7 +1276,7 @@ export default function LicenseCertificationPage() {
           {/* Export */}
           <button
             onClick={() => setShowExport(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#c5c0bb] text-[#231f20] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -1287,7 +1287,7 @@ export default function LicenseCertificationPage() {
           {/* Tambah Record */}
           <button
             onClick={() => { setEditRecord(null); setShowForm(true); }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors whitespace-nowrap"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -1301,7 +1301,7 @@ export default function LicenseCertificationPage() {
           <select
             value={filterPerusahaan}
             onChange={(e) => setFilterPerusahaan(e.target.value)}
-            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] transition-colors"
+            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] transition-colors"
           >
             <option value="">Semua Perusahaan</option>
             {perusahaanOptions.map((p) => (
@@ -1312,7 +1312,7 @@ export default function LicenseCertificationPage() {
           <select
             value={filterJenis}
             onChange={(e) => setFilterJenis(e.target.value)}
-            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] transition-colors"
+            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] transition-colors"
           >
             <option value="">Semua Jenis Sertifikat</option>
             {jenisOptions.map((j) => (
@@ -1323,7 +1323,7 @@ export default function LicenseCertificationPage() {
           <select
             value={filterExpiry}
             onChange={(e) => setFilterExpiry(e.target.value as 'all' | 'active' | 'soon' | 'expired')}
-            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] transition-colors"
+            className="py-2.5 px-3.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] transition-colors"
           >
             <option value="all">Semua Status Kedaluwarsa</option>
             <option value="active">🟢 Aktif</option>
@@ -1346,20 +1346,20 @@ export default function LicenseCertificationPage() {
 
         {/* Info bar */}
         <div className="flex items-center justify-between mb-3 px-1 flex-wrap gap-2">
-          <p className="text-[12px] text-[#6b6560]">
+          <p className="text-[12px] text-[#6B7280]">
             {isLoading ? 'Memuat data...' : `Menampilkan ${filtered.length} record${search || activeFilterCount > 0 ? ` dari ${records.length}` : ''}`}
-            {!isAdmin && !isLoading && <span className="ml-1.5 text-[#a09b96]">(hanya record Anda)</span>}
+            {!isAdmin && !isLoading && <span className="ml-1.5 text-[#9CA3AF]">(hanya record Anda)</span>}
           </p>
           {isAdmin && !isLoading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#f15a22]/10 text-[#f15a22] rounded-full font-semibold border border-[#f15a22]/20">Mode Admin</span>
+            <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">Mode Admin</span>
           )}
         </div>
 
         {/* ── Table ── */}
-        <div className="bg-white rounded-2xl border border-[#e5e0db] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
           {isLoading ? (
             <div className="p-8 space-y-3">
-              {[1, 2, 3, 4].map((i) => <div key={i} className="h-12 bg-[#f1f0ee] rounded-xl animate-pulse" />)}
+              {[1, 2, 3, 4].map((i) => <div key={i} className="h-12 bg-[#FAFAFA] rounded-xl animate-pulse" />)}
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-16 text-center px-6">
@@ -1368,20 +1368,20 @@ export default function LicenseCertificationPage() {
                   <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
               </div>
-              <p className="text-[14px] font-semibold text-[#231f20]">{error}</p>
-              <button onClick={fetchRecords} className="mt-3 text-[13px] text-[#f15a22] hover:underline">Coba lagi</button>
+              <p className="text-[14px] font-semibold text-[#1F2937]">{error}</p>
+              <button onClick={fetchRecords} className="mt-3 text-[13px] text-[#FF6B1A] hover:underline">Coba lagi</button>
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center px-6">
-              <div className="w-16 h-16 rounded-2xl bg-[#f1f0ee] flex items-center justify-center mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+              <div className="w-16 h-16 rounded-2xl bg-[#FAFAFA] flex items-center justify-center mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5">
                   <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <p className="font-semibold text-[#231f20] text-[14px] mb-1">
+              <p className="font-semibold text-[#1F2937] text-[14px] mb-1">
                 {search || activeFilterCount > 0 ? 'Tidak ada hasil' : 'Belum ada record'}
               </p>
-              <p className="text-[#6b6560] text-[13px]">
+              <p className="text-[#6B7280] text-[13px]">
                 {search || activeFilterCount > 0 ? 'Coba ubah kata kunci atau filter' : 'Klik "Tambah Record" untuk mulai'}
               </p>
             </div>
@@ -1389,17 +1389,17 @@ export default function LicenseCertificationPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#e5e0db] bg-[#faf9f7]">
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide w-10">#</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide">Nama / ID</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden md:table-cell">Departemen</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden lg:table-cell">Jenis Sertifikat</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden md:table-cell">No. Sertifikat</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide hidden lg:table-cell">Masa Berlaku</th>
-                    <th className="text-right py-3 px-4 text-[11px] font-semibold text-[#6b6560] uppercase tracking-wide">Aksi</th>
+                  <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide w-10">#</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide">Nama / ID</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide hidden md:table-cell">Departemen</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide hidden lg:table-cell">Jenis Sertifikat</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide hidden md:table-cell">No. Sertifikat</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide hidden lg:table-cell">Masa Berlaku</th>
+                    <th className="text-right py-3 px-4 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wide">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#f1f0ee]">
+                <tbody className="divide-y divide-[#FAFAFA]">
                   {filtered.map((rec, idx) => {
                     const d = rec.data;
                     const files = (rec as any).files as Array<{ fileUrl: string }> | undefined;
@@ -1409,12 +1409,12 @@ export default function LicenseCertificationPage() {
                     return (
                       <tr
                         key={rec.id}
-                        className={`hover:bg-[#faf9f7] transition-colors ${
+                        className={`hover:bg-[#FAFAFA] transition-colors ${
                           expStatus === 'expired' ? 'bg-red-50/40' : expStatus === 'soon' ? 'bg-yellow-50/40' : ''
                         }`}
                       >
                         {/* # */}
-                        <td className="py-3 px-4 text-[#a09b96]">{idx + 1}</td>
+                        <td className="py-3 px-4 text-[#9CA3AF]">{idx + 1}</td>
 
                         {/* Nama / ID */}
                         <td className="py-3 px-4">
@@ -1422,8 +1422,8 @@ export default function LicenseCertificationPage() {
                             onClick={() => setDetailRecord(rec)}
                             className="text-left"
                           >
-                            <p className="font-semibold text-[13px] text-[#231f20] hover:text-[#f15a22] transition-colors">{d.nama || '—'}</p>
-                            <p className="text-[11px] text-[#a09b96]">{d.idKaryawan}</p>
+                            <p className="font-semibold text-[13px] text-[#1F2937] hover:text-[#FF6B1A] transition-colors">{d.nama || '—'}</p>
+                            <p className="text-[11px] text-[#9CA3AF]">{d.idKaryawan}</p>
                             {/* Lembaga badge inline */}
                             <span className={`mt-0.5 inline-block px-1.5 py-0.5 rounded-full text-[9px] font-bold ${
                               d.lembagaSertifikasi === 'Kemnaker' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
@@ -1434,19 +1434,19 @@ export default function LicenseCertificationPage() {
                         </td>
 
                         {/* Departemen */}
-                        <td className="py-3 px-4 text-[#6b6560] hidden md:table-cell max-w-[140px]">
+                        <td className="py-3 px-4 text-[#6B7280] hidden md:table-cell max-w-[140px]">
                           <span className="truncate block text-[12px]">{d.departemen || '—'}</span>
-                          <span className="truncate block text-[11px] text-[#a09b96]">{d.perusahaan || ''}</span>
+                          <span className="truncate block text-[11px] text-[#9CA3AF]">{d.perusahaan || ''}</span>
                         </td>
 
                         {/* Jenis Sertifikat */}
                         <td className="py-3 px-4 hidden lg:table-cell max-w-[200px]">
-                          <span className="truncate block text-[12px] text-[#231f20]">{d.jenisSertifikat || '—'}</span>
+                          <span className="truncate block text-[12px] text-[#1F2937]">{d.jenisSertifikat || '—'}</span>
                         </td>
 
                         {/* No. Sertifikat */}
                         <td className="py-3 px-4 hidden md:table-cell">
-                          <span className="font-mono text-[12px] text-[#6b6560]">{d.noSertifikat || '—'}</span>
+                          <span className="font-mono text-[12px] text-[#6B7280]">{d.noSertifikat || '—'}</span>
                           {hasFile && (
                             <span title="Ada file sertifikat" className="ml-1.5 inline-block w-1.5 h-1.5 rounded-full bg-green-400" />
                           )}
@@ -1457,12 +1457,12 @@ export default function LicenseCertificationPage() {
                           {d.masaBerlaku ? (
                             <div className="space-y-1">
                               <p className={`text-[12px] font-medium ${
-                                expStatus === 'expired' ? 'text-red-600' : expStatus === 'soon' ? 'text-yellow-600' : 'text-[#231f20]'
+                                expStatus === 'expired' ? 'text-red-600' : expStatus === 'soon' ? 'text-yellow-600' : 'text-[#1F2937]'
                               }`}>{formatDate(d.masaBerlaku)}</p>
                               <ExpiryBadge masaBerlaku={d.masaBerlaku} />
                             </div>
                           ) : (
-                            <span className="text-[#c5c0bb] text-[12px]">—</span>
+                            <span className="text-[#E5E7EB] text-[12px]">—</span>
                           )}
                         </td>
 
@@ -1472,7 +1472,7 @@ export default function LicenseCertificationPage() {
                             {/* View detail */}
                             <button
                               onClick={() => setDetailRecord(rec)}
-                              className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-[#f1f0ee] rounded-lg transition-colors"
+                              className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FAFAFA] rounded-lg transition-colors"
                               title="Lihat detail"
                             >
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1483,7 +1483,7 @@ export default function LicenseCertificationPage() {
                               <>
                                 <button
                                   onClick={() => { setEditRecord(rec); setShowForm(true); }}
-                                  className="p-1.5 text-[#6b6560] hover:text-[#f15a22] hover:bg-[#fff4f0] rounded-lg transition-colors"
+                                  className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
                                   title="Edit"
                                 >
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1493,7 +1493,7 @@ export default function LicenseCertificationPage() {
                                 </button>
                                 <button
                                   onClick={() => setDeleteTarget(rec)}
-                                  className="p-1.5 text-[#6b6560] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                  className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                   title="Hapus"
                                 >
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

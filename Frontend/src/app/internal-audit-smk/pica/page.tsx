@@ -25,7 +25,7 @@ import { KRITERIA_SMK3 } from '@/data/picaData';
 import toast from 'react-hot-toast';
 
 // ── Input style constants ─────────────────────────────────────────────────────
-const inputCls    = 'w-full border border-[#c5c0bb] rounded-xl px-3.5 py-2.5 text-[13px] focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors bg-white';
+const inputCls    = 'w-full border border-[#E5E7EB] rounded-xl px-3.5 py-2.5 text-[13px] focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors bg-white';
 const textareaCls = inputCls + ' resize-none';
 
 // ── Shared form sub-components ────────────────────────────────────────────────
@@ -36,10 +36,10 @@ function FormSection({
   title: string; icon: React.ReactNode; badge?: React.ReactNode; children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-[#e5e0db] shadow-sm overflow-hidden">
-      <div className="bg-[#faf9f7] border-b border-[#e5e0db] px-5 py-3 flex items-center gap-2.5">
-        <span className="text-[#f15a22]">{icon}</span>
-        <h2 className="text-[14px] font-semibold text-[#231f20]">{title}</h2>
+    <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+      <div className="bg-[#FAFAFA] border-b border-[#E5E7EB] px-5 py-3 flex items-center gap-2.5">
+        <span className="text-[#FF6B1A]">{icon}</span>
+        <h2 className="text-[14px] font-semibold text-[#1F2937]">{title}</h2>
         {badge}
       </div>
       <div className="p-5 space-y-4">{children}</div>
@@ -54,13 +54,13 @@ function Field({
 }) {
   return (
     <div>
-      <label className="flex items-center gap-1.5 text-[13px] font-semibold text-[#231f20] mb-1.5">
+      <label className="flex items-center gap-1.5 text-[13px] font-semibold text-[#1F2937] mb-1.5">
         {label}
         {required && <span className="text-red-500 text-[12px]">*</span>}
-        {optional && <span className="text-[#a09b96] text-[11px] font-normal">(opsional)</span>}
+        {optional && <span className="text-[#9CA3AF] text-[11px] font-normal">(opsional)</span>}
       </label>
       {children}
-      {hint && <p className="text-[11px] text-[#a09b96] mt-1">{hint}</p>}
+      {hint && <p className="text-[11px] text-[#9CA3AF] mt-1">{hint}</p>}
     </div>
   );
 }
@@ -93,14 +93,14 @@ function FileUploadArea({
     <>
       {/* Drop zone */}
       <div
-        className="border-2 border-dashed border-[#c5c0bb] rounded-xl p-4 text-center hover:border-[#f15a22] transition-colors cursor-pointer"
+        className="border-2 border-dashed border-[#E5E7EB] rounded-xl p-4 text-center hover:border-[#FF6B1A] transition-colors cursor-pointer"
         onClick={() => ref.current?.click()}
       >
-        <svg className="w-6 h-6 text-[#c5c0bb] mx-auto mb-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <svg className="w-6 h-6 text-[#E5E7EB] mx-auto mb-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
         </svg>
-        <p className="text-[12px] text-[#6b6560]">{placeholder}</p>
-        <p className="text-[11px] text-[#a09b96] mt-0.5">{subtext}</p>
+        <p className="text-[12px] text-[#6B7280]">{placeholder}</p>
+        <p className="text-[11px] text-[#9CA3AF] mt-0.5">{subtext}</p>
         <input ref={ref} type="file" className="hidden" multiple accept={accept}
           onChange={(e) => { if (e.target.files) { onAdd(Array.from(e.target.files)); e.target.value = ''; } }} />
       </div>
@@ -114,7 +114,7 @@ function FileUploadArea({
                 const originalIdx = files.indexOf(file);
                 const previewUrl = previews[originalIdx] || '';
                 return (
-                  <div key={originalIdx} className="relative group aspect-square rounded-xl overflow-hidden border border-[#e5e0db] shadow-sm">
+                  <div key={originalIdx} className="relative group aspect-square rounded-xl overflow-hidden border border-[#E5E7EB] shadow-sm">
                     {previewUrl && (
                       <img
                         src={previewUrl}
@@ -152,12 +152,12 @@ function FileUploadArea({
               {otherFiles.map((file) => {
                 const originalIdx = files.indexOf(file);
                 return (
-                  <div key={originalIdx} className="flex items-center gap-2 bg-[#faf9f7] rounded-lg px-3 py-2">
+                  <div key={originalIdx} className="flex items-center gap-2 bg-[#FAFAFA] rounded-lg px-3 py-2">
                     <svg className="w-4 h-4 text-blue-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                     </svg>
-                    <span className="text-[12px] text-[#231f20] flex-1 truncate">{file.name}</span>
-                    <span className="text-[11px] text-[#a09b96]">{(file.size / 1024).toFixed(0)} KB</span>
+                    <span className="text-[12px] text-[#1F2937] flex-1 truncate">{file.name}</span>
+                    <span className="text-[11px] text-[#9CA3AF]">{(file.size / 1024).toFixed(0)} KB</span>
                     <button type="button" onClick={() => onRemove(originalIdx)} className="text-red-400 hover:text-red-600 flex-shrink-0">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -214,14 +214,14 @@ function FileLightbox({
               : <svg className="w-4 h-4 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             }
             <span className="text-white text-[13px] truncate">{file.fileName}</span>
-            <span className="text-[#a09b96] text-[11px] flex-shrink-0">{formatFileSize(file.fileSize)}</span>
+            <span className="text-[#9CA3AF] text-[11px] flex-shrink-0">{formatFileSize(file.fileSize)}</span>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             {files.length > 1 && (
-              <span className="text-[#a09b96] text-[12px]">{idx + 1} / {files.length}</span>
+              <span className="text-[#9CA3AF] text-[12px]">{idx + 1} / {files.length}</span>
             )}
             <a href={file.fileUrl} target="_blank" rel="noopener noreferrer"
-              className="p-1.5 rounded-lg text-[#a09b96] hover:text-white hover:bg-white/10 transition-colors"
+              className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-white hover:bg-white/10 transition-colors"
               title="Buka di tab baru">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -229,7 +229,7 @@ function FileLightbox({
               </svg>
             </a>
             <button onClick={onClose}
-              className="p-1.5 rounded-lg text-[#a09b96] hover:text-white hover:bg-white/10 transition-colors">
+              className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-white hover:bg-white/10 transition-colors">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
@@ -256,9 +256,9 @@ function FileLightbox({
                 </svg>
               </div>
               <p className="text-white font-semibold text-[15px] mb-1">{file.fileName}</p>
-              <p className="text-[#a09b96] text-[13px] mb-5">Preview tidak tersedia untuk tipe file ini</p>
+              <p className="text-[#9CA3AF] text-[13px] mb-5">Preview tidak tersedia untuk tipe file ini</p>
               <a href={file.fileUrl} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors">
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                   <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -297,7 +297,7 @@ function FileLightbox({
             {files.map((f, i) => (
               <button key={i} onClick={() => setIdx(i)}
                 className={`flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${
-                  i === idx ? 'border-[#f15a22]' : 'border-transparent opacity-60 hover:opacity-100'
+                  i === idx ? 'border-[#FF6B1A]' : 'border-transparent opacity-60 hover:opacity-100'
                 }`}>
                 {isImageFile(f.fileName) ? (
                   <img src={f.fileUrl} alt={f.fileName} className="w-full h-full object-cover" />
@@ -356,7 +356,7 @@ function FileListWithDelete({
               <div
                 key={originalIdx}
                 className={`relative group aspect-square rounded-xl overflow-hidden border shadow-sm transition-all ${
-                  isDeleting ? 'opacity-40 border-red-300' : 'border-[#e5e0db] hover:border-[#f15a22]'
+                  isDeleting ? 'opacity-40 border-red-300' : 'border-[#E5E7EB] hover:border-[#FF6B1A]'
                 }`}
               >
                 <button
@@ -417,7 +417,7 @@ function FileListWithDelete({
               <div
                 key={originalIdx}
                 className={`flex items-center gap-2.5 rounded-xl px-3 py-2 border transition-all ${
-                  isDeleting ? 'opacity-40 bg-red-50 border-red-200' : 'bg-[#faf9f7] border-[#e5e0db]'
+                  isDeleting ? 'opacity-40 bg-red-50 border-red-200' : 'bg-[#FAFAFA] border-[#E5E7EB]'
                 }`}
               >
                 <button
@@ -429,8 +429,8 @@ function FileListWithDelete({
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14 2 14 8 20 8"/>
                   </svg>
-                  <span className="text-[12px] text-[#6b6560] truncate flex-1">{f.fileName}</span>
-                  <span className="text-[10px] text-[#a09b96] flex-shrink-0">{formatFileSize(f.fileSize)}</span>
+                  <span className="text-[12px] text-[#6B7280] truncate flex-1">{f.fileName}</span>
+                  <span className="text-[10px] text-[#9CA3AF] flex-shrink-0">{formatFileSize(f.fileSize)}</span>
                 </button>
                 {fileId && (
                   <button
@@ -487,7 +487,7 @@ function FileList({ files }: { files: { fileName: string; fileUrl: string; fileS
               <button
                 key={originalIdx}
                 onClick={() => setLightboxIdx(originalIdx)}
-                className="relative group aspect-square rounded-xl overflow-hidden border border-[#e5e0db] hover:border-[#f15a22] transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30"
+                className="relative group aspect-square rounded-xl overflow-hidden border border-[#E5E7EB] hover:border-[#FF6B1A] transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30"
                 title={f.fileName}
               >
                 <img
@@ -519,14 +519,14 @@ function FileList({ files }: { files: { fileName: string; fileUrl: string; fileS
             const originalIdx = files.indexOf(f);
             return (
               <button key={originalIdx} onClick={() => setLightboxIdx(originalIdx)}
-                className="flex items-center gap-2.5 bg-[#faf9f7] hover:bg-orange-50 border border-[#e5e0db] hover:border-orange-200 rounded-xl px-3 py-2 transition-colors group text-left w-full">
+                className="flex items-center gap-2.5 bg-[#FAFAFA] hover:bg-orange-50 border border-[#E5E7EB] hover:border-orange-200 rounded-xl px-3 py-2 transition-colors group text-left w-full">
                 <svg className="w-4 h-4 text-blue-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14 2 14 8 20 8"/>
                 </svg>
-                <span className="text-[12px] text-[#6b6560] group-hover:text-[#f15a22] truncate flex-1 transition-colors">{f.fileName}</span>
-                <span className="text-[10px] text-[#a09b96] flex-shrink-0">{formatFileSize(f.fileSize)}</span>
-                <svg className="w-3 h-3 text-[#c5c0bb] group-hover:text-[#f15a22] flex-shrink-0 transition-colors ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <span className="text-[12px] text-[#6B7280] group-hover:text-[#FF6B1A] truncate flex-1 transition-colors">{f.fileName}</span>
+                <span className="text-[10px] text-[#9CA3AF] flex-shrink-0">{formatFileSize(f.fileSize)}</span>
+                <svg className="w-3 h-3 text-[#E5E7EB] group-hover:text-[#FF6B1A] flex-shrink-0 transition-colors ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                   <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                 </svg>
@@ -548,7 +548,7 @@ function FileList({ files }: { files: { fileName: string; fileUrl: string; fileS
 }
 
 function RiwayatTimeline({ riwayat }: { riwayat: PicaRecord['riwayatApproval'] }) {
-  if (!riwayat?.length) return <p className="text-[12px] text-[#a09b96] italic">Belum ada riwayat</p>;
+  if (!riwayat?.length) return <p className="text-[12px] text-[#9CA3AF] italic">Belum ada riwayat</p>;
   return (
     <div className="space-y-3">
       {[...riwayat].reverse().map((r, i) => (
@@ -564,9 +564,9 @@ function RiwayatTimeline({ riwayat }: { riwayat: PicaRecord['riwayatApproval'] }
               <span className={`text-[12px] font-bold ${r.action === 'ACC' ? 'text-green-700' : 'text-red-700'}`}>
                 {r.action === 'ACC' ? 'Disetujui (ACC)' : 'Ditolak (TACC)'}
               </span>
-              <span className="text-[11px] text-[#a09b96]">— {r.oleh}</span>
+              <span className="text-[11px] text-[#9CA3AF]">— {r.oleh}</span>
             </div>
-            <div className="text-[11px] text-[#a09b96]">{formatTanggalPica(r.tanggal)}</div>
+            <div className="text-[11px] text-[#9CA3AF]">{formatTanggalPica(r.tanggal)}</div>
             {r.keterangan && (
               <div className={`mt-1 text-[12px] rounded-lg px-2 py-1 ${r.action === 'TACC' ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'}`}>
                 {r.keterangan}
@@ -601,8 +601,8 @@ function StatCard({ label, value, color, active, onClick }: {
 }) {
   return (
     <button onClick={onClick}
-      className={`bg-white rounded-xl border px-4 py-3 flex flex-col gap-1 shadow-sm w-full text-left transition-all ${active ? 'border-[#f15a22] ring-1 ring-[#f15a22]' : 'border-[#e5e0db] hover:border-[#c5c0bb]'} ${onClick ? 'cursor-pointer' : 'cursor-default'}`}>
-      <span className="text-[12px] text-[#6b6560]">{label}</span>
+      className={`bg-white rounded-xl border px-4 py-3 flex flex-col gap-1 shadow-sm w-full text-left transition-all ${active ? 'border-[#FF6B1A] ring-1 ring-[#FF6B1A]' : 'border-[#E5E7EB] hover:border-[#E5E7EB]'} ${onClick ? 'cursor-pointer' : 'cursor-default'}`}>
+      <span className="text-[12px] text-[#6B7280]">{label}</span>
       <span className={`text-2xl font-bold ${color}`}>{value}</span>
     </button>
   );
@@ -778,11 +778,11 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
 
         {/* Modal header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
-          <h2 className="font-bold text-[15px] text-[#231f20]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
+          <h2 className="font-bold text-[15px] text-[#1F2937]">
             {isEdit ? 'Edit Temuan PICA' : 'Tambah Record'}
           </h2>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -821,7 +821,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
                   return (
                     <button key={k} type="button" onClick={() => setKategori(k)}
                       className={`px-4 py-2 rounded-xl text-[13px] font-semibold border-2 transition-all ${
-                        kategori === k ? `${bg} ${text} ${border} shadow-sm` : 'bg-white text-[#6b6560] border-[#e5e0db] hover:border-[#c5c0bb]'
+                        kategori === k ? `${bg} ${text} ${border} shadow-sm` : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-[#E5E7EB]'
                       }`}>
                       {label}
                     </button>
@@ -839,21 +839,21 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
                   onFocus={() => { if (!kriteriaId) setShowKriteria(true); }} />
                 {kriteriaId && (
                   <button type="button" onClick={() => { setKriteriaId(''); setKriteriaSearch(''); setShowKriteria(false); }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
                   </button>
                 )}
                 {showKriteria && filteredKriteria.length > 0 && (
-                  <div className="absolute z-50 top-full left-0 right-0 bg-white border border-[#e5e0db] rounded-xl shadow-lg mt-1 max-h-52 overflow-y-auto">
+                  <div className="absolute z-50 top-full left-0 right-0 bg-white border border-[#E5E7EB] rounded-xl shadow-lg mt-1 max-h-52 overflow-y-auto">
                     {filteredKriteria.map((k) => (
                       <button key={k.id} type="button"
-                        className="w-full text-left px-4 py-2.5 hover:bg-orange-50 transition-colors border-b border-[#f1f0ee] last:border-0"
+                        className="w-full text-left px-4 py-2.5 hover:bg-orange-50 transition-colors border-b border-[#FAFAFA] last:border-0"
                         onClick={() => { setKriteriaId(k.id); setKriteriaSearch(''); setShowKriteria(false); }}>
                         <div className="flex items-start gap-2">
-                          <span className="inline-block bg-[#f15a22]/10 text-[#f15a22] text-[11px] font-mono font-semibold px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0">{k.id}</span>
-                          <span className="text-[12px] text-[#231f20] leading-snug">{k.deskripsi}</span>
+                          <span className="inline-block bg-[#FF6B1A]/10 text-[#FF6B1A] text-[11px] font-mono font-semibold px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0">{k.id}</span>
+                          <span className="text-[12px] text-[#1F2937] leading-snug">{k.deskripsi}</span>
                         </div>
                       </button>
                     ))}
@@ -861,7 +861,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
                 )}
                 {kriteriaId && selectedKriteria && (
                   <div className="mt-2 p-3 bg-orange-50 rounded-xl border border-orange-100 text-[12px]">
-                    <span className="inline-block bg-[#f15a22] text-white font-mono font-bold px-2 py-0.5 rounded mr-2">{selectedKriteria.id}</span>
+                    <span className="inline-block bg-[#FF6B1A] text-white font-mono font-bold px-2 py-0.5 rounded mr-2">{selectedKriteria.id}</span>
                     {selectedKriteria.deskripsi}
                   </div>
                 )}
@@ -917,7 +917,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
                 placeholder="Upload foto / dokumen temuan" subtext="Foto, PDF, dokumen" />
               {isEdit && record && record.dokumentasiTemuanFiles.length > 0 && (
                 <div className="mt-2">
-                  <p className="text-[11px] text-[#a09b96] mb-1">File sudah ada ({record.dokumentasiTemuanFiles.length}):</p>
+                  <p className="text-[11px] text-[#9CA3AF] mb-1">File sudah ada ({record.dokumentasiTemuanFiles.length}):</p>
                   <FileList files={record.dokumentasiTemuanFiles} />
                 </div>
               )}
@@ -935,7 +935,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
                   return (
                     <button key={h} type="button" onClick={() => toggleHirarki(h)}
                       className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold border transition-all ${
-                        selected ? 'bg-[#f15a22] text-white border-[#f15a22] shadow-sm' : 'bg-white text-[#6b6560] border-[#e5e0db] hover:border-[#f15a22] hover:text-[#f15a22]'
+                        selected ? 'bg-[#FF6B1A] text-white border-[#FF6B1A] shadow-sm' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-[#FF6B1A] hover:text-[#FF6B1A]'
                       }`}>
                       {selected && <span className="mr-1">✓</span>}{h}
                     </button>
@@ -971,13 +971,13 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
         </div>
 
         {/* Modal footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           <button onClick={onClose} disabled={saving}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors disabled:opacity-50">
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors disabled:opacity-50">
             Batal
           </button>
           <button onClick={handleSubmit} disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+            className="flex items-center gap-2 px-5 py-2 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60">
             {saving && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
             {saving ? 'Menyimpan...' : perbaikanFiles.length > 0 ? 'Simpan & Submit Perbaikan' : isEdit ? 'Simpan Perubahan' : 'Buat Temuan'}
           </button>
@@ -1100,14 +1100,14 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col">
 
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Submit Tindakan Perbaikan</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">Submit Tindakan Perbaikan</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">
               {isTacc ? '🔄 Revisi Perbaikan (TACC)' : '📤 Upload Bukti Perbaikan'}
             </h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -1136,28 +1136,28 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
 
               {/* Temuan masalah */}
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-1">Temuan Masalah</p>
-                <p className="text-[13px] text-[#231f20] font-medium leading-snug">{record.temuanMasalah}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-1">Temuan Masalah</p>
+                <p className="text-[13px] text-[#1F2937] font-medium leading-snug">{record.temuanMasalah}</p>
               </div>
 
               {/* Grid: Tanggal, Jenis, Kategori, Lokasi */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db]">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Tanggal Temuan</p>
-                  <p className="text-[12px] text-[#231f20] font-medium">{formatTanggalPica(record.tanggalTemuan)}</p>
+                <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Tanggal Temuan</p>
+                  <p className="text-[12px] text-[#1F2937] font-medium">{formatTanggalPica(record.tanggalTemuan)}</p>
                 </div>
-                <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db]">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Jenis Temuan</p>
-                  <p className="text-[12px] text-[#231f20] font-medium">{record.jenisTemuan || '—'}</p>
+                <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Jenis Temuan</p>
+                  <p className="text-[12px] text-[#1F2937] font-medium">{record.jenisTemuan || '—'}</p>
                 </div>
-                <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db]">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Tingkat Keparahan</p>
+                <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Tingkat Keparahan</p>
                   <span className={`inline-block text-[11px] font-bold px-2 py-0.5 rounded-lg ${kategoriBg} ${kategoriText}`}>
                     {kategoriLabel}
                   </span>
                 </div>
-                <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db]">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Batas Akhir</p>
+                <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Batas Akhir</p>
                   <p className={`text-[12px] font-bold ${sisaHariColor(sisa)}`}>
                     {formatTanggalPica(record.batasAkhir)}
                   </p>
@@ -1170,14 +1170,14 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
               </div>
 
               {/* Lokasi + PIC */}
-              <div className="bg-[#faf9f7] rounded-xl p-3 border border-[#e5e0db] grid grid-cols-2 gap-3">
+              <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB] grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">Lokasi / Divisi</p>
-                  <p className="text-[12px] text-[#231f20] font-medium">{record.lokasiDivisiNama || record.lokasiDivisiId || '—'}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Lokasi / Divisi</p>
+                  <p className="text-[12px] text-[#1F2937] font-medium">{record.lokasiDivisiNama || record.lokasiDivisiId || '—'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-0.5">PIC</p>
-                  <p className="text-[12px] text-[#231f20] font-medium">{record.picNama || '—'}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">PIC</p>
+                  <p className="text-[12px] text-[#1F2937] font-medium">{record.picNama || '—'}</p>
                 </div>
               </div>
 
@@ -1186,9 +1186,9 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
                 <div className="bg-orange-50 rounded-xl p-3 border border-orange-100">
                   <p className="text-[10px] font-bold uppercase tracking-wide text-orange-500 mb-0.5">Kriteria SMK3</p>
                   <div className="flex items-start gap-2">
-                    <span className="flex-shrink-0 inline-block bg-[#f15a22] text-white font-mono font-bold text-[11px] px-2 py-0.5 rounded mt-0.5">{record.kriteriaId}</span>
+                    <span className="flex-shrink-0 inline-block bg-[#FF6B1A] text-white font-mono font-bold text-[11px] px-2 py-0.5 rounded mt-0.5">{record.kriteriaId}</span>
                     {record.kriteriaDeskripsi && (
-                      <p className="text-[12px] text-[#6b6560] leading-snug">{record.kriteriaDeskripsi}</p>
+                      <p className="text-[12px] text-[#6B7280] leading-snug">{record.kriteriaDeskripsi}</p>
                     )}
                   </div>
                 </div>
@@ -1197,9 +1197,9 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
               {/* Dokumentasi temuan (teks + file) */}
               {(record.dokumentasiTemuanTeks || record.dokumentasiTemuanFiles.length > 0) && (
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#a09b96] mb-1.5">Dokumentasi Temuan</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-1.5">Dokumentasi Temuan</p>
                   {record.dokumentasiTemuanTeks && (
-                    <p className="text-[12px] text-[#6b6560] mb-2 leading-relaxed">{record.dokumentasiTemuanTeks}</p>
+                    <p className="text-[12px] text-[#6B7280] mb-2 leading-relaxed">{record.dokumentasiTemuanTeks}</p>
                   )}
                   {record.dokumentasiTemuanFiles.length > 0 && (
                     <FileList files={record.dokumentasiTemuanFiles} />
@@ -1220,7 +1220,7 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
                   return (
                     <button key={h} type="button" onClick={() => toggleHirarki(h)}
                       className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold border transition-all ${
-                        selected ? 'bg-[#f15a22] text-white border-[#f15a22] shadow-sm' : 'bg-white text-[#6b6560] border-[#e5e0db] hover:border-[#f15a22] hover:text-[#f15a22]'
+                        selected ? 'bg-[#FF6B1A] text-white border-[#FF6B1A] shadow-sm' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-[#FF6B1A] hover:text-[#FF6B1A]'
                       }`}>
                       {selected && <span className="mr-1">✓</span>}{h}
                     </button>
@@ -1238,9 +1238,9 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
             {/* File lama dengan tombol hapus */}
             {existingFiles.length > 0 && (
               <div>
-                <p className="text-[13px] font-semibold text-[#231f20] mb-1.5 flex items-center gap-1.5">
+                <p className="text-[13px] font-semibold text-[#1F2937] mb-1.5 flex items-center gap-1.5">
                   File Perbaikan Sebelumnya
-                  <span className="text-[11px] font-normal text-[#a09b96]">({existingFiles.length} file — hover untuk hapus)</span>
+                  <span className="text-[11px] font-normal text-[#9CA3AF]">({existingFiles.length} file — hover untuk hapus)</span>
                 </p>
                 <FileListWithDelete
                   files={existingFiles.map((f) => ({ ...(f as any), id: (f as any).id }))}
@@ -1284,8 +1284,8 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
         </div>
 
         {/* ── Footer ── */}
-        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
-          <p className="text-[11px] text-[#a09b96]">
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
+          <p className="text-[11px] text-[#9CA3AF]">
             {existingFiles.length > 0
               ? `${existingFiles.length} file lama tersisa${files.length > 0 ? ` + ${files.length} file baru` : ''}`
               : files.length > 0 ? `${files.length} file baru siap diupload` : 'Belum ada file'
@@ -1293,11 +1293,11 @@ function SubmitPerbaikanModal({ isOpen, onClose, onSuccess, record, user }: Subm
           </p>
           <div className="flex items-center gap-3">
             <button onClick={onClose} disabled={saving}
-              className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors disabled:opacity-50">
+              className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors disabled:opacity-50">
               Batal
             </button>
             <button onClick={handleSubmit} disabled={saving || (existingFiles.length === 0 && files.length === 0)}
-              className="flex items-center gap-2 px-5 py-2 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+              className="flex items-center gap-2 px-5 py-2 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60">
               {saving && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
               {saving ? 'Mengupload...' : isTacc ? '🔄 Submit Revisi → INPG' : '📤 Submit Perbaikan → INPG'}
             </button>
@@ -1360,12 +1360,12 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col">
 
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Approval Temuan</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Tutup Temuan (CLSD)</h2>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">Approval Temuan</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">Tutup Temuan (CLSD)</h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -1374,12 +1374,12 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
           {/* Info temuan */}
-          <div className="p-3 bg-white rounded-xl border border-[#e5e0db] text-[12px] space-y-1.5">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96]">Temuan</p>
-            <p className="text-[#231f20] font-medium">{record.temuanMasalah}</p>
-            <p className="text-[#6b6560]">PIC: <strong>{record.picNama}</strong> · Lokasi: {record.lokasiDivisiNama || record.lokasiDivisiId}</p>
+          <div className="p-3 bg-white rounded-xl border border-[#E5E7EB] text-[12px] space-y-1.5">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF]">Temuan</p>
+            <p className="text-[#1F2937] font-medium">{record.temuanMasalah}</p>
+            <p className="text-[#6B7280]">PIC: <strong>{record.picNama}</strong> · Lokasi: {record.lokasiDivisiNama || record.lokasiDivisiId}</p>
             <div className="flex flex-wrap gap-2 mt-1.5">
-              <span className="text-[11px] text-[#6b6560] bg-[#f1f0ee] px-2 py-0.5 rounded-full">Kriteria: {record.kriteriaId}</span>
+              <span className="text-[11px] text-[#6B7280] bg-[#FAFAFA] px-2 py-0.5 rounded-full">Kriteria: {record.kriteriaId}</span>
               {record.hierarkiPengendalian.map((h) => (
                 <span key={h} className="text-[11px] bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full">{h}</span>
               ))}
@@ -1388,15 +1388,15 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
 
           {/* Bukti perbaikan */}
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-2">Bukti Perbaikan yang Disubmit</p>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-2">Bukti Perbaikan yang Disubmit</p>
             {record.dokumentasiPerbaikanFiles.length > 0
               ? <FileList files={record.dokumentasiPerbaikanFiles} />
-              : <p className="text-[12px] text-[#a09b96] italic">Tidak ada file bukti</p>
+              : <p className="text-[12px] text-[#9CA3AF] italic">Tidak ada file bukti</p>
             }
             {record.rekomendasiPerbaikan && (
-              <div className="mt-3 p-3 bg-white rounded-xl border border-[#e5e0db]">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-1">Keterangan Perbaikan</p>
-                <p className="text-[13px] text-[#231f20]">{record.rekomendasiPerbaikan}</p>
+              <div className="mt-3 p-3 bg-white rounded-xl border border-[#E5E7EB]">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-1">Keterangan Perbaikan</p>
+                <p className="text-[13px] text-[#1F2937]">{record.rekomendasiPerbaikan}</p>
               </div>
             )}
           </div>
@@ -1404,32 +1404,32 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
           {/* Riwayat */}
           {record.riwayatApproval.length > 0 && (
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[#a09b96] mb-2">Riwayat</p>
+              <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-2">Riwayat</p>
               <RiwayatTimeline riwayat={record.riwayatApproval} />
             </div>
           )}
 
           {/* Keputusan */}
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-3">Keputusan Review <span className="text-red-500">*</span></p>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-3">Keputusan Review <span className="text-red-500">*</span></p>
             <div className="grid grid-cols-2 gap-3">
               <button type="button" onClick={() => setApprovalAction('ACC')}
                 className={`flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl border-2 transition-all ${
-                  approvalAction === 'ACC' ? 'border-green-500 bg-green-50' : 'border-[#e5e0db] bg-white hover:border-green-300'}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={approvalAction === 'ACC' ? '#16a34a' : '#a09b96'} strokeWidth="2.5">
+                  approvalAction === 'ACC' ? 'border-green-500 bg-green-50' : 'border-[#E5E7EB] bg-white hover:border-green-300'}`}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={approvalAction === 'ACC' ? '#16a34a' : '#9CA3AF'} strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
-                <span className={`font-bold text-[13px] ${approvalAction === 'ACC' ? 'text-green-700' : 'text-[#6b6560]'}`}>ACC</span>
-                <span className={`text-[11px] text-center ${approvalAction === 'ACC' ? 'text-green-600' : 'text-[#a09b96]'}`}>Setujui &amp; Tutup</span>
+                <span className={`font-bold text-[13px] ${approvalAction === 'ACC' ? 'text-green-700' : 'text-[#6B7280]'}`}>ACC</span>
+                <span className={`text-[11px] text-center ${approvalAction === 'ACC' ? 'text-green-600' : 'text-[#9CA3AF]'}`}>Setujui &amp; Tutup</span>
               </button>
               <button type="button" onClick={() => setApprovalAction('TACC')}
                 className={`flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl border-2 transition-all ${
-                  approvalAction === 'TACC' ? 'border-red-500 bg-red-50' : 'border-[#e5e0db] bg-white hover:border-red-300'}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={approvalAction === 'TACC' ? '#dc2626' : '#a09b96'} strokeWidth="2.5">
+                  approvalAction === 'TACC' ? 'border-red-500 bg-red-50' : 'border-[#E5E7EB] bg-white hover:border-red-300'}`}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={approvalAction === 'TACC' ? '#dc2626' : '#9CA3AF'} strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
-                <span className={`font-bold text-[13px] ${approvalAction === 'TACC' ? 'text-red-700' : 'text-[#6b6560]'}`}>TACC</span>
-                <span className={`text-[11px] text-center ${approvalAction === 'TACC' ? 'text-red-600' : 'text-[#a09b96]'}`}>Tolak &amp; Kembalikan</span>
+                <span className={`font-bold text-[13px] ${approvalAction === 'TACC' ? 'text-red-700' : 'text-[#6B7280]'}`}>TACC</span>
+                <span className={`text-[11px] text-center ${approvalAction === 'TACC' ? 'text-red-600' : 'text-[#9CA3AF]'}`}>Tolak &amp; Kembalikan</span>
               </button>
             </div>
 
@@ -1445,7 +1445,7 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
                   Status akan kembali ke <strong>OPEN</strong>. PIC diminta memperbaiki dan upload ulang bukti.
                 </div>
                 <div>
-                  <label className="block text-[13px] font-semibold text-[#231f20] mb-1.5">
+                  <label className="block text-[13px] font-semibold text-[#1F2937] mb-1.5">
                     Alasan Penolakan <span className="text-red-500">*</span>
                   </label>
                   <textarea className={textareaCls} rows={3}
@@ -1457,7 +1457,7 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
 
             {approvalAction && (
               <div className="mt-3">
-                <label className="block text-[13px] font-semibold text-[#231f20] mb-1.5">
+                <label className="block text-[13px] font-semibold text-[#1F2937] mb-1.5">
                   Catatan {approvalAction === 'TACC' ? '' : '(opsional)'}
                 </label>
                 {approvalAction === 'ACC' && (
@@ -1470,15 +1470,15 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db] flex-shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
           <button onClick={onClose} disabled={saving}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors disabled:opacity-50">
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors disabled:opacity-50">
             Batal
           </button>
           <button onClick={handleApproval}
             disabled={saving || !approvalAction || (approvalAction === 'TACC' && !keterangan.trim())}
             className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${
-              approvalAction === 'ACC' ? 'bg-green-600 hover:bg-green-700' : approvalAction === 'TACC' ? 'bg-red-600 hover:bg-red-700' : 'bg-[#a09b96]'
+              approvalAction === 'ACC' ? 'bg-green-600 hover:bg-green-700' : approvalAction === 'TACC' ? 'bg-red-600 hover:bg-red-700' : 'bg-[#9CA3AF]'
             }`}>
             {saving && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
             {saving ? 'Memproses...' : !approvalAction ? 'Pilih ACC / TACC' : approvalAction === 'ACC' ? 'Approve (ACC)' : 'Reject (TACC)'}
@@ -1553,12 +1553,12 @@ function PicaExportModal({ isOpen, onClose, records, onExportCSV, onExportHTML, 
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Export Data</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Download PICA</h2>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">Export Data</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">Download PICA</h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -1566,44 +1566,44 @@ function PicaExportModal({ isOpen, onClose, records, onExportCSV, onExportHTML, 
         </div>
 
         <div className="px-6 py-5 space-y-4">
-          <p className="text-[13px] text-[#6b6560]">
+          <p className="text-[13px] text-[#6B7280]">
             Kosongkan tanggal untuk export semua record.
           </p>
 
           {/* Format selector */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-2">Format Export</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-2">Format Export</label>
             <div className="grid grid-cols-3 gap-2">
               {/* HTML */}
               <button type="button" onClick={() => setExportFormat('html')}
-                className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all ${exportFormat === 'html' ? 'border-[#f15a22] bg-orange-50' : 'border-[#e5e0db] hover:border-[#f15a22]/40'}`}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'html' ? '#f15a22' : '#a09b96'} strokeWidth="2">
+                className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all ${exportFormat === 'html' ? 'border-[#FF6B1A] bg-orange-50' : 'border-[#E5E7EB] hover:border-[#FF6B1A]/40'}`}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'html' ? '#FF6B1A' : '#9CA3AF'} strokeWidth="2">
                   <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
                 </svg>
-                <span className={`font-bold text-[11px] ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#6b6560]'}`}>HTML</span>
-                <span className={`text-[9px] text-center leading-tight ${exportFormat === 'html' ? 'text-[#f15a22]' : 'text-[#a09b96]'}`}>Tabel + Foto</span>
+                <span className={`font-bold text-[11px] ${exportFormat === 'html' ? 'text-[#FF6B1A]' : 'text-[#6B7280]'}`}>HTML</span>
+                <span className={`text-[9px] text-center leading-tight ${exportFormat === 'html' ? 'text-[#FF6B1A]' : 'text-[#9CA3AF]'}`}>Tabel + Foto</span>
               </button>
               {/* PDF */}
               <button type="button" onClick={() => setExportFormat('pdf')}
-                className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all ${exportFormat === 'pdf' ? 'border-red-500 bg-red-50' : 'border-[#e5e0db] hover:border-red-300'}`}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'pdf' ? '#dc2626' : '#a09b96'} strokeWidth="2">
+                className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all ${exportFormat === 'pdf' ? 'border-red-500 bg-red-50' : 'border-[#E5E7EB] hover:border-red-300'}`}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'pdf' ? '#dc2626' : '#9CA3AF'} strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                 </svg>
-                <span className={`font-bold text-[11px] ${exportFormat === 'pdf' ? 'text-red-700' : 'text-[#6b6560]'}`}>PDF</span>
-                <span className={`text-[9px] text-center leading-tight ${exportFormat === 'pdf' ? 'text-red-600' : 'text-[#a09b96]'}`}>Print / Save</span>
+                <span className={`font-bold text-[11px] ${exportFormat === 'pdf' ? 'text-red-700' : 'text-[#6B7280]'}`}>PDF</span>
+                <span className={`text-[9px] text-center leading-tight ${exportFormat === 'pdf' ? 'text-red-600' : 'text-[#9CA3AF]'}`}>Print / Save</span>
               </button>
               {/* CSV */}
               <button type="button" onClick={() => setExportFormat('csv')}
-                className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all ${exportFormat === 'csv' ? 'border-green-500 bg-green-50' : 'border-[#e5e0db] hover:border-green-300'}`}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'csv' ? '#16a34a' : '#a09b96'} strokeWidth="2">
+                className={`flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all ${exportFormat === 'csv' ? 'border-green-500 bg-green-50' : 'border-[#E5E7EB] hover:border-green-300'}`}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={exportFormat === 'csv' ? '#16a34a' : '#9CA3AF'} strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                   <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>
                 </svg>
-                <span className={`font-bold text-[11px] ${exportFormat === 'csv' ? 'text-green-700' : 'text-[#6b6560]'}`}>CSV</span>
-                <span className={`text-[9px] text-center leading-tight ${exportFormat === 'csv' ? 'text-green-600' : 'text-[#a09b96]'}`}>Data saja</span>
+                <span className={`font-bold text-[11px] ${exportFormat === 'csv' ? 'text-green-700' : 'text-[#6B7280]'}`}>CSV</span>
+                <span className={`text-[9px] text-center leading-tight ${exportFormat === 'csv' ? 'text-green-600' : 'text-[#9CA3AF]'}`}>Data saja</span>
               </button>
             </div>
-            <p className="text-[11px] text-[#a09b96] mt-1.5">
+            <p className="text-[11px] text-[#9CA3AF] mt-1.5">
               {exportFormat === 'html' && 'File .html berisi tabel lengkap + foto before/after embedded. Buka di browser untuk lihat atau print.'}
               {exportFormat === 'pdf'  && 'Buka tab baru dengan tabel A3 landscape, klik "Print" untuk simpan sebagai PDF.'}
               {exportFormat === 'csv'  && 'Data semua field + URL foto. Buka di Excel / Google Sheets.'}
@@ -1612,37 +1612,37 @@ function PicaExportModal({ isOpen, onClose, records, onExportCSV, onExportHTML, 
 
           {/* Date range */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Dari Tanggal Temuan</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Dari Tanggal Temuan</label>
             <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A]" />
           </div>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#231f20] mb-1.5">Sampai Tanggal Temuan</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">Sampai Tanggal Temuan</label>
             <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-[14px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f15a22]/30 focus:border-[#f15a22]" />
+              className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A]" />
           </div>
 
           {/* Preview count */}
-          <div className="px-3 py-2 bg-[#faf9f7] rounded-xl border border-[#e5e0db]">
-            <p className="text-[12px] text-[#6b6560]">
+          <div className="px-3 py-2 bg-[#FAFAFA] rounded-xl border border-[#E5E7EB]">
+            <p className="text-[12px] text-[#6B7280]">
               Record yang akan diexport:{' '}
-              <strong className="text-[#231f20]">{previewCount}</strong>
+              <strong className="text-[#1F2937]">{previewCount}</strong>
               {' '}dari{' '}
-              <strong className="text-[#231f20]">{records.length}</strong> total
+              <strong className="text-[#1F2937]">{records.length}</strong> total
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e5e0db]">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB]">
           <button onClick={onClose} disabled={exporting}
-            className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">
             Batal
           </button>
           <button onClick={handleExport} disabled={exporting || previewCount === 0}
             className={`flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white rounded-xl transition-colors disabled:opacity-60 ${
               exportFormat === 'csv' ? 'bg-green-600 hover:bg-green-700' :
               exportFormat === 'pdf' ? 'bg-red-600 hover:bg-red-700' :
-              'bg-[#f15a22] hover:bg-[#d44d1a]'
+              'bg-[#FF6B1A] hover:bg-[#E85D0F]'
             }`}>
             {exporting ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1880,8 +1880,8 @@ export default function PicaListPage() {
     }));
 
     // ── Styles ──
-    const thStyle    = `padding:8px 10px;border:1px solid #d1d5db;background:#231f20;color:#fff;font-size:11px;font-weight:700;text-align:left;white-space:nowrap;`;
-    const thPhotoSt  = `padding:8px 10px;border:1px solid #d1d5db;background:#f15a22;color:#fff;font-size:11px;font-weight:700;text-align:center;white-space:nowrap;min-width:160px;`;
+    const thStyle    = `padding:8px 10px;border:1px solid #d1d5db;background:#1F2937;color:#fff;font-size:11px;font-weight:700;text-align:left;white-space:nowrap;`;
+    const thPhotoSt  = `padding:8px 10px;border:1px solid #d1d5db;background:#FF6B1A;color:#fff;font-size:11px;font-weight:700;text-align:center;white-space:nowrap;min-width:160px;`;
     const tdBase     = `padding:7px 10px;border:1px solid #e5e7eb;font-size:11px;vertical-align:top;`;
 
     // ── Header kolom tabel ──
@@ -1915,7 +1915,7 @@ export default function PicaListPage() {
         // Dokumen non-gambar
         const links = files.map((f) => {
           const href = f.fileUrl.startsWith('http') ? f.fileUrl : `${baseUrl}${f.fileUrl}`;
-          return `<a href="${href}" target="_blank" style="font-size:10px;color:#f15a22;display:block;">📄 ${f.fileName}</a>`;
+          return `<a href="${href}" target="_blank" style="font-size:10px;color:#FF6B1A;display:block;">📄 ${f.fileName}</a>`;
         }).join('');
         return `<td style="${tdSt}">${links}</td>`;
       }
@@ -1992,15 +1992,15 @@ export default function PicaListPage() {
       tr { page-break-inside: avoid; page-break-after: auto; }
       img { max-width: 120px !important; max-height: 90px !important; }
     }
-    .header { background: #231f20; color: white; padding: 16px 20px; margin-bottom: 14px; border-radius: 6px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+    .header { background: #1F2937; color: white; padding: 16px 20px; margin-bottom: 14px; border-radius: 6px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
     .header h1 { font-size: 18px; margin-bottom: 3px; }
     .header p { font-size: 11px; color: #9ca3af; }
     .stats { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
     .stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 14px; text-align: center; min-width: 90px; }
-    .stat-num { font-size: 20px; font-weight: 700; color: #f15a22; }
+    .stat-num { font-size: 20px; font-weight: 700; color: #FF6B1A; }
     .stat-label { font-size: 10px; color: #6b7280; }
-    .print-btn { background: #f15a22; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
-    .print-btn:hover { background: #d44d1a; }
+    .print-btn { background: #FF6B1A; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+    .print-btn:hover { background: #E85D0F; }
     .table-wrap { overflow-x: auto; border-radius: 6px; border: 1px solid #d1d5db; }
     table { border-collapse: collapse; width: 100%; min-width: 1400px; }
     thead th { position: sticky; top: 0; }
@@ -2013,7 +2013,7 @@ export default function PicaListPage() {
       <p>${dateLabel}</p>
     </div>
     <div style="text-align:right;">
-      <p style="font-size:13px;font-weight:700;color:#f15a22;">${data.length} Record</p>
+      <p style="font-size:13px;font-weight:700;color:#FF6B1A;">${data.length} Record</p>
       <p style="font-size:10px;color:#9ca3af;">SMK3 Safety System</p>
     </div>
   </div>
@@ -2075,8 +2075,8 @@ export default function PicaListPage() {
       base64Cache.set(url, await fetchImageAsBase64(url));
     }));
 
-    const thStyle   = `padding:6px 8px;border:1px solid #d1d5db;background:#231f20;color:#fff;font-size:10px;font-weight:700;text-align:left;white-space:nowrap;`;
-    const thPhotoSt = `padding:6px 8px;border:1px solid #d1d5db;background:#f15a22;color:#fff;font-size:10px;font-weight:700;text-align:center;white-space:nowrap;min-width:130px;`;
+    const thStyle   = `padding:6px 8px;border:1px solid #d1d5db;background:#1F2937;color:#fff;font-size:10px;font-weight:700;text-align:left;white-space:nowrap;`;
+    const thPhotoSt = `padding:6px 8px;border:1px solid #d1d5db;background:#FF6B1A;color:#fff;font-size:10px;font-weight:700;text-align:center;white-space:nowrap;min-width:130px;`;
     const tdBase    = `padding:6px 8px;border:1px solid #e5e7eb;font-size:10px;vertical-align:top;`;
 
     const headerCols = [
@@ -2179,14 +2179,14 @@ export default function PicaListPage() {
       img { max-width: 110px !important; max-height: 85px !important; }
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
-    .header { background: #231f20; color: white; padding: 12px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .header { background: #1F2937; color: white; padding: 12px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
     .header h1 { font-size: 14px; margin-bottom: 2px; }
     .header p { font-size: 10px; color: #9ca3af; }
     .stats { display: flex; gap: 8px; margin-bottom: 10px; }
     .stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 4px; padding: 5px 10px; text-align: center; }
-    .stat-num { font-size: 16px; font-weight: 700; color: #f15a22; }
+    .stat-num { font-size: 16px; font-weight: 700; color: #FF6B1A; }
     .stat-label { font-size: 9px; color: #6b7280; }
-    .print-btn { background: #f15a22; color: white; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+    .print-btn { background: #FF6B1A; color: white; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
     .table-wrap { overflow-x: auto; border: 1px solid #d1d5db; border-radius: 4px; }
     table { border-collapse: collapse; width: 100%; }
     thead th { position: sticky; top: 0; }
@@ -2199,7 +2199,7 @@ export default function PicaListPage() {
       <p>${dateLabel}</p>
     </div>
     <div style="text-align:right;">
-      <p style="font-size:12px;font-weight:700;color:#f15a22;">${data.length} Record</p>
+      <p style="font-size:12px;font-weight:700;color:#FF6B1A;">${data.length} Record</p>
       <p style="font-size:9px;color:#9ca3af;">Internal Audit SMK3 — HAAMI System</p>
     </div>
   </div>
@@ -2243,24 +2243,24 @@ export default function PicaListPage() {
   }
 
   const tabs: { key: FilterTab; label: string; count: number; color: string; activeColor: string }[] = [
-    { key: 'ALL',  label: 'ALL',      count: stats.total,      color: 'border-[#e5e0db] text-[#6b6560] hover:border-[#c5c0bb]',   activeColor: 'bg-[#231f20] text-white border-[#231f20]' },
-    { key: 'OPEN', label: '🔵 OPEN',    count: stats.open,       color: 'border-[#e5e0db] text-[#6b6560] hover:border-blue-300',     activeColor: 'bg-blue-600 text-white border-blue-600' },
+    { key: 'ALL',  label: 'ALL',      count: stats.total,      color: 'border-[#E5E7EB] text-[#6B7280] hover:border-[#E5E7EB]',   activeColor: 'bg-[#1F2937] text-white border-[#1F2937]' },
+    { key: 'OPEN', label: '🔵 OPEN',    count: stats.open,       color: 'border-[#E5E7EB] text-[#6B7280] hover:border-blue-300',     activeColor: 'bg-blue-600 text-white border-blue-600' },
     { key: 'TACC', label: '❌ TACC',    count: taccCount,        color: 'border-red-200 text-red-600 hover:border-red-400',          activeColor: 'bg-red-600 text-white border-red-600' },
-    { key: 'INPG', label: '⏳ INPG',    count: stats.inProgress, color: 'border-[#e5e0db] text-[#6b6560] hover:border-amber-300',   activeColor: 'bg-amber-500 text-white border-amber-500' },
-    { key: 'CLSD', label: '✅ CLSD',    count: stats.closed,     color: 'border-[#e5e0db] text-[#6b6560] hover:border-green-300',   activeColor: 'bg-green-600 text-white border-green-600' },
+    { key: 'INPG', label: '⏳ INPG',    count: stats.inProgress, color: 'border-[#E5E7EB] text-[#6B7280] hover:border-amber-300',   activeColor: 'bg-amber-500 text-white border-amber-500' },
+    { key: 'CLSD', label: '✅ CLSD',    count: stats.closed,     color: 'border-[#E5E7EB] text-[#6B7280] hover:border-green-300',   activeColor: 'bg-green-600 text-white border-green-600' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* ── Header (sesuai CrudPage) ── */}
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-6xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">Internal Audit SMK3</p>
-          <h1 className="font-bold text-white text-[clamp(22px,4vw,38px)] leading-tight">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">Internal Audit SMK3</p>
+          <h1 className="font-bold text-[#1F2937] text-[clamp(22px,4vw,38px)] leading-tight">
             Problem Identification &amp; Corrective Action
           </h1>
-          <p className="text-[#8a8580] text-[13px] mt-1.5">
+          <p className="text-[#6B7280] text-[13px] mt-1.5">
             Manajemen temuan audit dan tindakan perbaikan SMK3
           </p>
         </div>
@@ -2273,15 +2273,15 @@ export default function PicaListPage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
           {/* Search */}
           <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a09b96] pointer-events-none" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <input type="text"
               placeholder="Cari temuan, kriteria, PIC, lokasi..."
               value={search} onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-9 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors" />
+              className="w-full pl-10 pr-9 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors" />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]">
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
@@ -2293,7 +2293,7 @@ export default function PicaListPage() {
           <button
             onClick={() => setExportModalOpen(true)}
             disabled={records.length === 0}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#c5c0bb] text-[#231f20] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -2305,7 +2305,7 @@ export default function PicaListPage() {
           {/* Tambah record (admin only) */}
           {isAdmin && (
             <button onClick={() => setCreateOpen(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors whitespace-nowrap">
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors whitespace-nowrap">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
@@ -2327,33 +2327,33 @@ export default function PicaListPage() {
               )}
             </button>
           ))}
-          <span className="ml-auto text-[12px] text-[#a09b96]">{filtered.length} record</span>
+          <span className="ml-auto text-[12px] text-[#9CA3AF]">{filtered.length} record</span>
         </div>
 
         {/* ── Table ── */}
-        <div className="bg-white rounded-2xl border border-[#e5e0db] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-8 space-y-3">
-              {[1,2,3,4].map((i) => <div key={i} className="h-12 bg-[#f1f0ee] rounded-xl animate-pulse" />)}
+              {[1,2,3,4].map((i) => <div key={i} className="h-12 bg-[#FAFAFA] rounded-xl animate-pulse" />)}
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-[#f1f0ee] flex items-center justify-center mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+              <div className="w-16 h-16 rounded-2xl bg-[#FAFAFA] flex items-center justify-center mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14 2 14 8 20 8"/>
                   <line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
                 </svg>
               </div>
-              <p className="font-semibold text-[#231f20] text-[14px] mb-1">
+              <p className="font-semibold text-[#1F2937] text-[14px] mb-1">
                 {search ? 'Tidak ada record yang sesuai' : 'Belum ada data PICA'}
               </p>
-              <p className="text-[#6b6560] text-[13px]">
+              <p className="text-[#6B7280] text-[13px]">
                 {search ? `Tidak ditemukan untuk "${search}"` : 'Klik "+ Tambah Record" untuk menambahkan data pertama.'}
               </p>
               {isAdmin && !search && (
                 <button onClick={() => setCreateOpen(true)}
-                  className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-[#f15a22] hover:underline font-medium">
+                  className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-[#FF6B1A] hover:underline font-medium">
                   + Buat temuan pertama
                 </button>
               )}
@@ -2362,17 +2362,17 @@ export default function PicaListPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-[#e5e0db] bg-[#faf9f7]">
-                    <th className="text-left px-4 py-3 font-semibold text-[#6b6560] text-[11px] uppercase tracking-wide whitespace-nowrap">ID / Tanggal</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6b6560] text-[11px] uppercase tracking-wide">Temuan Masalah</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6b6560] text-[11px] uppercase tracking-wide">Lokasi</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6b6560] text-[11px] uppercase tracking-wide">PIC</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6b6560] text-[11px] uppercase tracking-wide whitespace-nowrap">Deadline</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6b6560] text-[11px] uppercase tracking-wide whitespace-nowrap">Status</th>
-                    <th className="text-center px-4 py-3 font-semibold text-[#6b6560] text-[11px] uppercase tracking-wide">Aksi</th>
+                  <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap">ID / Tanggal</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide">Temuan Masalah</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide">Lokasi</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide">PIC</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap">Deadline</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap">Status</th>
+                    <th className="text-center px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#f1f0ee]">
+                <tbody className="divide-y divide-[#FAFAFA]">
                   {filtered.map((record) => {
                     const sisa      = sisaHariDeadline(record.batasAkhir);
                     const terlambat = isTerlambat(record);
@@ -2381,17 +2381,17 @@ export default function PicaListPage() {
                     const canApprove = isAdmin && record.statusPerbaikan === 'INPG';
                     return (
                       <tr key={record.id}
-                        className={`hover:bg-[#faf9f7] transition-colors ${
+                        className={`hover:bg-[#FAFAFA] transition-colors ${
                           isTacc ? 'bg-red-50/40 border-l-2 border-l-red-400' : terlambat ? 'bg-red-50/30' : ''
                         }`}>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="font-mono text-[10px] text-[#a09b96]">{record.id.slice(0, 14)}…</div>
-                          <div className="text-[11px] text-[#6b6560] mt-0.5">{formatTanggalPica(record.tanggalTemuan)}</div>
+                          <div className="font-mono text-[10px] text-[#9CA3AF]">{record.id.slice(0, 14)}…</div>
+                          <div className="text-[11px] text-[#6B7280] mt-0.5">{formatTanggalPica(record.tanggalTemuan)}</div>
                         </td>
                         <td className="px-4 py-3 max-w-[260px]">
-                          <div className="font-medium text-[#231f20] line-clamp-2 leading-snug">{record.temuanMasalah}</div>
+                          <div className="font-medium text-[#1F2937] line-clamp-2 leading-snug">{record.temuanMasalah}</div>
                           {record.kriteriaDeskripsi && (
-                            <div className="text-[11px] text-[#a09b96] mt-0.5 line-clamp-1">Kriteria {record.kriteriaId}</div>
+                            <div className="text-[11px] text-[#9CA3AF] mt-0.5 line-clamp-1">Kriteria {record.kriteriaId}</div>
                           )}
                           {isTacc && (
                             <div className="mt-1 flex items-center gap-1 text-[11px] text-red-600">
@@ -2403,15 +2403,15 @@ export default function PicaListPage() {
                           )}
                         </td>
                         <td className="px-4 py-3 max-w-[140px]">
-                          <div className="text-[#6b6560] text-[12px] leading-snug line-clamp-2">
+                          <div className="text-[#6B7280] text-[12px] leading-snug line-clamp-2">
                             {record.lokasiDivisiNama || record.lokasiDivisiId}
                           </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-[#6b6560] text-[12px]">{record.picNama}</div>
+                          <div className="text-[#6B7280] text-[12px]">{record.picNama}</div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-[#6b6560] text-[12px]">{formatTanggalPica(record.batasAkhir)}</div>
+                          <div className="text-[#6B7280] text-[12px]">{formatTanggalPica(record.batasAkhir)}</div>
                           {record.statusPerbaikan !== 'CLSD' && sisa !== null && (
                             <div className={`text-[10px] mt-0.5 font-medium ${sisaHariColor(sisa)}`}>
                               {sisa < 0 ? `Terlambat ${Math.abs(sisa)} hr` : `Sisa ${sisa} hr`}
@@ -2427,7 +2427,7 @@ export default function PicaListPage() {
                             {/* Submit perbaikan — user, status OPEN */}
                             {canSubmit && (
                               <button onClick={() => setSubmitRecord(record)}
-                                className="p-1.5 rounded-lg text-[#6b6560] hover:text-[#f15a22] hover:bg-[#f1f0ee] transition-colors"
+                                className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FAFAFA] transition-colors"
                                 title="Submit Perbaikan">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <path d="M9 11l3 3L22 4"/>
@@ -2450,7 +2450,7 @@ export default function PicaListPage() {
                             {/* Edit — admin, status OPEN */}
                             {isAdmin && record.statusPerbaikan === 'OPEN' && (
                               <button onClick={() => setEditRecord(record)}
-                                className="p-1.5 rounded-lg text-[#6b6560] hover:text-[#f15a22] hover:bg-[#f1f0ee] transition-colors"
+                                className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FAFAFA] transition-colors"
                                 title="Edit Record">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -2463,7 +2463,7 @@ export default function PicaListPage() {
                             {isAdmin && (
                               <button onClick={() => handleDelete(record.id)}
                                 disabled={deletingId === record.id}
-                                className="p-1.5 rounded-lg text-[#6b6560] hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                                className="p-1.5 rounded-lg text-[#6B7280] hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
                                 title="Hapus Record">
                                 {deletingId === record.id ? (
                                   <div className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
@@ -2487,11 +2487,11 @@ export default function PicaListPage() {
           )}
 
           {!loading && filtered.length > 0 && (
-            <div className="px-4 py-3 border-t border-[#f1f0ee] flex items-center justify-between text-[12px] text-[#a09b96] bg-[#faf9f7]">
+            <div className="px-4 py-3 border-t border-[#FAFAFA] flex items-center justify-between text-[12px] text-[#9CA3AF] bg-[#FAFAFA]">
               <span>{filtered.length} dari {records.length} record</span>
               {(search || activeTab !== 'ALL') && (
                 <button onClick={() => { setSearch(''); setActiveTab('ALL'); }}
-                  className="text-[#f15a22] hover:underline text-[12px] font-medium">
+                  className="text-[#FF6B1A] hover:underline text-[12px] font-medium">
                   Reset filter
                 </button>
               )}

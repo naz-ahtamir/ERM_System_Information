@@ -102,10 +102,27 @@ async function fetchWithAuth<T = any>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+    });
+  } catch (netErr) {
+    // If backend server (e.g. port 3001) is offline, fallback to Next.js internal route in browser
+    if (typeof window !== 'undefined' && url.includes(':3001/api')) {
+      try {
+        response = await fetch(`/api${endpoint}`, {
+          ...options,
+          headers,
+        });
+      } catch {
+        throw new Error('Server backend tidak dapat dijangkau (port 3001). Pastikan server backend sedang berjalan.');
+      }
+    } else {
+      throw new Error('Gagal terhubung ke server backend. Pastikan server aktif.');
+    }
+  }
 
   // Handle 401 Unauthorized
   if (response.status === 401) {

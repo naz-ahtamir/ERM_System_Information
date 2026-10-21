@@ -66,12 +66,12 @@ function CreateSessionModal({ isOpen, onClose, onCreated }: CreateModalProps) {
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e0db]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB]">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#f15a22] mb-0.5">Safety Induction</p>
-            <h2 className="font-bold text-[15px] text-[#231f20]">Buat Sesi Baru</h2>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[#FF6B1A] mb-0.5">Safety Induction</p>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">Buat Sesi Baru</h2>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -85,17 +85,17 @@ function CreateSessionModal({ isOpen, onClose, onCreated }: CreateModalProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1.5">Tanggal *</label>
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1.5">Tanggal *</label>
               <input
                 type="date" value={form.tanggal} onChange={(e) => set('tanggal', e.target.value)} required
-                className="w-full px-3 py-2 text-[13px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20"
+                className="w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1.5">Status</label>
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1.5">Status</label>
               <select
                 value={form.status} onChange={(e) => set('status', e.target.value as SessionStatus)}
-                className="w-full appearance-none px-3 py-2 text-[13px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 bg-white"
+                className="w-full appearance-none px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 bg-white"
               >
                 <option value="INPG">Berlangsung</option>
                 <option value="CLSD">Selesai</option>
@@ -104,39 +104,39 @@ function CreateSessionModal({ isOpen, onClose, onCreated }: CreateModalProps) {
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1.5">Lokasi *</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1.5">Lokasi *</label>
             <input
               type="text" value={form.lokasi} onChange={(e) => set('lokasi', e.target.value)}
               placeholder="cth: Gedung A, Ruang Training" required
-              className="w-full px-3 py-2 text-[13px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20"
+              className="w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1.5">Topik / Judul</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1.5">Topik / Judul</label>
             <input
               type="text" value={form.topik} onChange={(e) => set('topik', e.target.value)}
               placeholder="cth: Safety Induction Karyawan Baru Juli 2026"
-              className="w-full px-3 py-2 text-[13px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20"
+              className="w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6b6560] mb-1.5">Deskripsi</label>
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#6B7280] mb-1.5">Deskripsi</label>
             <textarea
               value={form.deskripsi} onChange={(e) => set('deskripsi', e.target.value)}
               rows={2} placeholder="Keterangan tambahan (opsional)"
-              className="w-full px-3 py-2 text-[13px] border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 resize-none"
+              className="w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 resize-none"
             />
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} disabled={saving}
-              className="px-4 py-2 text-[13px] font-semibold text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors">
+              className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors">
               Batal
             </button>
             <button type="submit" disabled={saving}
-              className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#f15a22] rounded-xl hover:bg-[#d44d1a] transition-colors disabled:opacity-60">
+              className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60">
               {saving ? (
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -166,12 +166,12 @@ function QRModal({ session, onClose }: { session: InductionSession; onClose: () 
     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm text-center">
-        <div className="px-6 py-4 border-b border-[#e5e0db] flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-[#E5E7EB] flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-bold text-[#f15a22] uppercase tracking-wide">QR Code</p>
-            <p className="font-bold text-[15px] text-[#231f20]">{session.kodeSesi}</p>
+            <p className="text-[11px] font-bold text-[#FF6B1A] uppercase tracking-wide">QR Code</p>
+            <p className="font-bold text-[15px] text-[#1F2937]">{session.kodeSesi}</p>
           </div>
-          <button onClick={onClose} className="text-[#6b6560] hover:text-[#231f20] p-1">
+          <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -180,16 +180,16 @@ function QRModal({ session, onClose }: { session: InductionSession; onClose: () 
         <div className="px-6 py-6 space-y-4">
           {/* QR Image */}
           <div className="flex justify-center">
-            <img src={qrUrl} alt="QR Code" className="w-56 h-56 rounded-xl border border-[#e5e0db]" />
+            <img src={qrUrl} alt="QR Code" className="w-56 h-56 rounded-xl border border-[#E5E7EB]" />
           </div>
-          <p className="text-[12px] text-[#6b6560]">Peserta scan QR ini untuk daftar hadir</p>
-          <div className="px-3 py-2 bg-[#faf9f7] rounded-xl border border-[#e5e0db] text-left">
-            <p className="text-[10px] text-[#a09b96] mb-0.5">URL Scan</p>
-            <p className="text-[11px] text-[#231f20] break-all font-mono">{scanUrl}</p>
+          <p className="text-[12px] text-[#6B7280]">Peserta scan QR ini untuk daftar hadir</p>
+          <div className="px-3 py-2 bg-[#FAFAFA] rounded-xl border border-[#E5E7EB] text-left">
+            <p className="text-[10px] text-[#9CA3AF] mb-0.5">URL Scan</p>
+            <p className="text-[11px] text-[#1F2937] break-all font-mono">{scanUrl}</p>
           </div>
           <a
             href={qrUrl} download={`QR-${session.kodeSesi}.png`} target="_blank" rel="noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -220,16 +220,16 @@ function SessionCard({
   const count = session._count?.participants ?? session.participants?.length ?? 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#e5e0db] shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       {/* Top accent */}
-      <div className={`h-1 ${session.status === 'INPG' ? 'bg-green-500' : session.status === 'CLSD' ? 'bg-blue-500' : 'bg-[#c5c0bb]'}`} />
+      <div className={`h-1 ${session.status === 'INPG' ? 'bg-green-500' : session.status === 'CLSD' ? 'bg-blue-500' : 'bg-[#E5E7EB]'}`} />
 
       <div className="p-5">
         {/* Header row */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-bold text-[#f15a22] uppercase tracking-wide mb-0.5">{session.kodeSesi}</p>
-            <p className="font-bold text-[15px] text-[#231f20] truncate">{session.topik || session.lokasi}</p>
+            <p className="text-[10px] font-bold text-[#FF6B1A] uppercase tracking-wide mb-0.5">{session.kodeSesi}</p>
+            <p className="font-bold text-[15px] text-[#1F2937] truncate">{session.topik || session.lokasi}</p>
           </div>
           <span className={`flex-shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${sl.bg} ${sl.text}`}>
             {sl.label}
@@ -237,7 +237,7 @@ function SessionCard({
         </div>
 
         {/* Meta */}
-        <div className="space-y-1.5 text-[12px] text-[#6b6560] mb-4">
+        <div className="space-y-1.5 text-[12px] text-[#6B7280] mb-4">
           <div className="flex items-center gap-2">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
@@ -263,13 +263,13 @@ function SessionCard({
 
         {/* Stat */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex-1 bg-[#faf9f7] rounded-xl p-2.5 text-center border border-[#e5e0db]">
-            <p className="text-[20px] font-bold text-[#f15a22]">{count}</p>
-            <p className="text-[10px] text-[#6b6560]">Peserta</p>
+          <div className="flex-1 bg-[#FAFAFA] rounded-xl p-2.5 text-center border border-[#E5E7EB]">
+            <p className="text-[20px] font-bold text-[#FF6B1A]">{count}</p>
+            <p className="text-[10px] text-[#6B7280]">Peserta</p>
           </div>
-          <div className="flex-1 bg-[#faf9f7] rounded-xl p-2.5 text-center border border-[#e5e0db]">
-            <p className="text-[20px] font-bold text-[#231f20]">{session._count?.media ?? 0}</p>
-            <p className="text-[10px] text-[#6b6560]">Dokumen</p>
+          <div className="flex-1 bg-[#FAFAFA] rounded-xl p-2.5 text-center border border-[#E5E7EB]">
+            <p className="text-[20px] font-bold text-[#1F2937]">{session._count?.media ?? 0}</p>
+            <p className="text-[10px] text-[#6B7280]">Dokumen</p>
           </div>
         </div>
 
@@ -277,13 +277,13 @@ function SessionCard({
         <div className="flex gap-2">
           <button
             onClick={() => onDetail(session)}
-            className="flex-1 py-2 text-[13px] font-semibold text-white bg-[#231f20] rounded-xl hover:bg-[#3d3838] transition-colors"
+            className="flex-1 py-2 text-[13px] font-semibold text-white bg-[#1F2937] rounded-xl hover:bg-[#3d3838] transition-colors"
           >
             Detail
           </button>
           <button
             onClick={() => onQR(session)}
-            className="px-3 py-2 text-[#231f20] bg-[#f1f0ee] rounded-xl hover:bg-[#e5e0db] transition-colors"
+            className="px-3 py-2 text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors"
             title="Lihat QR Code"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -377,19 +377,19 @@ export default function SafetyInductionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f1f0ee]">
+    <div className="min-h-screen bg-[#FAFAFA]">
       {/* ── Dark Header ── */}
-      <div className="bg-[#231f20] px-6 md:px-10 py-8 border-b-[3px] border-b-[#f15a22]">
+      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-6xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#f15a22] mb-2">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">
             Safety Competency
           </p>
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="font-bold text-white text-[clamp(22px,4vw,38px)] leading-tight">
+              <h1 className="font-bold text-[#1F2937] text-[clamp(22px,4vw,38px)] leading-tight">
                 Safety Induction
               </h1>
-              <p className="text-[#8a8580] text-[13px] mt-1.5">
+              <p className="text-[#6B7280] text-[13px] mt-1.5">
                 Manajemen sesi induksi K3 untuk karyawan baru, kontraktor, tamu, dan supplier.
               </p>
             </div>
@@ -404,17 +404,17 @@ export default function SafetyInductionPage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
           {/* Search */}
           <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a09b96]" width="15" height="15"
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" width="15" height="15"
               viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input
               type="text" value={search} onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari kode sesi, lokasi, topik, PIC..."
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#c5c0bb] rounded-xl focus:outline-none focus:border-[#f15a22] focus:ring-2 focus:ring-[#f15a22]/20 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a09b96] hover:text-[#231f20]">
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -443,16 +443,16 @@ export default function SafetyInductionPage() {
               <style>
                 body{font-family:Arial,sans-serif;font-size:11px;color:#1f2937;padding:16px}
                 @media print{body{padding:4mm}.no-print{display:none!important}@page{margin:8mm;size:A4 landscape}}
-                .header{background:#231f20;color:white;padding:14px 18px;margin-bottom:12px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
+                .header{background:#1F2937;color:white;padding:14px 18px;margin-bottom:12px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
                 .header h1{font-size:16px;margin:0 0 3px}.header p{font-size:10px;color:#9ca3af;margin:0}
-                .print-btn{background:#f15a22;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-bottom:12px}
+                .print-btn{background:#FF6B1A;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-bottom:12px}
                 table{border-collapse:collapse;width:100%}
-                th{background:#231f20;color:white;padding:8px 10px;text-align:left;font-size:11px;position:sticky;top:0}
+                th{background:#1F2937;color:white;padding:8px 10px;text-align:left;font-size:11px;position:sticky;top:0}
                 td{padding:7px 10px;border-bottom:1px solid #e5e7eb;vertical-align:middle}
               </style></head><body>
               <div class="header">
                 <div><h1>Safety Induction — Rekap Sesi</h1><p>Dicetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p></div>
-                <div style="text-align:right"><p style="font-size:14px;font-weight:700;color:#f15a22">${filtered.length} Sesi</p><p>SMK3 Safety System</p></div>
+                <div style="text-align:right"><p style="font-size:14px;font-weight:700;color:#FF6B1A">${filtered.length} Sesi</p><p>SMK3 Safety System</p></div>
               </div>
               <button class="print-btn no-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
               <table>
@@ -462,7 +462,7 @@ export default function SafetyInductionPage() {
               const w = window.open('', '_blank');
               if (w) { w.document.write(html); w.document.close(); }
             }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#c5c0bb] text-[#231f20] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-green-400 hover:text-green-700 transition-colors whitespace-nowrap"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -475,7 +475,7 @@ export default function SafetyInductionPage() {
           {isAdmin && (
             <button
               onClick={() => setShowCreate(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#f15a22] text-white text-[13px] font-semibold rounded-xl hover:bg-[#d44d1a] transition-colors whitespace-nowrap"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors whitespace-nowrap"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -488,9 +488,9 @@ export default function SafetyInductionPage() {
         {/* Toolbar Row 2: Status chip buttons */}
         <div className="flex items-center gap-2 mb-6 flex-wrap">
           {([
-            { value: 'ALL',  label: 'Semua',          count: statusCounts.ALL,  cls: 'bg-[#231f20] text-white border-[#231f20]',  off: 'bg-white border-[#e5e0db] text-[#6b6560] hover:border-[#c5c0bb]' },
-            { value: 'INPG', label: '🟢 Berlangsung',  count: statusCounts.INPG, cls: 'bg-green-600 text-white border-green-600',   off: 'bg-white border-[#e5e0db] text-[#6b6560] hover:border-green-300' },
-            { value: 'CLSD', label: '🔵 Selesai',      count: statusCounts.CLSD, cls: 'bg-blue-600 text-white border-blue-600',     off: 'bg-white border-[#e5e0db] text-[#6b6560] hover:border-blue-300' },
+            { value: 'ALL',  label: 'Semua',          count: statusCounts.ALL,  cls: 'bg-[#1F2937] text-white border-[#1F2937]',  off: 'bg-white border-[#E5E7EB] text-[#6B7280] hover:border-[#E5E7EB]' },
+            { value: 'INPG', label: '🟢 Berlangsung',  count: statusCounts.INPG, cls: 'bg-green-600 text-white border-green-600',   off: 'bg-white border-[#E5E7EB] text-[#6B7280] hover:border-green-300' },
+            { value: 'CLSD', label: '🔵 Selesai',      count: statusCounts.CLSD, cls: 'bg-blue-600 text-white border-blue-600',     off: 'bg-white border-[#E5E7EB] text-[#6B7280] hover:border-blue-300' },
           ] as const).map((tab) => (
             <button key={tab.value} onClick={() => setFilterStatus(tab.value)}
               className={`px-3.5 py-1.5 rounded-lg text-[12px] font-semibold transition-colors border ${filterStatus === tab.value ? tab.cls : tab.off}`}>
@@ -504,25 +504,25 @@ export default function SafetyInductionPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-2xl border border-[#e5e0db] h-52 animate-pulse" />
+              <div key={i} className="bg-white rounded-2xl border border-[#E5E7EB] h-52 animate-pulse" />
             ))}
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-[14px] font-semibold text-[#231f20] mb-2">{error}</p>
-            <button onClick={fetchSessions} className="text-[13px] text-[#f15a22] hover:underline">Coba lagi</button>
+            <p className="text-[14px] font-semibold text-[#1F2937] mb-2">{error}</p>
+            <button onClick={fetchSessions} className="text-[13px] text-[#FF6B1A] hover:underline">Coba lagi</button>
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#f1f0ee] flex items-center justify-center mb-4">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c5c0bb" strokeWidth="1.5">
+            <div className="w-16 h-16 rounded-2xl bg-[#FAFAFA] flex items-center justify-center mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5">
                 <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <p className="font-semibold text-[#231f20] text-[14px] mb-1">
+            <p className="font-semibold text-[#1F2937] text-[14px] mb-1">
               {search || filterStatus !== 'ALL' ? 'Tidak ada hasil' : 'Belum ada sesi induction'}
             </p>
-            <p className="text-[#6b6560] text-[13px]">
+            <p className="text-[#6B7280] text-[13px]">
               {search || filterStatus !== 'ALL' ? 'Coba ubah filter' : 'Klik "Buat Sesi" untuk mulai'}
             </p>
           </div>
