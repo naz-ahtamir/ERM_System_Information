@@ -680,6 +680,8 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
         setBatasAkhir(record.batasAkhir);
         setHirarki(record.hierarkiPengendalian as HiraruchiPengendalian[]);
         setRekomendasi(record.rekomendasiPerbaikan || '');
+        setTemuanFiles([]);
+        setPerbaikanFiles([]);
       } else {
         setTemuanMasalah(''); setKriteriaId(''); setKriteriaSearch('');
         setKategori(''); setLokasiDivisiId(''); setPicNamaManual(''); setPicIdManual('');
