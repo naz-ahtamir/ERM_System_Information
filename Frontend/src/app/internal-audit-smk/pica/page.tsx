@@ -1739,7 +1739,7 @@ type FilterTab = 'ALL' | 'OPEN' | 'INPG' | 'CLSD' | 'TACC';
 
 export default function PicaListPage() {
   const { user, isLoading: authLoading } = useAuth();
-  const isAdmin = user?.role === 'admin' || user?.role === 'supervisor';
+  const isAdmin = user?.role === 'admin';
   const searchParams = useSearchParams();
 
   const [records,    setRecords]    = useState<PicaRecord[]>([]);
@@ -1755,8 +1755,7 @@ export default function PicaListPage() {
   const [approvalRecord,    setApprovalRecord]     = useState<PicaRecord | null>(null);
 
   const fetchData = useCallback(async () => {
-    // Tunggu sampai auth selesai resolve — cegah fetch dengan divisionId = null
-    // saat user non-admin masih dalam proses load dari /api/auth/me
+    // Tunggu sampai auth selesai resolve — cegah fetch sebelum divisionId tersedia
     if (authLoading) return;
 
     setLoading(true);
@@ -1764,18 +1763,16 @@ export default function PicaListPage() {
       let filters: PicaFilters | undefined;
 
       if (!isAdmin) {
-        // Non-admin (user/pic): hanya boleh lihat record divisinya sendiri.
-        // Jika divisionId belum tersedia (user tidak terdaftar di divisi manapun),
-        // filter pakai picId agar tetap terbatas pada record miliknya.
+        // Non-admin hanya lihat record divisinya sendiri
         if (user?.divisionId) {
           filters = { divisiId: user.divisionId };
-        } else if (user?.id) {
-          filters = { picId: user.id };
+        } else {
+          // User tidak terdaftar di divisi manapun → tidak ada record yang relevan
+          setRecords([]);
+          return;
         }
-        // Jika keduanya tidak ada, tetap kirim filter picId kosong
-        // agar backend tidak mengembalikan semua data
       }
-      // isAdmin → filters tetap undefined → backend kembalikan semua record
+      // Admin/supervisor → tanpa filter → lihat semua record
 
       const data = await picaApi.getAll(filters);
       setRecords(data);
@@ -1784,7 +1781,7 @@ export default function PicaListPage() {
     } finally {
       setLoading(false);
     }
-  }, [isAdmin, authLoading, user?.divisionId, user?.id]);
+  }, [isAdmin, authLoading, user?.divisionId]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 

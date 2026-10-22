@@ -11,7 +11,8 @@ export interface User {
   nama: string;
   role: 'admin' | 'supervisor' | 'user';
   departemen?: string;
-  divisionId?: string | null;   // UUID FK ke tabel divisions
+  departmentId?: string | null;  // UUID FK ke tabel departments
+  divisionId?: string | null;    // UUID FK ke tabel divisions
   email?: string;
   name?: string;    // Alias untuk nama
   department?: string; // Alias untuk departemen
@@ -105,7 +106,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               if (data?.id) {
                 setUser(prev => prev ? {
                   ...prev,
-                  divisionId: data.divisionId ?? null,
+                  divisionId:   data.divisionId   ?? null,
+                  departmentId: data.departmentId ?? null,
                 } : prev);
               }
             })
@@ -187,7 +189,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         departemen: response.user.departemen,
         department: response.user.departemen, // Alias
         email: response.user.email || `${response.user.idKaryawan}@smk3.local`, // Fallback
-        divisionId: response.user.divisionId ?? null,
+        divisionId:   response.user.divisionId   ?? null,
+        departmentId: response.user.departmentId ?? null,
       };
       
       console.log('🔵 AuthContext: About to setUser()');
