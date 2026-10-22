@@ -13,7 +13,7 @@ import {
   formatFileSize,
   isImageFile,
 } from '@/lib/picaApi';
-import type { PicaRecord, StatusPerbaikan, KategoriTemuan, JenisTemuan, HiraruchiPengendalian } from '@/types/pica';
+import type { PicaRecord, PicaFilters, StatusPerbaikan, KategoriTemuan, JenisTemuan, HiraruchiPengendalian } from '@/types/pica';
 import {
   KATEGORI_TEMUAN_LABELS,
   STATUS_PERBAIKAN_LABELS,
@@ -1738,7 +1738,7 @@ function PicaExportModal({ isOpen, onClose, records, onExportCSV, onExportHTML, 
 type FilterTab = 'ALL' | 'OPEN' | 'INPG' | 'CLSD' | 'TACC';
 
 export default function PicaListPage() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const isAdmin = user?.role === 'admin' || user?.role === 'supervisor';
   const searchParams = useSearchParams();
 
@@ -1755,11 +1755,28 @@ export default function PicaListPage() {
   const [approvalRecord,    setApprovalRecord]     = useState<PicaRecord | null>(null);
 
   const fetchData = useCallback(async () => {
+    // Tunggu sampai auth selesai resolve — cegah fetch dengan divisionId = null
+    // saat user non-admin masih dalam proses load dari /api/auth/me
+    if (authLoading) return;
+
     setLoading(true);
     try {
-      const filters = !isAdmin && user?.divisionId
-        ? { divisiId: user.divisionId }
-        : undefined;
+      let filters: PicaFilters | undefined;
+
+      if (!isAdmin) {
+        // Non-admin (user/pic): hanya boleh lihat record divisinya sendiri.
+        // Jika divisionId belum tersedia (user tidak terdaftar di divisi manapun),
+        // filter pakai picId agar tetap terbatas pada record miliknya.
+        if (user?.divisionId) {
+          filters = { divisiId: user.divisionId };
+        } else if (user?.id) {
+          filters = { picId: user.id };
+        }
+        // Jika keduanya tidak ada, tetap kirim filter picId kosong
+        // agar backend tidak mengembalikan semua data
+      }
+      // isAdmin → filters tetap undefined → backend kembalikan semua record
+
       const data = await picaApi.getAll(filters);
       setRecords(data);
     } catch {
@@ -1767,7 +1784,7 @@ export default function PicaListPage() {
     } finally {
       setLoading(false);
     }
-  }, [isAdmin, user?.divisionId]);
+  }, [isAdmin, authLoading, user?.divisionId, user?.id]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
