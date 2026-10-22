@@ -664,6 +664,11 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
   const [rekomendasi,          setRekomendasi]          = useState('');
   const [perbaikanFiles,       setPerbaikanFiles]       = useState<File[]>([]);
 
+  // ── State untuk hapus file existing (temuan + perbaikan) ───────────────
+  const [deletingIds,           setDeletingIds]           = useState<Set<string>>(new Set());
+  const [existingTemuanFiles,   setExistingTemuanFiles]   = useState<PicaRecord['dokumentasiTemuanFiles']>([]);
+  const [existingPerbaikanFiles, setExistingPerbaikanFiles] = useState<PicaRecord['dokumentasiPerbaikanFiles']>([]);
+
   // Populate on edit
   useEffect(() => {
     if (isOpen) {
@@ -682,6 +687,9 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
         setRekomendasi(record.rekomendasiPerbaikan || '');
         setTemuanFiles([]);
         setPerbaikanFiles([]);
+        setDeletingIds(new Set());
+        setExistingTemuanFiles(record.dokumentasiTemuanFiles);
+        setExistingPerbaikanFiles(record.dokumentasiPerbaikanFiles);
       } else {
         setTemuanMasalah(''); setKriteriaId(''); setKriteriaSearch('');
         setKategori(''); setLokasiDivisiId(''); setPicNamaManual(''); setPicIdManual('');
@@ -689,9 +697,43 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
         setTanggalTemuan(new Date().toISOString().split('T')[0]);
         setJenisTemuan(''); setBatasAkhir('');
         setHirarki([]); setRekomendasi(''); setPerbaikanFiles([]);
+        setDeletingIds(new Set());
+        setExistingTemuanFiles([]);
+        setExistingPerbaikanFiles([]);
       }
     }
   }, [isOpen, record]);
+
+  // ── Handler hapus file existing ────────────────────────────────────────
+  const handleDeleteTemuanFile = async (fileId: string) => {
+    if (!record) return;
+    if (!confirm('Hapus foto/file ini? Tindakan ini tidak bisa dibatalkan.')) return;
+    setDeletingIds((prev) => new Set(prev).add(fileId));
+    try {
+      await picaApi.deleteFile(record.id, fileId);
+      setExistingTemuanFiles((prev) => prev.filter((f) => (f as any).id !== fileId));
+      toast.success('File berhasil dihapus');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Gagal menghapus file');
+    } finally {
+      setDeletingIds((prev) => { const s = new Set(prev); s.delete(fileId); return s; });
+    }
+  };
+
+  const handleDeletePerbaikanFile = async (fileId: string) => {
+    if (!record) return;
+    if (!confirm('Hapus bukti perbaikan ini? Tindakan ini tidak bisa dibatalkan.')) return;
+    setDeletingIds((prev) => new Set(prev).add(fileId));
+    try {
+      await picaApi.deleteFile(record.id, fileId);
+      setExistingPerbaikanFiles((prev) => prev.filter((f) => (f as any).id !== fileId));
+      toast.success('File berhasil dihapus');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Gagal menghapus file');
+    } finally {
+      setDeletingIds((prev) => { const s = new Set(prev); s.delete(fileId); return s; });
+    }
+  };
 
   const selectedDivisi   = divisiList.find((d) => d.id === lokasiDivisiId);
   const selectedKriteria = KRITERIA_SMK3.find((k) => k.id === kriteriaId);
@@ -913,16 +955,26 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
               <textarea className={`${textareaCls} mb-3`} rows={2}
                 placeholder="Deskripsi singkat kondisi saat temuan (opsional)..."
                 value={dokTeks} onChange={(e) => setDokTeks(e.target.value)} />
+              {/* File lama (edit mode) — dengan tombol hapus */}
+              {isEdit && existingTemuanFiles.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[12px] font-semibold text-[#1F2937] mb-1.5 flex items-center gap-1.5">
+                    File Tersimpan
+                    <span className="text-[11px] font-normal text-[#9CA3AF]">({existingTemuanFiles.length} file — hover untuk hapus)</span>
+                  </p>
+                  <FileListWithDelete
+                    files={existingTemuanFiles.map((f) => ({ ...(f as any), id: (f as any).id }))}
+                    deletingIds={deletingIds}
+                    onDelete={handleDeleteTemuanFile}
+                  />
+                </div>
+              )}
+              {/* Upload file baru */}
               <FileUploadArea files={temuanFiles}
                 onAdd={(f) => setTemuanFiles((p) => [...p, ...f])}
                 onRemove={(i) => setTemuanFiles((p) => p.filter((_, j) => j !== i))}
-                placeholder="Upload foto / dokumen temuan" subtext="Foto, PDF, dokumen" />
-              {isEdit && record && record.dokumentasiTemuanFiles.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-[11px] text-[#9CA3AF] mb-1">File sudah ada ({record.dokumentasiTemuanFiles.length}):</p>
-                  <FileList files={record.dokumentasiTemuanFiles} />
-                </div>
-              )}
+                placeholder={isEdit && existingTemuanFiles.length > 0 ? 'Tambah foto / dokumen baru' : 'Upload foto / dokumen temuan'}
+                subtext="Foto, PDF, dokumen" />
             </Field>
           </FormSection>
 
@@ -953,10 +1005,24 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
             </Field>
 
             <Field label="Bukti Perbaikan" optional hint="Jika diupload, status temuan akan otomatis menjadi INPG">
+              {/* File bukti perbaikan lama (edit mode) — dengan tombol hapus */}
+              {isEdit && existingPerbaikanFiles.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[12px] font-semibold text-[#1F2937] mb-1.5 flex items-center gap-1.5">
+                    Bukti Perbaikan Tersimpan
+                    <span className="text-[11px] font-normal text-[#9CA3AF]">({existingPerbaikanFiles.length} file — hover untuk hapus)</span>
+                  </p>
+                  <FileListWithDelete
+                    files={existingPerbaikanFiles.map((f) => ({ ...(f as any), id: (f as any).id }))}
+                    deletingIds={deletingIds}
+                    onDelete={handleDeletePerbaikanFile}
+                  />
+                </div>
+              )}
               <FileUploadArea files={perbaikanFiles}
                 onAdd={(f) => setPerbaikanFiles((p) => [...p, ...f])}
                 onRemove={(i) => setPerbaikanFiles((p) => p.filter((_, j) => j !== i))}
-                placeholder="Upload bukti perbaikan (opsional)"
+                placeholder={isEdit && existingPerbaikanFiles.length > 0 ? 'Tambah bukti perbaikan baru' : 'Upload bukti perbaikan (opsional)'}
                 subtext="Foto, PDF, dokumen — jika diisi, status langsung INPG" />
               {perbaikanFiles.length > 0 && (
                 <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-2">
