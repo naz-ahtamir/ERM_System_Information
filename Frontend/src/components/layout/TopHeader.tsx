@@ -52,11 +52,11 @@ export function TopHeader({ user: propsUser }: TopHeaderProps) {
       <div className="flex items-center justify-between w-full">
         {/* Left — breadcrumbs / system info */}
         <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-2 text-xs text-[#6B7280]">
-            <span className="font-semibold text-[#1F2937]">SMK3 System</span>
+          {/* <div className="hidden sm:flex items-center gap-2 text-xs text-[#6B7280]">
+            <span className="font-semibold text-[#1F2937]">ERM SYSTEM</span>
             <span className="text-gray-300">/</span>
             <span className="text-[#9CA3AF]">PT. QMB New Energy Materials</span>
-          </div>
+          </div> */}
         </div>
 
         {/* Right — notification bell + user avatar dropdown */}
@@ -79,7 +79,7 @@ export function TopHeader({ user: propsUser }: TopHeaderProps) {
               </div>
               <div className="hidden sm:block text-left mr-0.5">
                 <p className="text-xs font-semibold text-[#1F2937] leading-tight truncate max-w-[130px]">{name}</p>
-                <p className="text-[10px] text-[#6B7280] uppercase tracking-wider font-medium">{role}</p>
+                {/* <p className="text-[10px] text-[#6B7280] uppercase tracking-wider font-medium">{role}</p> */}
               </div>
               <svg
                 width="12" height="12"
