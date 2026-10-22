@@ -813,11 +813,11 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
       >
         {/* Brand + close button (mobile) */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[#E5E7EB] flex-shrink-0 bg-white">
-          <div className="w-9 h-9 bg-[#FF6B1A] rounded-xl flex items-center justify-center font-bold text-base text-white flex-shrink-0 shadow-xs ring-2 ring-[#FFF1E8]">
+          {/* <div className="w-9 h-9 bg-[#FF6B1A] rounded-xl flex items-center justify-center font-bold text-base text-white flex-shrink-0 shadow-xs ring-2 ring-[#FFF1E8]">
             K3
-          </div>
+          </div> */}
           <div className="flex-1 min-w-0">
-            <div className="font-bold text-sm text-[#1F2937] tracking-tight leading-tight">SMK3 System</div>
+            <div className="font-bold text-sm text-[#1F2937] tracking-tight leading-tight">ERM SYSTEM</div>
             <div className="text-[10px] text-[#6B7280] tracking-wider uppercase font-semibold mt-0.5 truncate">PT. QMB New Energy Materials</div>
           </div>
           {/* Close button — hanya terlihat di mobile */}
