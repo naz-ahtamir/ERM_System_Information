@@ -97,7 +97,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             department: decoded.departemen, // Alias for compatibility
           });
 
-          // Fetch /api/auth/me untuk dapat divisionId dan data terkini
+          // Fetch /api/auth/me untuk dapat divisionId dan data terkini.
+          // isLoading tetap true sampai fetch ini selesai agar komponen yang
+          // bergantung pada divisionId (misal PICA page) tidak fetch data
+          // sebelum divisionId tersedia.
           fetch('/api/auth/me', {
             headers: { Authorization: `Bearer ${token}` },
           })
@@ -111,16 +114,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 } : prev);
               }
             })
-            .catch(() => {}); // silent — user tetap bisa login tanpa divisionId
+            .catch(() => {}) // silent — user tetap bisa login tanpa divisionId
+            .finally(() => {
+              setIsLoading(false); // ← pindah ke sini agar divisionId sudah tersedia
+            });
         } else {
           clearToken();
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Failed to initialize auth:', error);
         clearToken();
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
 
     initializeAuth();

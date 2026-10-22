@@ -1767,12 +1767,13 @@ export default function PicaListPage() {
         if (user?.divisionId) {
           filters = { divisiId: user.divisionId };
         } else {
-          // User tidak terdaftar di divisi manapun → tidak ada record yang relevan
+          // User tidak terdaftar di divisi manapun → tampilkan kosong
           setRecords([]);
+          setLoading(false);
           return;
         }
       }
-      // Admin/supervisor → tanpa filter → lihat semua record
+      // Admin → tanpa filter → lihat semua record
 
       const data = await picaApi.getAll(filters);
       setRecords(data);
