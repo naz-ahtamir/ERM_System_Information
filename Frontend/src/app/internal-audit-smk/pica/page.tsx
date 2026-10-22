@@ -1795,6 +1795,18 @@ export default function PicaListPage() {
     }
   }, [isAdmin, authLoading, user?.divisionId, user?.divisi]);
 
+  // Refresh data tanpa kehilangan posisi scroll (dipakai oleh onSuccess modal)
+  const refreshData = useCallback(async () => {
+    const scrollY = window.scrollY;
+    await fetchData();
+    // Restore scroll setelah React selesai render
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollY, behavior: 'instant' as ScrollBehavior });
+      });
+    });
+  }, [fetchData]);
+
   useEffect(() => { fetchData(); }, [fetchData]);
 
   // ── Auto-open modal jika ada ?id= di URL (dari klik notifikasi) ──
@@ -2598,7 +2610,7 @@ export default function PicaListPage() {
       <CreateEditModal
         isOpen={createOpen || !!editRecord}
         onClose={() => { setCreateOpen(false); setEditRecord(null); }}
-        onSuccess={fetchData}
+        onSuccess={refreshData}
         record={editRecord}
         user={user}
       />
@@ -2607,7 +2619,7 @@ export default function PicaListPage() {
         <SubmitPerbaikanModal
           isOpen={!!submitRecord}
           onClose={() => setSubmitRecord(null)}
-          onSuccess={fetchData}
+          onSuccess={refreshData}
           record={submitRecord}
           user={user}
         />
@@ -2617,7 +2629,7 @@ export default function PicaListPage() {
         <ApprovalModal
           isOpen={!!approvalRecord}
           onClose={() => setApprovalRecord(null)}
-          onSuccess={fetchData}
+          onSuccess={refreshData}
           record={approvalRecord}
           user={user}
         />

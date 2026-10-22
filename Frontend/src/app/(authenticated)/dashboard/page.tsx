@@ -83,7 +83,7 @@ function DashboardContent() {
                 Indikator kinerja keselamatan, pemantauan insiden, dan ringkasan audit
               </p> */}
             </div>
-            <div className="flex items-center gap-3.5">
+            <div className="flex items-center gap-3.5 hidden">
               <div>
                 {(user?.name || user?.role || "U").charAt(0).toUpperCase()}
               </div>
