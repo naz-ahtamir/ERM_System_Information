@@ -48,7 +48,7 @@ export function TopHeader({ user: propsUser }: TopHeaderProps) {
                             'bg-[#FFF1E8] text-[#FF6B1A] border border-[#FF6B1A]/30';
 
   return (
-    <header className="fixed top-0 right-0 left-0 lg:left-[280px] bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] px-4 md:px-6 z-40 h-14 flex items-center transition-all">
+    <header className="fixed top-0 right-0 left-0 lg:left-[280px] bg-white/95 backdrop-blur-md px-4 md:px-6 z-40 h-14 flex items-center transition-all">
       <div className="flex items-center justify-between w-full">
         {/* Left — breadcrumbs / system info */}
         <div className="flex items-center gap-2">

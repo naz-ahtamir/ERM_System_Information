@@ -74,23 +74,23 @@ function DashboardContent() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF1E8] border border-[#FF6B1A]/20 text-[11px] font-semibold text-[#FF6B1A] mb-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B1A]"></span>
-                Executive Safety Overview
+                SAFETY OVERVIEW
               </div>
               <h1 className="text-2xl md:text-3xl font-extrabold text-[#1F2937] tracking-tight">
-                Safety <span className="text-[#FF6B1A]">KPI</span> Dashboard
+                SAFETY <span className="text-[#FF6B1A]">KPI</span> DASHBOARD
               </h1>
-              <p className="text-sm text-[#6B7280] mt-1">
+              {/* <p className="text-sm text-[#6B7280] mt-1">
                 Indikator kinerja keselamatan, pemantauan insiden, dan ringkasan audit
-              </p>
+              </p> */}
             </div>
-            <div className="flex items-center gap-3.5 bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-3 px-4 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-              <div className="w-10 h-10 rounded-full bg-[#FFF1E8] border border-[#FF6B1A]/20 text-[#FF6B1A] font-bold text-base flex items-center justify-center flex-shrink-0">
+            <div className="flex items-center gap-3.5">
+              <div>
                 {(user?.name || user?.role || "U").charAt(0).toUpperCase()}
               </div>
-              <div>
+              {/* <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-[#9CA3AF]">Logged in as</p>
                 <p className="text-sm font-bold text-[#1F2937] leading-tight">{user?.name || user?.role}</p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -541,7 +541,7 @@ function DashboardContent() {
         </div>
       </section>
 
-      {/* Back to SMK3 */}
+      {/* Back to SMK3
       <div className="py-8 px-5 md:px-10 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto text-center">
           <Link
@@ -565,7 +565,7 @@ function DashboardContent() {
             Kembali ke SMK3 Overview
           </Link>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

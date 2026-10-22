@@ -812,7 +812,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
         `}
       >
         {/* Brand + close button (mobile) */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-[#E5E7EB] flex-shrink-0 bg-white">
+        <div className="flex items-center gap-3 px-5 py-4 flex-shrink-0 bg-white">
           {/* <div className="w-9 h-9 bg-[#FF6B1A] rounded-xl flex items-center justify-center font-bold text-base text-white flex-shrink-0 shadow-xs ring-2 ring-[#FFF1E8]">
             K3
           </div> */}
