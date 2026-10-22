@@ -1758,31 +1758,42 @@ export default function PicaListPage() {
     // Tunggu sampai auth selesai resolve — cegah fetch sebelum divisionId tersedia
     if (authLoading) return;
 
+    console.log('[PICA] fetchData — isAdmin:', isAdmin, '| divisionId:', user?.divisionId, '| role:', user?.role);
+
     setLoading(true);
     try {
       let filters: PicaFilters | undefined;
 
       if (!isAdmin) {
-        // Non-admin hanya lihat record divisinya sendiri
         if (user?.divisionId) {
+          // Ideal: filter by UUID FK
           filters = { divisiId: user.divisionId };
-        } else {
-          // User tidak terdaftar di divisi manapun → tampilkan kosong
-          setRecords([]);
-          setLoading(false);
-          return;
+          console.log('[PICA] filter by divisiId:', user.divisionId);
         }
+        // Jika divisionId null tapi ada nama divisi (string lama),
+        // fetch semua lalu filter di frontend berdasarkan nama
+        // (fallback sampai admin assign divisionId ke semua user)
       }
-      // Admin → tanpa filter → lihat semua record
 
       const data = await picaApi.getAll(filters);
-      setRecords(data);
+
+      // Fallback filter by nama divisi jika divisionId belum di-assign
+      const result = (!isAdmin && !user?.divisionId && user?.divisi)
+        ? data.filter((r) => {
+            const namaDivisiUser   = user.divisi?.trim().toLowerCase();
+            const namaDivisiRecord = r.lokasiDivisiNama?.trim().toLowerCase();
+            return namaDivisiUser && namaDivisiRecord && namaDivisiRecord === namaDivisiUser;
+          })
+        : data;
+
+      console.log('[PICA] records loaded:', result.length, '(total from API:', data.length, ')');
+      setRecords(result);
     } catch {
       toast.error('Gagal memuat data PICA');
     } finally {
       setLoading(false);
     }
-  }, [isAdmin, authLoading, user?.divisionId]);
+  }, [isAdmin, authLoading, user?.divisionId, user?.divisi]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 

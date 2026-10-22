@@ -11,6 +11,7 @@ export interface User {
   nama: string;
   role: 'admin' | 'supervisor' | 'user';
   departemen?: string;
+  divisi?: string;               // Nama divisi (string lama dari backend)
   departmentId?: string | null;  // UUID FK ke tabel departments
   divisionId?: string | null;    // UUID FK ke tabel divisions
   email?: string;
@@ -95,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             role: decoded.role,
             departemen: decoded.departemen,
             department: decoded.departemen, // Alias for compatibility
+            divisi: decoded.divisi,
           });
 
           // Fetch /api/auth/me untuk dapat divisionId dan data terkini.
@@ -106,12 +108,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           })
             .then(r => r.ok ? r.json() : null)
             .then(data => {
+              console.log('[AuthContext] /api/auth/me response:', data);
               if (data?.id) {
                 setUser(prev => prev ? {
                   ...prev,
+                  divisi:       data.divisi       ?? prev.divisi,
                   divisionId:   data.divisionId   ?? null,
                   departmentId: data.departmentId ?? null,
                 } : prev);
+                console.log('[AuthContext] divisionId set to:', data.divisionId);
               }
             })
             .catch(() => {}) // silent — user tetap bisa login tanpa divisionId
@@ -195,6 +200,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         departemen: response.user.departemen,
         department: response.user.departemen, // Alias
         email: response.user.email || `${response.user.idKaryawan}@smk3.local`, // Fallback
+        divisi:       response.user.divisi       ?? undefined,
         divisionId:   response.user.divisionId   ?? null,
         departmentId: response.user.departmentId ?? null,
       };
