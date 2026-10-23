@@ -1,48 +1,49 @@
+import Image from "next/image";
 import { Section, MaxWidth } from "@/app/components/Section";
 
 // --- Gallery data ---
 const galleryItems = [
   {
     id: 1,
-    category: "Safety Training",
-    title: "Safety Training Session",
-    date: "Bulan K3 — January 2024",
-    bgClass: "from-orange-50 to-orange-100/60",
+    category: "Internal Audit",
+    title: "Internal Audit SMK3",
+    date: "SMK3 Compliance Audit — 2026",
+    src: "/photos/Internal Audit SMK3 (2026).jpg",
   },
   {
     id: 2,
-    category: "LOTO Procedure",
-    title: "LOTO Procedure Demo",
-    date: "OHS Field Inspection — March 2024",
-    bgClass: "from-gray-50 to-gray-100",
+    category: "External Audit",
+    title: "External Audit SMK3",
+    date: "SMK3 Certification Audit — 2024",
+    src: "/photos/External Audit SMK3 (2024).jpeg",
   },
   {
     id: 3,
-    category: "Fire Drill",
-    title: "Fire Drill Q1",
-    date: "Emergency Response — February 2024",
-    bgClass: "from-orange-50 to-orange-100/60",
+    category: "P2K3 Meeting",
+    title: "Monthly Meeting P2K3",
+    date: "Occupational Safety Committee — 2026",
+    src: "/photos/Monthly Meeting-P2K3 (2026).jpeg",
   },
   {
     id: 4,
-    category: "Hazard Inspection",
-    title: "Hazard Inspection Round",
-    date: "Monthly Inspection — April 2024",
-    bgClass: "from-gray-50 to-gray-100",
+    category: "Blood Donation",
+    title: "Blood Donation",
+    date: "Indonesia's National OHS Month — 2026",
+    src: "/photos/Blood Donation – Indonesia's National OHS Month (2026).jpg",
   },
   {
     id: 5,
-    category: "Safety Award",
-    title: "Safety Award Ceremony",
-    date: "Annual K3 Award — January 2024",
-    bgClass: "from-orange-50 to-orange-100/60",
+    category: "Inhouse Training",
+    title: "Inhouse Training — Working at Height",
+    date: "Safety Competency Training — 2025",
+    src: "/photos/Inhouse Training-Working at Height (2025).jpg",
   },
   {
     id: 6,
-    category: "Morning Briefing",
-    title: "Morning Safety Briefing",
-    date: "Daily Toolbox Talk — May 2024",
-    bgClass: "from-gray-50 to-gray-100",
+    category: "Health Seminar",
+    title: "Health Seminar — Tuberculosis Awareness",
+    date: "Occupational Health Education — 2025",
+    src: "/photos/Health Seminar – Tuberculosis Awareness and Education (2025).jpeg",
   },
 ];
 
@@ -325,8 +326,16 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {galleryItems.map((item) => (
             <div key={item.id} className="group relative overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-xs hover:shadow-md transition-all">
-              <div className={`w-full aspect-[4/3] bg-gradient-to-br ${item.bgClass} flex items-center justify-center relative p-6 transition-transform duration-300 group-hover:scale-105`}>
-                <span className="text-xs font-bold uppercase tracking-wider text-[#9CA3AF] px-3 py-1 bg-white/80 rounded-md border border-[#E5E7EB] shadow-2xs">
+              <div className="w-full aspect-[4/3] relative overflow-hidden bg-[#F3F4F6]">
+                <Image
+                  src={item.src}
+                  alt={item.title}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                <span className="absolute top-3 left-3 text-xs font-bold uppercase tracking-wider text-white px-2.5 py-1 bg-black/40 backdrop-blur-sm rounded-md">
                   {item.category}
                 </span>
               </div>

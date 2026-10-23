@@ -28,7 +28,7 @@ export default function ContactPage() {
               <span className="w-8 h-0.5 bg-[#FF6B1A]"></span>
             </div>
             <h2 className="font-bold text-[#1F2937] leading-tight text-[clamp(28px,3.5vw,42px)]">
-              Contact Us
+              CONTACT US
             </h2>
 
             <div className="space-y-6 mt-8">
@@ -138,7 +138,7 @@ export default function ContactPage() {
                 </div>
               </div>
               <p className="text-[14px] text-white/90 mb-4">
-                Untuk keadaan darurat, segera hubungi:
+                IN CASE OF EMERGENCY, CALL:
               </p>
               <div className="grid grid-cols-2 gap-6">
                 <div>
