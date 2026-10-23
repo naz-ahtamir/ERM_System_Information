@@ -60,12 +60,12 @@ export function Navbar() {
     `text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors ${
       isActive(href)
         ? "text-[#FF6B1A] bg-[#FFF1E8]"
-        : "text-[#4B5563] hover:text-[#111827] hover:bg-gray-100"
+        : "text-white hover:text-[#111827] hover:bg-gray-100"
     }`;
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] shadow-xs">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent">
         <div className="h-[72px] flex items-center justify-between px-5 md:px-10 max-w-7xl mx-auto">
 
           {/* Logo */}
@@ -75,15 +75,15 @@ export function Navbar() {
               K3
             </div> */}
             <div className="hidden sm:block">
-              <div className="font-bold text-sm text-[#1F2937] leading-tight group-hover:text-[#FF6B1A] transition-colors">
+              <div className="font-bold text-sm text-white leading-tight group-hover:text-[#FF6B1A] transition-colors">
                 ERM DEPARTMENT
               </div>
-              <div className="text-[10px] text-[#6B7280] font-medium tracking-wide uppercase">
+              <div className="text-[10px] text-white/70 font-medium tracking-wide uppercase">
                 PT. QMB New Energy Materials
               </div>
             </div>
             {/* Mobile fallback */}
-            <div className="sm:hidden font-bold text-xs text-[#1F2937] uppercase tracking-wider">
+            <div className="sm:hidden font-bold text-xs text-white uppercase tracking-wider">
               ERM DEPARTMENT
             </div>
           </Link>
@@ -186,7 +186,7 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="text-xs font-semibold text-[#1F2937] px-4 py-2 rounded-lg border border-[#E5E7EB] hover:border-[#FF6B1A] hover:text-[#FF6B1A] hover:bg-[#FFF1E8]/40 transition-all ml-1 shadow-xs"
+                className="text-xs font-semibold text-white px-4 py-2 rounded-lg border border-white/40 hover:border-[#FF6B1A] hover:text-[#FF6B1A] hover:bg-[#FFF1E8]/40 transition-all ml-1 shadow-xs"
               >
                 LOGIN
               </Link>
@@ -195,7 +195,7 @@ export function Navbar() {
 
           {/* Hamburger */}
           <button
-            className="lg:hidden p-2 rounded-lg text-[#1F2937] hover:bg-gray-100 transition-colors z-50"
+            className="lg:hidden p-2 rounded-lg text-white hover:bg-gray-100/20 transition-colors z-50"
             aria-label="Toggle menu"
             onClick={() => setMobileOpen(prev => !prev)}
           >
