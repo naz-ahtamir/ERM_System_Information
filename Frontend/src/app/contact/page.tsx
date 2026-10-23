@@ -4,16 +4,16 @@ export default function ContactPage() {
   return (
     <>
       {/* Page Header */}
-      <div className="bg-white py-[calc(72px+40px)] px-5 md:px-10 border-b border-[#E5E7EB]">
+      <div className="bg-[#202938] py-[calc(72px+40px)] px-5 md:px-10 border-b border-[#E5E7EB]">
         <MaxWidth>
           <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-3">
             Safety Complain &amp; Hotline
           </div>
-          <h1 className="font-bold text-[#1F2937] leading-tight tracking-tight text-[clamp(32px,5vw,56px)]">
-            Safety Complain
+          <h1 className="font-bold text-[white] leading-tight tracking-tight text-[clamp(32px,5vw,56px)]">
+            SAFETY COMPLAIN
           </h1>
-          <p className="text-[#6B7280] text-[15px] mt-2 max-w-xl">
-            Laporkan bahaya, keluhan keselamatan kerja (K3), atau hubungi tim tanggap darurat kami.
+          <p className="text-[white] text-[15px] mt-2 max-w-xl">
+            Report hazards, submit OHS concerns, or contact our Emergency Response Team.
           </p>
         </MaxWidth>
       </div>
@@ -167,9 +167,9 @@ export default function ContactPage() {
               <span>Report a Concern</span>
               <span className="w-8 h-0.5 bg-[#FF6B1A]"></span>
             </div>
-            <h2 className="font-bold text-[#1F2937] leading-tight text-[clamp(28px,3.5vw,42px)]">
+            {/* <h2 className="font-bold text-[#1F2937] leading-tight text-[clamp(28px,3.5vw,42px)]">
               Report a Concern
-            </h2>
+            </h2> */}
 
             <form className="mt-8 space-y-5">
               <div>
