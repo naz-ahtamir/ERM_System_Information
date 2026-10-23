@@ -24,7 +24,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/about"
-                  className="text-sm text-[#4B5563] hover:text-[#FF6B1A] transition-colors"
+                  className="text-sm text-white hover:text-[#FF6B1A] transition-colors"
                 >
                   About & Policy
                 </Link>

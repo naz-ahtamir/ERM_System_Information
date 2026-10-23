@@ -56,11 +56,12 @@ export function Navbar() {
   const isAdmin = user?.role === "admin";
   const userInitial = user?.name?.charAt(0).toUpperCase() ?? "U";
 
+  // Uniform underline-only hover, no color/background change, no icons
   const linkClass = (href: string) =>
-    `text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+    `text-sm font-semibold px-3 py-1.5 transition-all underline-offset-4 ${
       isActive(href)
-        ? "text-[#FF6B1A] bg-[#FFF1E8]"
-        : "text-white hover:text-[#111827] hover:bg-gray-100"
+        ? "text-white underline"
+        : "text-white hover:underline"
     }`;
 
   return (
@@ -70,20 +71,16 @@ export function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
-            {/* <div className="w-9 h-9 bg-[#FF6B1A] rounded-xl flex items-center justify-center
-                            text-white font-bold text-sm shadow-xs ring-2 ring-[#FFF1E8]">
-              K3
-            </div> */}
             <div className="hidden sm:block">
-              <div className="font-bold text-sm text-white leading-tight group-hover:text-[#FF6B1A] transition-colors">
+              <div className="font-bold text-xl text-white leading-tight">
                 ERM DEPARTMENT
               </div>
-              <div className="text-[10px] text-white/70 font-medium tracking-wide uppercase">
+              <div className="text-sm text-white/70 font-medium tracking-wide uppercase">
                 PT. QMB New Energy Materials
               </div>
             </div>
             {/* Mobile fallback */}
-            <div className="sm:hidden font-bold text-xs text-white uppercase tracking-wider">
+            <div className="sm:hidden font-bold text-base text-white uppercase tracking-wider">
               ERM DEPARTMENT
             </div>
           </Link>
@@ -107,12 +104,8 @@ export function Navbar() {
                 {/* Tombol Dashboard */}
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 bg-[#FF6B1A] text-white hover:bg-[#E85D0F] rounded-lg shadow-xs hover:shadow transition-all"
+                  className="text-sm font-semibold text-white px-3 py-1.5 transition-all underline-offset-4 hover:underline"
                 >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                  </svg>
                   Dashboard
                 </Link>
 
@@ -144,23 +137,16 @@ export function Navbar() {
                       <div className="p-1 space-y-0.5">
                         <Link
                           href="/dashboard"
-                          className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-[#4B5563] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
+                          className="block px-3 py-2 text-xs font-medium text-[#4B5563] underline-offset-2 hover:underline transition-all"
                         >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                          </svg>
                           Dashboard
                         </Link>
 
                         {isAdmin && (
                           <Link
                             href="/admin"
-                            className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
+                            className="block px-3 py-2 text-xs font-semibold text-[#FF6B1A] underline-offset-2 hover:underline transition-all"
                           >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/>
-                            </svg>
                             Admin Panel
                           </Link>
                         )}
@@ -169,13 +155,8 @@ export function Navbar() {
                       <div className="border-t border-[#E5E7EB] pt-1 px-1">
                         <button
                           onClick={handleLogout}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="block w-full text-left px-3 py-2 text-xs font-medium text-red-600 underline-offset-2 hover:underline transition-all"
                         >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <polyline points="16 17 21 12 16 7"/>
-                            <line x1="21" y1="12" x2="9" y2="12"/>
-                          </svg>
                           Logout
                         </button>
                       </div>
@@ -186,7 +167,7 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="text-xs font-semibold text-white px-4 py-2 rounded-lg border border-white/40 hover:border-[#FF6B1A] hover:text-[#FF6B1A] hover:bg-[#FFF1E8]/40 transition-all ml-1 shadow-xs"
+                className="text-sm font-semibold text-white px-3 py-1.5 transition-all underline-offset-4 hover:underline ml-1"
               >
                 LOGIN
               </Link>
@@ -258,10 +239,10 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`block font-semibold text-sm py-2.5 px-4 rounded-lg transition-all
+                className={`block font-semibold text-sm py-2.5 px-4 transition-all underline-offset-4
                             ${isActive(link.href)
-                              ? "bg-[#FFF1E8] text-[#FF6B1A]"
-                              : "text-[#4B5563] hover:bg-gray-100 hover:text-[#1F2937]"
+                              ? "text-[#1F2937] underline"
+                              : "text-[#4B5563] hover:underline"
                             }`}
               >
                 {link.name}
@@ -275,27 +256,21 @@ export function Navbar() {
               <>
                 <Link
                   href="/dashboard"
-                  className="flex items-center justify-center gap-2 font-semibold
-                             text-sm py-2.5 px-4 bg-[#FF6B1A] text-white hover:bg-[#E85D0F]
-                             transition-all rounded-lg shadow-xs"
+                  className="block font-semibold text-sm py-2.5 px-4 text-[#4B5563] underline-offset-4 hover:underline transition-all"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                  </svg>
-                  Masuk ke Dashboard
+                  Dashboard
                 </Link>
                 {isAdmin && (
                   <Link
                     href="/admin"
-                    className="block font-semibold text-sm py-2.5 px-4 text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-all"
+                    className="block font-semibold text-sm py-2.5 px-4 text-[#FF6B1A] underline-offset-4 hover:underline transition-all"
                   >
                     Admin Panel
                   </Link>
                 )}
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left font-semibold text-sm py-2.5 px-4 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                  className="block w-full text-left font-semibold text-sm py-2.5 px-4 text-red-600 underline-offset-4 hover:underline transition-all"
                 >
                   Logout
                 </button>
@@ -303,9 +278,9 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="block text-center font-semibold text-sm py-2.5 px-4 bg-[#FF6B1A] text-white hover:bg-[#E85D0F] rounded-lg transition-all shadow-xs"
+                className="block font-semibold text-sm py-2.5 px-4 text-[#4B5563] underline-offset-4 hover:underline transition-all"
               >
-                Sign In
+                Login
               </Link>
             )}
           </div>
