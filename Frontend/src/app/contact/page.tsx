@@ -138,7 +138,7 @@ export default function ContactPage() {
                 </div>
               </div>
               <p className="text-[14px] text-white/90 mb-4">
-                IN CASE OF EMERGENCY, CALL:
+                In case of emergency, call :
               </p>
               <div className="grid grid-cols-2 gap-6">
                 <div>

@@ -17,6 +17,14 @@ export function Navbar() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Deteksi scroll untuk toggle background navbar
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const avatarRef = useRef<HTMLDivElement>(null);
 
@@ -66,7 +74,11 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#202938]">
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-[#202938] shadow-md"
+          : "bg-transparent"
+      }`}>
         <div className="h-[72px] flex items-center justify-between px-5 md:px-10 max-w-7xl mx-auto">
 
           {/* Logo */}
