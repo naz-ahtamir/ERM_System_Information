@@ -41,7 +41,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar />
-      <main className="flex-1 pt-[72px]">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
     </>
   );
