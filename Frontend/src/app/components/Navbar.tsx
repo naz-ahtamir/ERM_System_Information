@@ -65,7 +65,7 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#202938]">
         <div className="h-[72px] flex items-center justify-between px-5 md:px-10 max-w-7xl mx-auto">
 
           {/* Logo */}
