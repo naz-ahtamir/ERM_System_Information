@@ -26,7 +26,7 @@ export function Footer() {
                   href="/#about"
                   className="text-sm text-white hover:text-[#FF6B1A] transition-colors"
                 >
-                  About & Policy
+                  Philosophy & Policy
                 </Link>
               </li>
               <li>
@@ -34,7 +34,7 @@ export function Footer() {
                   href="/#gallery"
                   className="text-sm text-white hover:text-[#FF6B1A] transition-colors"
                 >
-                  Gallery & Documentation
+                  Photo Documentation
                 </Link>
               </li>
               <li>

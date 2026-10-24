@@ -174,17 +174,17 @@ export default function Home() {
               className="flex gap-10 items-center whitespace-nowrap text-[13px] font-medium text-white shrink-0"
               style={{ animation: 'marqueeScroll 40s linear infinite' }}
             >
-              <span>⚠ Safety First in Every Work Activity</span>
+              <span>Safety First in Every Work Activity</span>
               <span className="opacity-50 px-3">&bull;</span>
-              <span>🦺 Always Wear the Required Personal Protective Equipment</span>
+              <span>Always Wear the Required Personal Protective Equipment</span>
               <span className="opacity-50 px-3">&bull;</span>
-              <span>🚨 Report Hazards Before They Become Incidents</span>
+              <span>Report Hazards Before They Become Incidents</span>
               <span className="opacity-50 px-3">&bull;</span>
-              <span>✅ Follow OHS Procedures — Zero Accident is Our Goal</span>
+              <span>Follow OHS Procedures — Zero Accident is Our Goal</span>
               <span className="opacity-50 px-3">&bull;</span>
-              <span>📋 Identify Risks Before Starting Any Job</span>
+              <span>Identify Risks Before Starting Any Job</span>
               <span className="opacity-50 px-3">&bull;</span>
-              <span>🔒 Safety is Not an Option — It is an Obligation</span>
+              <span>Safety is Not an Option — It is an Obligation</span>
               <span className="opacity-50 px-3">&bull;</span>
             </div>
           ))}
