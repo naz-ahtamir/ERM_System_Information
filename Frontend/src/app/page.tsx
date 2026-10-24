@@ -175,17 +175,17 @@ export default function Home() {
               style={{ animation: 'marqueeScroll 40s linear infinite' }}
             >
               <span>⚠ Safety First in Every Work Activity</span>
-              <span className="opacity-50">&bull;</span>
+              <span className="opacity-50 px-3">&bull;</span>
               <span>🦺 Always Wear the Required Personal Protective Equipment</span>
-              <span className="opacity-50">&bull;</span>
+              <span className="opacity-50 px-3">&bull;</span>
               <span>🚨 Report Hazards Before They Become Incidents</span>
-              <span className="opacity-50">&bull;</span>
+              <span className="opacity-50 px-3">&bull;</span>
               <span>✅ Follow OHS Procedures — Zero Accident is Our Goal</span>
-              <span className="opacity-50">&bull;</span>
+              <span className="opacity-50 px-3">&bull;</span>
               <span>📋 Identify Risks Before Starting Any Job</span>
-              <span className="opacity-50">&bull;</span>
+              <span className="opacity-50 px-3">&bull;</span>
               <span>🔒 Safety is Not an Option — It is an Obligation</span>
-              <span className="opacity-50">&bull;</span>
+              <span className="opacity-50 px-3">&bull;</span>
             </div>
           ))}
         </div>
