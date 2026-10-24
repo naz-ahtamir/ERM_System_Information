@@ -87,7 +87,7 @@ export function Navbar() {
               <div className="font-bold text-xl text-white leading-tight">
                 ERM DEPARTMENT
               </div>
-              <div className="text-[9px] text-white/70 font-medium tracking-wide uppercase">
+              <div className="text-[10px] text-white/70 font-medium tracking-wide uppercase">
                 PT. QMB New Energy Materials
               </div>
             </div>

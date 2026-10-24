@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Section, MaxWidth } from "@/app/components/Section";
+import { MarqueeBar } from "@/app/components/MarqueeBar";
 
 // --- Gallery data ---
 const galleryItems = [
@@ -164,32 +165,7 @@ export default function Home() {
       </section>
 
       {/* ─── MARQUEE HIGHLIGHTS ───────────────────────────────────────────── */}
-      <div className="bg-[#FF6B1A] py-3 overflow-hidden relative mt-8">
-        {/* Marquee Container */}
-        <div className="flex overflow-hidden">
-          {[0, 1].map((i) => (
-            <div
-              key={i}
-              aria-hidden={i === 1 ? true : undefined}
-              className="flex gap-10 items-center whitespace-nowrap text-[13px] font-medium text-white shrink-0"
-              style={{ animation: 'marqueeScroll 40s linear infinite' }}
-            >
-              <span>Safety First in Every Work Activity</span>
-              <span className="opacity-50 px-3">&bull;</span>
-              <span>Always Wear the Required Personal Protective Equipment</span>
-              <span className="opacity-50 px-3">&bull;</span>
-              <span>Report Hazards Before They Become Incidents</span>
-              <span className="opacity-50 px-3">&bull;</span>
-              <span>Follow OHS Procedures — Zero Accident is Our Goal</span>
-              <span className="opacity-50 px-3">&bull;</span>
-              <span>Identify Risks Before Starting Any Job</span>
-              <span className="opacity-50 px-3">&bull;</span>
-              <span>Safety is Not an Option — It is an Obligation</span>
-              <span className="opacity-50 px-3">&bull;</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <MarqueeBar />
 
       {/* ─── ABOUT / PHILOSOPHY ───────────────────────────────────────────── */}
       <Section id="about" className="bg-white">
