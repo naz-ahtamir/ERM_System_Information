@@ -79,7 +79,7 @@ export function Navbar() {
           ? "bg-[#202938] shadow-md"
           : "bg-transparent"
       }`}>
-        <div className="h-[72px] flex items-center justify-between px-5 md:px-10 max-w-7xl mx-auto">
+        <div className="h-[72px] flex items-center justify-between px-4 md:px-8 w-full">
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">

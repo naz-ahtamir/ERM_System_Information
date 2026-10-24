@@ -7,12 +7,14 @@ export function MaxWidth({ children }: { children: ReactNode }) {
 export function Section({
   children,
   className = "",
+  id,
 }: {
   children: ReactNode;
   className?: string;
+  id?: string;
 }) {
   return (
-    <section className={`py-16 md:py-24 px-5 md:px-10 ${className}`}>
+    <section id={id} className={`py-16 md:py-24 px-5 md:px-10 ${className}`}>
       <MaxWidth>{children}</MaxWidth>
     </section>
   );

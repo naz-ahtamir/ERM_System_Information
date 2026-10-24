@@ -124,7 +124,7 @@ export default function Home() {
       </section>
 
       {/* ─── STATS ────────────────────────────────────────────────────────── */}
-      <section className="bg-white py-16 border-b border-[#E5E7EB]">
+      <section className="hidden bg-white py-16 border-b border-[#E5E7EB]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto px-6">
           <div className="bg-[#FAFAFA] border border-[#E5E7EB] p-8 rounded-2xl shadow-xs relative">
             <div className="flex items-center justify-between mb-4">
@@ -164,44 +164,35 @@ export default function Home() {
       </section>
 
       {/* ─── MARQUEE HIGHLIGHTS ───────────────────────────────────────────── */}
-      <div className="bg-[#FAFAFA] border-b border-[#E5E7EB] py-4 overflow-hidden relative">
-        <div className="flex items-center gap-6">
-          <span className="text-[11px] font-bold tracking-wider uppercase text-[#FF6B1A] whitespace-nowrap shrink-0 bg-[#FFF1E8] border border-[#FF6B1A]/20 px-3 py-1 rounded-md ml-8">
-            Latest
-          </span>
-          <div className="w-px h-4 bg-[#E5E7EB] shrink-0"></div>
-          
-          {/* Marquee Container */}
-          <div className="flex overflow-hidden flex-1">
-            <div className="flex gap-12 items-center whitespace-nowrap text-[13px] font-medium text-[#1F2937]" style={{animation: 'marqueeScroll 40s linear infinite'}}>
-              <span>National Safety Month Campaign Active</span>
-              <span className="text-[#FF6B1A]">&bull;</span>
-              <span>BNSP Certification Batch 12 — Completed</span>
-              <span className="text-[#FF6B1A]">&bull;</span>
-              <span>Emergency Response Drill Q2 — Passed</span>
-              <span className="text-[#FF6B1A]">&bull;</span>
-              <span className="font-semibold text-[#FF6B1A]">LTIFR: 0.12 — New Record Low</span>
+      <div className="bg-[#FF6B1A] py-3 overflow-hidden relative">
+        {/* Marquee Container */}
+        <div className="flex overflow-hidden">
+          {[0, 1].map((i) => (
+            <div
+              key={i}
+              aria-hidden={i === 1 ? true : undefined}
+              className="flex gap-10 items-center whitespace-nowrap text-[13px] font-medium text-white shrink-0"
+              style={{ animation: 'marqueeScroll 40s linear infinite' }}
+            >
+              <span>⚠ Safety First in Every Work Activity</span>
+              <span className="opacity-50">&bull;</span>
+              <span>🦺 Always Wear the Required Personal Protective Equipment</span>
+              <span className="opacity-50">&bull;</span>
+              <span>🚨 Report Hazards Before They Become Incidents</span>
+              <span className="opacity-50">&bull;</span>
+              <span>✅ Follow OHS Procedures — Zero Accident is Our Goal</span>
+              <span className="opacity-50">&bull;</span>
+              <span>📋 Identify Risks Before Starting Any Job</span>
+              <span className="opacity-50">&bull;</span>
+              <span>🔒 Safety is Not an Option — It is an Obligation</span>
+              <span className="opacity-50">&bull;</span>
             </div>
-            
-            <div className="flex gap-12 items-center whitespace-nowrap text-[13px] font-medium text-[#1F2937]" aria-hidden="true" style={{animation: 'marqueeScroll 40s linear infinite'}}>
-              <span>National Safety Month Campaign Active</span>
-              <span className="text-[#FF6B1A]">&bull;</span>
-              <span>BNSP Certification Batch 12 — Completed</span>
-              <span className="text-[#FF6B1A]">&bull;</span>
-              <span>Emergency Response Drill Q2 — Passed</span>
-              <span className="text-[#FF6B1A]">&bull;</span>
-              <span className="font-semibold text-[#FF6B1A]">LTIFR: 0.12 — New Record Low</span>
-            </div>
-          </div>
+          ))}
         </div>
-        
-        {/* Gradient fades for smooth edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#FAFAFA] to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#FAFAFA] to-transparent z-10 pointer-events-none"></div>
       </div>
 
       {/* ─── ABOUT / PHILOSOPHY ───────────────────────────────────────────── */}
-      <Section className="bg-white">
+      <Section id="about" className="bg-white">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-14 items-start">
           <div>
             <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-3">
@@ -312,7 +303,7 @@ export default function Home() {
       </Section>
 
       {/* ─── GALLERY ──────────────────────────────────────────────────────── */}
-      <Section className="bg-white border-t border-[#E5E7EB]">
+      <Section id="gallery" className="bg-white border-t border-[#E5E7EB]">
         <div className="mb-12">
           <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] flex items-center gap-2 mb-3">
             <span>Photo Documentation</span>
@@ -335,9 +326,6 @@ export default function Home() {
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-                <span className="absolute top-3 left-3 text-xs font-bold uppercase tracking-wider text-white px-2.5 py-1 bg-black/40 backdrop-blur-sm rounded-md">
-                  {item.category}
-                </span>
               </div>
               <div className="p-5 border-t border-[#E5E7EB] bg-white">
                 <div className="font-semibold text-[15px] text-[#1F2937] mb-1 group-hover:text-[#FF6B1A] transition-colors">{item.title}</div>
