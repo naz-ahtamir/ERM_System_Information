@@ -9,7 +9,7 @@ export function Footer() {
             <div className="flex items-center gap-2.5 mb-3">
               <span className="font-bold text-base text-white tracking-tight">ERM DEPARTMENT</span>
             </div>
-            <p className="font-medium text-xs text-white uppercase tracking-wider mb-3">
+            <p className="font-medium text-xs text-white tracking-wider mb-3">
               PT. QMB New Energy Materials
             </p>
             {/* <p className="text-sm text-[#6B7280] max-w-sm leading-relaxed">

@@ -15,7 +15,7 @@ export function MarqueeBar() {
   const [paused, setPaused] = useState(false);
 
   return (
-    <div className="bg-[#E5E7EB] py-3 overflow-hidden relative mt-8">
+    <div className="bg-[#E4E6EA] py-3 overflow-hidden relative mt-8">
       <div
         className="flex overflow-hidden"
         onMouseEnter={() => setPaused(true)}
