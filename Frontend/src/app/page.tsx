@@ -164,7 +164,7 @@ export default function Home() {
       </section>
 
       {/* ─── MARQUEE HIGHLIGHTS ───────────────────────────────────────────── */}
-      <div className="bg-[#FF6B1A] py-3 overflow-hidden relative">
+      <div className="bg-[#FF6B1A] py-3 overflow-hidden relative mt-8">
         {/* Marquee Container */}
         <div className="flex overflow-hidden">
           {[0, 1].map((i) => (
