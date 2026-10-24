@@ -15,7 +15,7 @@ export function MarqueeBar() {
   const [paused, setPaused] = useState(false);
 
   return (
-    <div className="bg-[#FF6B1A] py-3 overflow-hidden relative mt-8">
+    <div className="bg-white border-y border-[#6B7280] py-3 overflow-hidden relative mt-8">
       <div
         className="flex overflow-hidden"
         onMouseEnter={() => setPaused(true)}
@@ -25,7 +25,7 @@ export function MarqueeBar() {
           <div
             key={i}
             aria-hidden={i === 1 ? true : undefined}
-            className="flex gap-10 items-center whitespace-nowrap text-[20px] font-bold text-white shrink-0"
+            className="flex gap-10 items-center whitespace-nowrap text-[20px] font-bold italic text-[#F36619] shrink-0"
             style={{
               animation: `marqueeScroll 22s linear infinite`,
               animationPlayState: paused ? 'paused' : 'running',
@@ -34,7 +34,7 @@ export function MarqueeBar() {
             {items.map((text, idx) => (
               <>
                 <span key={idx}>{text}</span>
-                <span key={`sep-${idx}`} className="text-white px-3">&bull;</span>
+                <span key={`sep-${idx}`} className="text-[#F36619] px-3">&bull;</span>
               </>
             ))}
           </div>
