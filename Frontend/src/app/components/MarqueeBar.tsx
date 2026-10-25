@@ -3,19 +3,19 @@
 import { useState } from 'react';
 
 const items = [
-  'SAFETY FIRST IN EVERY WORK ACTIVITY',
-  'ALWAYS WEAR THE REQUIRED PERSONAL PROTECTIVE EQUIPMENT',
-  'REPORT HAZARDS BEFORE THEY BECOME INCIDENTS',
-  'FOLLOW OHS PROCEDURES — ZERO ACCIDENT IS OUR GOAL',
-  'IDENTIFY RISKS BEFORE STARTING ANY JOB',
-  'SAFETY IS NOT AN OPTION — IT IS AN OBLIGATION',
+  '力行环保',
+  'PROTECT THE ENVIRONMENT',
+  '造福人类',
+  'BENEFIT HUMANITY',
+  '得道多助',
+  'RIGHTEOUSNESS DRAWS ABUNDANT SUPPORT',
 ];
 
 export function MarqueeBar() {
   const [paused, setPaused] = useState(false);
 
   return (
-    <div className="bg-[#E4E6EA] py-3 overflow-hidden relative mt-8">
+    <div className="bg-[#FAFAFA] py-3 overflow-hidden relative mt-8">
       <div
         className="flex overflow-hidden"
         onMouseEnter={() => setPaused(true)}
@@ -25,7 +25,7 @@ export function MarqueeBar() {
           <div
             key={i}
             aria-hidden={i === 1 ? true : undefined}
-            className="flex gap-10 items-center whitespace-nowrap text-[20px] font-bold italic text-[#F36619] shrink-0"
+            className="flex gap-10 items-center whitespace-nowrap text-[33px] font-bold italic text-[#F36619] shrink-0"
             style={{
               animation: `marqueeScroll 22s linear infinite`,
               animationPlayState: paused ? 'paused' : 'running',

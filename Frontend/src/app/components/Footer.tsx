@@ -12,9 +12,18 @@ export function Footer() {
             <p className="font-medium text-xs text-white tracking-wider mb-3">
               PT. QMB New Energy Materials
             </p>
-            {/* <p className="text-sm text-[#6B7280] max-w-sm leading-relaxed">
-              Live above all. No Safety, No Work.              
-            </p> */}
+            <p className="text-sm text-[#6B7280] max-w-sm leading-relaxed">
+              Water Treatment Building, 3rd Floor
+            </p>
+            <p className="text-sm text-[#6B7280] max-w-sm leading-relaxed">
+              Desa Fatufia, Kec. Bahodopi, Kab. Morowali
+            </p>
+            <p className="text-sm text-[#6B7280] max-w-sm leading-relaxed">
+              Central Sulawesi, Indonesia
+            </p>            
+            <p className="text-sm text-[#6B7280] max-w-sm leading-relaxed">
+              Postcode : 94974
+            </p>
           </div>
           <div>
             <div className="text-xs font-bold tracking-wider uppercase text-[#FF6B1A] mb-4">
