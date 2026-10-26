@@ -348,7 +348,21 @@ export default function AdminPage() {
     departemen: "",
     password: "",
     role: "user",
+    centerId:     "",
+    departmentId: "",
+    divisionId:   "",
   });
+
+  // ── Data dropdown untuk form tambah user ──
+  const [newUserCenters,  setNewUserCenters]  = useState<Center[]>([]);
+  const [newUserAllDepts, setNewUserAllDepts] = useState<any[]>([]);
+  const [newUserAllDivs,  setNewUserAllDivs]  = useState<Division[]>([]);
+
+  useEffect(() => {
+    centersApi.getAll().then(setNewUserCenters).catch(() => {});
+    departmentsApi.getAll().then(setNewUserAllDepts).catch(() => {});
+    divisionsApi.getAll().then(setNewUserAllDivs).catch(() => {});
+  }, []);
 
   // ── Auth guard ──
   useEffect(() => {
@@ -425,25 +439,58 @@ export default function AdminPage() {
     e.preventDefault();
     setError("");
     const token = getStoredToken();
+    const authHeaders = {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+
     try {
+      // Step 1: Buat user via bulk-create-users
       const res = await fetch("/api/users", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: authHeaders,
         body: JSON.stringify(newUser),
       });
 
-      if (res.ok) {
-        setNewUser({ idKaryawan: "", nama: "", jabatan: "", departemen: "", password: "", role: "user" });
-        setShowAddForm(false);
-        fetchUsers();
-        showToast("User berhasil dibuat");
-      } else {
+      if (!res.ok) {
         const d = await res.json();
         setError(d.error || d.message || "Gagal membuat user");
+        return;
       }
+
+      // Step 2: Jika ada divisionId dipilih, fetch user yang baru dibuat
+      // lalu PATCH divisionId/departmentId/centerId — karena bulk-create-users
+      // tidak menyimpan FK fields tersebut
+      if (newUser.divisionId || newUser.departmentId || newUser.centerId) {
+        try {
+          // Ambil daftar user terbaru untuk dapat id UUID dari user baru
+          const usersRes = await fetch("/api/users", { headers: authHeaders });
+          if (usersRes.ok) {
+            const allUsers = await usersRes.json();
+            const createdUser = allUsers.find((u: any) => u.idKaryawan === newUser.idKaryawan);
+            if (createdUser?.id) {
+              await fetch(`/api/users/${createdUser.id}`, {
+                method: "PATCH",
+                headers: authHeaders,
+                body: JSON.stringify({
+                  centerId:     newUser.centerId     || null,
+                  departmentId: newUser.departmentId || null,
+                  divisionId:   newUser.divisionId   || null,
+                }),
+              });
+            }
+          }
+        } catch {
+          // Gagal set divisi tidak membatalkan pembuatan user —
+          // admin bisa assign divisi manual via tombol Edit
+          console.warn("Gagal set divisionId setelah buat user — bisa diset manual via Edit");
+        }
+      }
+
+      setNewUser({ idKaryawan: "", nama: "", jabatan: "", departemen: "", password: "", role: "user", centerId: "", departmentId: "", divisionId: "" });
+      setShowAddForm(false);
+      fetchUsers();
+      showToast("User berhasil dibuat");
     } catch {
       setError("Gagal membuat user");
     }
@@ -709,6 +756,76 @@ export default function AdminPage() {
                         <option value="supervisor">Supervisor</option>
                         <option value="admin">Admin</option>
                       </select>
+                    </div>
+
+                    {/* ── Dropdown Pusat ── */}
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">Pusat</label>
+                      <select
+                        value={newUser.centerId}
+                        onChange={(e) => setNewUser({ ...newUser, centerId: e.target.value, departmentId: "", divisionId: "" })}
+                        className="w-full px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[14px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] transition-colors"
+                      >
+                        <option value="">-- Pilih Pusat --</option>
+                        {newUserCenters.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* ── Dropdown Departemen (filter by Pusat) ── */}
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">Departemen</label>
+                      <select
+                        value={newUser.departmentId}
+                        onChange={(e) => setNewUser({ ...newUser, departmentId: e.target.value, divisionId: "" })}
+                        disabled={!newUser.centerId}
+                        className="w-full px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[14px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="">-- Pilih Departemen --</option>
+                        {(newUser.centerId
+                          ? newUserAllDepts.filter((d: any) => d.centerId === newUser.centerId)
+                          : newUserAllDepts
+                        ).map((d: any) => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                      {!newUser.centerId && (
+                        <p className="text-[11px] text-[#9CA3AF] mt-1">Pilih pusat terlebih dahulu</p>
+                      )}
+                    </div>
+
+                    {/* ── Dropdown Divisi (filter by Departemen) ── */}
+                    <div className="md:col-span-2">
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">
+                        Divisi <span className="text-red-500">*</span>
+                        <span className="ml-1 text-[10px] font-normal text-[#9CA3AF] normal-case">(diperlukan agar user dapat melihat data PICA)</span>
+                      </label>
+                      <select
+                        value={newUser.divisionId}
+                        onChange={(e) => setNewUser({ ...newUser, divisionId: e.target.value })}
+                        disabled={!newUser.departmentId}
+                        className="w-full px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[14px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="">-- Pilih Divisi --</option>
+                        {(newUser.departmentId
+                          ? newUserAllDivs.filter((d) => d.departmentId === newUser.departmentId)
+                          : newUserAllDivs
+                        ).map((d) => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                      {!newUser.departmentId && (
+                        <p className="text-[11px] text-[#9CA3AF] mt-1">Pilih departemen terlebih dahulu</p>
+                      )}
+                      {newUser.divisionId && (() => {
+                        const selectedDiv = newUserAllDivs.find(d => d.id === newUser.divisionId);
+                        return selectedDiv?.pic ? (
+                          <p className="text-[11px] text-blue-600 mt-1">
+                            PIC divisi: <strong>{selectedDiv.pic.nama}</strong>
+                          </p>
+                        ) : null;
+                      })()}
                     </div>
                   </div>
 

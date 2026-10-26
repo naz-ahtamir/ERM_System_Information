@@ -1758,35 +1758,38 @@ export default function PicaListPage() {
     // Tunggu sampai auth selesai resolve — cegah fetch sebelum divisionId tersedia
     if (authLoading) return;
 
-    console.log('[PICA] fetchData — isAdmin:', isAdmin, '| divisionId:', user?.divisionId, '| role:', user?.role);
+    console.log('[PICA] fetchData — isAdmin:', isAdmin, '| divisionId:', user?.divisionId, '| divisi:', user?.divisi, '| role:', user?.role);
 
     setLoading(true);
     try {
-      let filters: PicaFilters | undefined;
+      let result: PicaRecord[];
 
-      if (!isAdmin) {
-        if (user?.divisionId) {
-          // Ideal: filter by UUID FK
-          filters = { divisiId: user.divisionId };
-          console.log('[PICA] filter by divisiId:', user.divisionId);
-        }
-        // Jika divisionId null tapi ada nama divisi (string lama),
-        // fetch semua lalu filter di frontend berdasarkan nama
-        // (fallback sampai admin assign divisionId ke semua user)
+      if (isAdmin) {
+        // Admin: ambil semua record tanpa filter
+        result = await picaApi.getAll();
+      } else if (user?.divisionId) {
+        // Non-admin dengan divisionId → filter by UUID FK di backend
+        console.log('[PICA] filter by divisiId:', user.divisionId);
+        result = await picaApi.getAll({ divisiId: user.divisionId });
+      } else if (user?.divisi) {
+        // Non-admin tanpa divisionId tapi punya nama divisi (string lama) →
+        // fetch semua lalu filter di frontend berdasarkan nama divisi
+        // (fallback sementara sampai admin assign divisionId ke semua user)
+        console.log('[PICA] fallback filter by nama divisi:', user.divisi);
+        const data = await picaApi.getAll();
+        const namaDivisiUser = user.divisi.trim().toLowerCase();
+        result = data.filter((r) => {
+          const namaDivisiRecord = r.lokasiDivisiNama?.trim().toLowerCase();
+          return namaDivisiRecord && namaDivisiRecord === namaDivisiUser;
+        });
+      } else {
+        // Non-admin tanpa divisionId dan tanpa nama divisi →
+        // jangan tampilkan apapun, bukan semua record
+        console.warn('[PICA] user tidak memiliki divisionId maupun divisi — record dikosongkan');
+        result = [];
       }
 
-      const data = await picaApi.getAll(filters);
-
-      // Fallback filter by nama divisi jika divisionId belum di-assign
-      const result = (!isAdmin && !user?.divisionId && user?.divisi)
-        ? data.filter((r) => {
-            const namaDivisiUser   = user.divisi?.trim().toLowerCase();
-            const namaDivisiRecord = r.lokasiDivisiNama?.trim().toLowerCase();
-            return namaDivisiUser && namaDivisiRecord && namaDivisiRecord === namaDivisiUser;
-          })
-        : data;
-
-      console.log('[PICA] records loaded:', result.length, '(total from API:', data.length, ')');
+      console.log('[PICA] records loaded:', result.length);
       setRecords(result);
     } catch {
       toast.error('Gagal memuat data PICA');
@@ -2455,8 +2458,24 @@ export default function PicaListPage() {
                 {search ? 'Tidak ada record yang sesuai' : 'Belum ada data PICA'}
               </p>
               <p className="text-[#6B7280] text-[13px]">
-                {search ? `Tidak ditemukan untuk "${search}"` : 'Klik "+ Tambah Record" untuk menambahkan data pertama.'}
+                {search
+                  ? `Tidak ditemukan untuk "${search}"`
+                  : !isAdmin && !user?.divisionId && !user?.divisi
+                  ? 'Akun Anda belum terhubung ke divisi manapun. Hubungi admin untuk assign divisi.'
+                  : 'Klik "+ Tambah Record" untuk menambahkan data pertama.'}
               </p>
+              {/* Banner khusus: user belum di-assign ke divisi */}
+              {!isAdmin && !user?.divisionId && !user?.divisi && (
+                <div className="mt-4 flex items-start gap-2.5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl max-w-sm text-left">
+                  <svg className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  <p className="text-[12px] text-amber-700 leading-relaxed">
+                    Akun Anda belum di-assign ke divisi. Minta admin untuk mengatur divisi akun Anda melalui halaman <strong>Admin Panel</strong>.
+                  </p>
+                </div>
+              )}
               {isAdmin && !search && (
                 <button onClick={() => setCreateOpen(true)}
                   className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-[#FF6B1A] hover:underline font-medium">
