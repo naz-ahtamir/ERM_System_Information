@@ -1176,39 +1176,6 @@ function DetailPanel({
             </div>
           )}
 
-          {/* K3 Policy Document File */}
-          {isK3Policy && (record as any).fileUrl && (
-            <div className="border border-[#E5E7EB] rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between px-3 py-2 bg-[#F9FAFB] border-b border-[#E5E7EB]">
-                <p className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">File Dokumen Kebijakan (PDF)</p>
-                <a href={fileUrl((record as any).fileUrl)} target="_blank" rel="noopener noreferrer"
-                  className="text-[11px] text-[#FF6B1A] hover:underline font-semibold flex items-center gap-1">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                    <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                  </svg>
-                  Buka
-                </a>
-              </div>
-              <div className="p-3">
-                <a href={fileUrl((record as any).fileUrl)} target="_blank" rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-[#FFF1E8] text-[#FF6B1A] border border-[#FF6B1A]/30 rounded-lg text-xs font-semibold hover:bg-[#FF6B1A] hover:text-white transition-all shadow-xs">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                  </svg>
-                  Buka File Dokumen Kebijakan (PDF)
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                    <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          )}
-
           {/* Files section */}
           {filesArr && filesArr.length > 0 && (
             <div className="space-y-3">
@@ -1703,7 +1670,9 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
                     {enableApproval && (
                       <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider hidden md:table-cell">Status</th>
                     )}
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider hidden lg:table-cell">Dibuat Oleh</th>
+                    {!isK3 && (
+                      <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider hidden lg:table-cell">Dibuat Oleh</th>
+                    )}
                     <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider hidden lg:table-cell">Tanggal</th>
                     <th className="text-right py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Aksi</th>
                   </tr>
@@ -1728,25 +1697,10 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
                                 setDetailRecord(rec);
                               }
                             }}
-                            className="font-medium text-[#1F2937] hover:text-[#FF6B1A] text-left transition-colors leading-snug inline-flex items-center gap-1.5 group"
-                            title={targetFileUrl ? 'Klik untuk langsung membuka file dokumen (tab baru)' : 'Lihat detail record'}
+                            className="font-medium text-[#1F2937] hover:text-[#FF6B1A] text-left transition-colors leading-snug"
+                            title={targetFileUrl ? 'Klik untuk membuka file dokumen' : 'Lihat detail record'}
                           >
-                            <span>{displayTitle}</span>
-                            {targetFileUrl && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 group-hover:bg-[#FF6B1A] group-hover:text-white group-hover:border-[#FF6B1A] transition-colors shrink-0">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                  <polyline points="14 2 14 8 20 8" />
-                                  <line x1="16" y1="13" x2="8" y2="13" />
-                                  <line x1="16" y1="17" x2="8" y2="17" />
-                                </svg>
-                                PDF
-                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                                  <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                                </svg>
-                              </span>
-                            )}
+                            {displayTitle}
                           </button>
                         </td>
                         {tableCols.map((f) => {
@@ -1773,30 +1727,16 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
                             {fStatus ? <ApprovalBadge status={fStatus} approvalStatus={aStatus} /> : <span className="text-gray-300">—</span>}
                           </td>
                         )}
-                        <td className="py-3 px-4 text-[#6B7280] hidden lg:table-cell">
-                          {isK3 ? (rec as any).createdBy?.nama : rec.createdByName || '—'}
-                        </td>
+                        {!isK3 && (
+                          <td className="py-3 px-4 text-[#6B7280] hidden lg:table-cell">
+                            {rec.createdByName || '—'}
+                          </td>
+                        )}
                         <td className="py-3 px-4 text-[#6B7280] hidden lg:table-cell whitespace-nowrap">
                           {formatDate(rec.createdAt)}
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center justify-end gap-1.5">
-                            {targetFileUrl && (
-                              <a
-                                href={targetFileUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
-                                title="Buka file PDF langsung"
-                              >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                  <polyline points="14 2 14 8 20 8" />
-                                  <line x1="16" y1="13" x2="8" y2="13" />
-                                  <line x1="16" y1="17" x2="8" y2="17" />
-                                </svg>
-                              </a>
-                            )}
                             <button onClick={() => setDetailRecord(rec)} className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors" title="Lihat detail">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
