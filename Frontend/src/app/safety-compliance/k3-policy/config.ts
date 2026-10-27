@@ -19,14 +19,14 @@ export const config: CrudPageConfig = {
         { label: 'KEBIJAKAN KHUSUS', value: 'KHUSUS' },
       ],
     },
-    // 2. Judul Kebijakan
+    // 2. Judul Kebijakan (Ditampilkan di kolom utama "Judul Kebijakan", diset false di sini agar tidak duplikat di kolom samping)
     {
       key: 'judulKebijakan',
       label: 'Judul Kebijakan',
       type: 'text',
       required: true,
       placeholder: 'Judul lengkap kebijakan',
-      showInTable: true,
+      showInTable: false,
     },
     // 3. Tanggal Penetapan
     {
@@ -52,7 +52,7 @@ export const config: CrudPageConfig = {
       type: 'text',
       required: true,
       placeholder: 'Jabatan penandatangan',
-      showInTable: true,
+      showInTable: false,
     },
     // 6. Status Dokumen
     {
@@ -60,7 +60,7 @@ export const config: CrudPageConfig = {
       label: 'Status Dokumen',
       type: 'select',
       required: true,
-      showInTable: true,
+      showInTable: false,
       options: [
         { label: 'ASLI', value: 'ASLI' },
         { label: 'SALINAN', value: 'SALINAN' },
@@ -74,16 +74,16 @@ export const config: CrudPageConfig = {
       label: 'Status Distribusi',
       type: 'select',
       required: false,
-      showInTable: true,
+      showInTable: false,
       options: [
         { label: 'TERKENDALI', value: 'TERKENDALI' },
         { label: 'TIDAK TERKENDALI', value: 'TIDAK TERKENDALI' },
       ],
     },
-    // 8. Status Validasi
+    // 8. Status Validasi (Status Berlaku)
     {
       key: 'statusValidasi',
-      label: 'Status Validasi',
+      label: 'Status Berlaku',
       type: 'select',
       required: false,
       showInTable: true,
@@ -91,13 +91,15 @@ export const config: CrudPageConfig = {
         { label: 'BERLAKU', value: 'BERLAKU' },
         { label: 'TIDAK BERLAKU', value: 'TIDAK BERLAKU' },
         { label: 'PEMUSNAHAN', value: 'PEMUSNAHAN' },
+        { label: 'EDISI LAMA', value: 'EDISI LAMA' },
+        { label: 'BATALKAN', value: 'BATALKAN' },
       ],
     },
-    // 9. Upload Dokumen PDF (harus diimplementasikan di CrudPage)
+    // 9. Upload Dokumen PDF
     {
       key: 'fileDokumen',
       label: 'Upload Dokumen (PDF)',
-      type: 'file',        // <-- tipe file, harus didukung CrudPage
+      type: 'file',
       required: false,
       accept: '.pdf',
       showInTable: false,

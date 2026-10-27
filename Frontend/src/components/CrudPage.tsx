@@ -57,7 +57,24 @@ type StatusFilter = '' | 'INPG' | 'CLSD' | 'CLSD-ACC' | 'CLSD-TACC';
 
 function formatDate(iso: string) {
   if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+  try {
+    const clean = String(iso).split('T')[0];
+    const parts = clean.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+        const d = new Date(year, month, day);
+        return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+      }
+    }
+    const d = new Date(iso);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+  } catch {}
+  return String(iso);
 }
 
 function fileUrl(path: string): string {
@@ -67,14 +84,28 @@ function fileUrl(path: string): string {
 }
 
 /** Cari URL file dari record: cek record.files[] dulu, lalu record.data[key] */
-function resolveFileUrl(record: SafetyRecord, fieldKey: string): string {
+function resolveFileUrl(record: SafetyRecord | null | undefined, fieldKey?: string): string {
+  if (!record) return '';
+  if ((record as any).fileUrl) return fileUrl((record as any).fileUrl);
   const filesArr = (record as any).files as Array<{ fieldName: string; fileUrl: string }> | undefined;
   if (filesArr?.length) {
-    const match = filesArr.find((f) => f.fieldName === fieldKey);
-    if (match) return fileUrl(match.fileUrl);
+    if (fieldKey) {
+      const match = filesArr.find((f) => f.fieldName === fieldKey);
+      if (match) return fileUrl(match.fileUrl);
+    }
+    if (filesArr[0]?.fileUrl) return fileUrl(filesArr[0].fileUrl);
   }
-  const fromData = record.data?.[fieldKey];
-  if (fromData) return fileUrl(String(fromData));
+  if (fieldKey) {
+    const fromData = record.data?.[fieldKey];
+    if (fromData) return fileUrl(String(fromData));
+  }
+  if (record.data) {
+    for (const [k, v] of Object.entries(record.data)) {
+      if (k.toLowerCase().includes('file') && v && typeof v === 'string') {
+        return fileUrl(v);
+      }
+    }
+  }
   return '';
 }
 
@@ -83,12 +114,17 @@ function Badge({ value }: { value: string }) {
     memenuhi: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
     aktif: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
     selesai: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    berlaku: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
     'tidak memenuhi': 'bg-rose-50 text-rose-700 border border-rose-200',
+    'tidak berlaku': 'bg-rose-50 text-rose-700 border border-rose-200',
     kadaluarsa: 'bg-rose-50 text-rose-700 border border-rose-200',
+    pemusnahan: 'bg-rose-50 text-rose-700 border border-rose-200',
+    batalkan: 'bg-rose-50 text-rose-700 border border-rose-200',
     open: 'bg-[#FFF1E8] text-[#FF6B1A] border border-[#FF6B1A]/30',
     'dalam proses': 'bg-amber-50 text-amber-700 border border-amber-200',
     'sebagian memenuhi': 'bg-amber-50 text-amber-700 border border-amber-200',
     'akan kadaluarsa': 'bg-amber-50 text-amber-700 border border-amber-200',
+    'edisi lama': 'bg-amber-50 text-amber-700 border border-amber-200',
     ditutup: 'bg-gray-100 text-gray-700 border border-gray-200',
   };
   const cls = map[value?.toLowerCase()] ?? 'bg-gray-100 text-gray-700 border border-gray-200';
@@ -692,7 +728,7 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
   };
 
   const handleExportCSV = (filtered: SafetyRecord[]) => {
-    const tableCols = fields.filter((f) => f.type !== 'file');
+    const tableCols = fields.filter((f) => f.type !== 'file' && f.key !== 'judulKebijakan');
     const headers = ['No', 'Judul', ...tableCols.map((f) => f.label), 'Status', 'Dibuat Oleh', 'Tanggal Dibuat'];
     const esc = (v: string) => `"${String(v ?? '').replace(/"/g, '""')}"`;
     const rows = filtered.map((rec, idx) => {
@@ -731,7 +767,7 @@ function ExportModal({ isOpen, onClose, records, fields, title }: ExportModalPro
 
   const handleExportHTML = async (filtered: SafetyRecord[]) => {
     // Semua kolom non-file untuk header tabel
-    const tableCols = fields.filter((f) => f.type !== 'file');
+    const tableCols = fields.filter((f) => f.type !== 'file' && f.key !== 'judulKebijakan');
     const dateLabel = dateFrom && dateTo
       ? `Periode: ${formatDate(dateFrom)} — ${formatDate(dateTo)}`
       : `Dicetak: ${formatDate(new Date().toISOString())}`;
@@ -1140,6 +1176,39 @@ function DetailPanel({
             </div>
           )}
 
+          {/* K3 Policy Document File */}
+          {isK3Policy && (record as any).fileUrl && (
+            <div className="border border-[#E5E7EB] rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between px-3 py-2 bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                <p className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">File Dokumen Kebijakan (PDF)</p>
+                <a href={fileUrl((record as any).fileUrl)} target="_blank" rel="noopener noreferrer"
+                  className="text-[11px] text-[#FF6B1A] hover:underline font-semibold flex items-center gap-1">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                  Buka
+                </a>
+              </div>
+              <div className="p-3">
+                <a href={fileUrl((record as any).fileUrl)} target="_blank" rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-[#FFF1E8] text-[#FF6B1A] border border-[#FF6B1A]/30 rounded-lg text-xs font-semibold hover:bg-[#FF6B1A] hover:text-white transition-all shadow-xs">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
+                  Buka File Dokumen Kebijakan (PDF)
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          )}
+
           {/* Files section */}
           {filesArr && filesArr.length > 0 && (
             <div className="space-y-3">
@@ -1273,7 +1342,7 @@ function DetailPanel({
                 Approval ACC/TACC
               </button>
             )}
-            {(!enableApproval || isInpg || isAdmin) && (
+            {(isK3Policy ? isAdmin : (!enableApproval || isInpg || isAdmin)) && (
               <button onClick={onEdit}
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-lg hover:bg-[#E85D0F] transition-colors shadow-sm">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -1493,7 +1562,15 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
     }
   };
 
-  const tableCols = config.fields.filter((f) => f.showInTable !== false && f.type !== 'file').slice(0, 3);
+  const isK3 = config.categoryId === 'sc-k3-policy';
+  const tableCols = config.fields.filter((f) => {
+    if (f.type === 'file') return false;
+    if (f.key === 'judulKebijakan') return false;
+    if (isK3) {
+      return f.showInTable === true;
+    }
+    return f.showInTable !== false;
+  }).slice(0, isK3 ? 5 : 3);
 
   const STATUS_TABS: { value: StatusFilter; label: string; color: string; activeColor: string }[] = [
     { value: '', label: 'Semua Status', color: 'border-[#E5E7EB] text-[#4B5563] hover:border-gray-300', activeColor: 'bg-[#FF6B1A] text-white border-[#FF6B1A] shadow-xs' },
@@ -1543,14 +1620,16 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
             </svg>
             Export
           </button>
-          {/* Add button */}
-          <button onClick={() => { setEditTarget(null); setModalOpen(true); }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-xs font-semibold rounded-xl hover:bg-[#E85D0F] transition-all whitespace-nowrap shadow-xs hover:shadow">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Tambah Record
-          </button>
+          {/* Add button - untuk K3 policy hanya muncul untuk admin */}
+          {(!isK3 || isAdmin) && (
+            <button onClick={() => { setEditTarget(null); setModalOpen(true); }}
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-xs font-semibold rounded-xl hover:bg-[#E85D0F] transition-all whitespace-nowrap shadow-xs hover:shadow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Tambah Record
+            </button>
+          )}
         </div>
 
         {/* Status filter tabs */}
@@ -1574,8 +1653,11 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
         <div className="flex items-center justify-between mb-3 px-1 flex-wrap gap-2">
           <p className="text-xs text-[#6B7280]">
             {loading ? 'Memuat data...' : `Menampilkan ${filtered.length} record${search ? ` dari ${records.length}` : ''}`}
-            {isRegularUser && !loading && (
+            {isRegularUser && !loading && !isK3 && (
               <span className="ml-1.5 text-gray-400">(hanya record Anda)</span>
+            )}
+            {isK3 && !isAdmin && !loading && (
+              <span className="text-[11px] px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded-full font-semibold border border-gray-200">Mode Lihat (Read-Only)</span>
             )}
           </p>
           {isAdmin && !loading && (
@@ -1614,7 +1696,7 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
                 <thead>
                   <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
                     <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider w-10">#</th>
-                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Judul</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">{isK3 ? 'Judul Kebijakan' : 'Judul'}</th>
                     {tableCols.map((f) => (
                       <th key={f.key} className="text-left py-3 px-4 text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider hidden md:table-cell">{f.label}</th>
                     ))}
@@ -1629,16 +1711,42 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
                 <tbody className="divide-y divide-[#F3F4F6]">
                   {filtered.map((rec, idx) => {
                     const isK3 = config.categoryId === 'sc-k3-policy';
-                    const displayTitle = isK3 ? (rec as any).judulKebijakan : rec.title;
+                    const displayTitle = isK3 ? ((rec as any).judulKebijakan || rec.title) : rec.title;
                     const fStatus = (rec as any).findingStatus as string | undefined;
                     const aStatus = (rec as any).approvalStatus as string | undefined;
+                    const targetFileUrl = resolveFileUrl(rec, 'fileDokumen');
+
                     return (
                       <tr key={rec.id} className="hover:bg-[#FFF9F5]/70 transition-colors">
                         <td className="py-3 px-4 text-[#9CA3AF]">{idx + 1}</td>
                         <td className="py-3 px-4">
-                          <button onClick={() => setDetailRecord(rec)}
-                            className="font-medium text-[#1F2937] hover:text-[#FF6B1A] text-left transition-colors leading-snug">
-                            {displayTitle}
+                          <button
+                            onClick={() => {
+                              if (targetFileUrl) {
+                                window.open(targetFileUrl, '_blank', 'noopener,noreferrer');
+                              } else {
+                                setDetailRecord(rec);
+                              }
+                            }}
+                            className="font-medium text-[#1F2937] hover:text-[#FF6B1A] text-left transition-colors leading-snug inline-flex items-center gap-1.5 group"
+                            title={targetFileUrl ? 'Klik untuk langsung membuka file dokumen (tab baru)' : 'Lihat detail record'}
+                          >
+                            <span>{displayTitle}</span>
+                            {targetFileUrl && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 group-hover:bg-[#FF6B1A] group-hover:text-white group-hover:border-[#FF6B1A] transition-colors shrink-0">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                  <polyline points="14 2 14 8 20 8" />
+                                  <line x1="16" y1="13" x2="8" y2="13" />
+                                  <line x1="16" y1="17" x2="8" y2="17" />
+                                </svg>
+                                PDF
+                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                  <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                              </span>
+                            )}
                           </button>
                         </td>
                         {tableCols.map((f) => {
@@ -1651,6 +1759,8 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
                                   <span className="text-[#4B5563] truncate block">{
                                     f.type === 'select'
                                       ? (f.options?.find((o) => o.value === val)?.label ?? String(val))
+                                      : f.type === 'date'
+                                      ? formatDate(String(val))
                                       : String(val)
                                   }</span>
                                 )
@@ -1671,17 +1781,35 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center justify-end gap-1.5">
+                            {targetFileUrl && (
+                              <a
+                                href={targetFileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
+                                title="Buka file PDF langsung"
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                  <polyline points="14 2 14 8 20 8" />
+                                  <line x1="16" y1="13" x2="8" y2="13" />
+                                  <line x1="16" y1="17" x2="8" y2="17" />
+                                </svg>
+                              </a>
+                            )}
                             <button onClick={() => setDetailRecord(rec)} className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors" title="Lihat detail">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                               </svg>
                             </button>
-                            <button onClick={() => { setEditTarget(rec); setModalOpen(true); }} className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors" title="Edit">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                              </svg>
-                            </button>
+                            {(!isK3 || isAdmin) && (
+                              <button onClick={() => { setEditTarget(rec); setModalOpen(true); }} className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors" title="Edit">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                              </button>
+                            )}
                             {isAdmin && (
                               <button onClick={() => handleDelete(rec)} className="p-1.5 text-[#6B7280] hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Hapus">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
