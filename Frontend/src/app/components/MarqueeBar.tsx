@@ -27,7 +27,7 @@ export function MarqueeBar() {
             aria-hidden={i === 1 ? true : undefined}
             className="flex gap-10 items-center whitespace-nowrap text-[33px] font-bold italic text-[#F36619] shrink-0"
             style={{
-              animation: `marqueeScroll 22s linear infinite`,
+              animation: `marqueeScroll 11s linear infinite`,
               animationPlayState: paused ? 'paused' : 'running',
             }}
           >
