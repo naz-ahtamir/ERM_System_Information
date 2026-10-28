@@ -866,6 +866,25 @@ export default function OrgStructurePage() {
   const [activeTab, setActiveTab] = useState<TabId>('pusat');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      const t = p.get('tab') as TabId | null;
+      if (t && ['pusat', 'departemen', 'divisi', 'pic'].includes(t)) {
+        setActiveTab(t);
+      }
+    }
+  }, []);
+
+  const handleTabChange = (tabId: TabId) => {
+    setActiveTab(tabId);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', tabId);
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
+  useEffect(() => {
     if (!isLoading && user?.role !== 'admin') router.push('/dashboard');
   }, [isLoading, user, router]);
 
@@ -885,17 +904,54 @@ export default function OrgStructurePage() {
       <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-2 text-[12px] text-[#6B7280] mb-4 flex-wrap">
-            <Link href="/admin" className="hover:text-[#FF6B1A] transition-colors">Admin Panel</Link>
+            <Link href="/" className="hover:text-[#FF6B1A] transition-colors flex items-center gap-1">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              Home
+            </Link>
+            <span>/</span>
+            <Link href="/dashboard" className="hover:text-[#FF6B1A] transition-colors">Dashboard</Link>
+            <span>/</span>
+            <span className="text-[#6B7280]">Admin Panel</span>
             <span>/</span>
             <span className="text-[#FF6B1A] font-medium">Struktur Organisasi</span>
           </div>
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">Admin Panel</p>
-          <h1 className="font-bold text-[#1F2937] text-[clamp(24px,4vw,36px)] leading-tight">
-            Struktur Organisasi
-          </h1>
-          <p className="text-[#6B7280] text-[13px] mt-1.5">
-            Kelola data Pusat, Departemen, Divisi, dan Person In Charge (PIC)
-          </p>
+
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">Admin Panel</p>
+              <h1 className="font-bold text-[#1F2937] text-[clamp(24px,4vw,36px)] leading-tight">
+                Struktur Organisasi &amp; PIC
+              </h1>
+              <p className="text-[#6B7280] text-[13px] mt-1.5">
+                Kelola data Pusat, Departemen, Divisi, dan Person In Charge (PIC) Divisi
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+                </svg>
+                Kelola Pengguna
+              </Link>
+              <Link
+                href="/admin/daftar-pelatihan"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg>
+                Daftar Pelatihan
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -907,7 +963,7 @@ export default function OrgStructurePage() {
           {TABS.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold transition-all ${
                 activeTab === tab.id
                   ? 'bg-[#FF6B1A] text-white shadow-xs'

@@ -511,7 +511,7 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
               </label>
               {isAdmin && (
                 <a
-                  href="/admin/master-data?tab=pelatihan"
+                  href="/admin/daftar-pelatihan"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[11px] text-[#FF6B1A] hover:underline font-semibold flex items-center gap-1"
@@ -1373,7 +1373,7 @@ export default function LicenseCertificationPage() {
           {/* Kelola Master Pelatihan (Khusus Admin) */}
           {isAdmin && (
             <a
-              href="/admin/master-data?tab=pelatihan"
+              href="/admin/daftar-pelatihan"
               className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors whitespace-nowrap shadow-xs"
               title="Kelola Master Daftar Pelatihan & Sertifikat di Admin Panel"
             >

@@ -663,11 +663,22 @@ export default function AdminPage() {
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <Link href="/dashboard" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-[#E5E7EB] text-[#1F2937] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
-                Dashboard
+              <Link href="/admin/org-structure" className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2" />
+                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                </svg>
+                Struktur Organisasi &amp; PIC
               </Link>
-              <Link href="/" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-[#E5E7EB] text-[#1F2937] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
-                Home
+              <Link href="/admin/daftar-pelatihan" className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg>
+                Daftar Pelatihan
+              </Link>
+              <Link href="/dashboard" className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#1F2937] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
+                Dashboard
               </Link>
             </div>
           </div>

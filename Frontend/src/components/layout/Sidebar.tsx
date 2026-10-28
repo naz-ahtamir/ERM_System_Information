@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useNotifications } from '@/contexts/NotificationContext';
@@ -626,22 +626,56 @@ const menuItems: MenuItem[] = [
   },
 ];
 
+const adminMenuItem: MenuItem = {
+  id: 'admin-panel',
+  label: 'Admin Panel',
+  icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <circle cx="12" cy="11" r="3" />
+      <path d="M12 14v3" />
+    </svg>
+  ),
+  subItems: [
+    { label: 'Kelola Pengguna', href: '/admin' },
+    { label: 'Struktur Organisasi', href: '/admin/org-structure' },
+    { label: 'Ubah PIC Divisi', href: '/admin/org-structure?tab=pic' },
+    { label: 'Daftar Pelatihan', href: '/admin/daftar-pelatihan' },
+  ],
+};
+
 export function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [search, setSearch] = useState('');
 
+  const isAdmin = user?.role === 'admin';
+  const allMenuItems = useMemo(() => {
+    return isAdmin ? [...menuItems, adminMenuItem] : menuItems;
+  }, [isAdmin]);
+
   // Track which menus are open — default open the one matching current path
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
-    menuItems.forEach((item) => {
+    const all = [...menuItems, adminMenuItem];
+    all.forEach((item) => {
       if (item.subItems?.some((s) => {
-        if (s.href && pathname.startsWith(s.href)) return true;
+        const hrefBase = s.href?.split('?')[0];
+        if (hrefBase && (pathname === hrefBase || pathname.startsWith(hrefBase + '/'))) return true;
         return s.children?.some((c) => {
-          if ('href' in c && c.href && pathname.startsWith(c.href)) return true;
+          if ('href' in c && c.href) {
+            const cBase = c.href.split('?')[0];
+            if (pathname === cBase || pathname.startsWith(cBase + '/')) return true;
+          }
           if ('children' in c) {
             const si = c as SubItem;
-            return si.children?.some((gc) => 'href' in gc && gc.href && pathname.startsWith(gc.href));
+            return si.children?.some((gc) => {
+              if ('href' in gc && gc.href) {
+                const gcBase = gc.href.split('?')[0];
+                return pathname === gcBase || pathname.startsWith(gcBase + '/');
+              }
+              return false;
+            });
           }
           return false;
         });
@@ -651,6 +685,12 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
     });
     return initial;
   });
+
+  useEffect(() => {
+    if (pathname.startsWith('/admin')) {
+      setOpenMenus((prev) => ({ ...prev, 'admin-panel': true }));
+    }
+  }, [pathname]);
 
   // Track sub-group expand (level 2 — submenu yang punya children)
   const [openSubGroups, setOpenSubGroups] = useState<Record<string, boolean>>(() => {
@@ -706,8 +746,23 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
     setOpenLevel3Groups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + '/');
+  const isActive = (href: string) => {
+    const [targetPath, targetQuery] = href.split('?');
+    if (targetQuery) {
+      if (typeof window === 'undefined') return pathname === targetPath;
+      const currentParams = new URLSearchParams(window.location.search);
+      const targetParams = new URLSearchParams(targetQuery);
+      let match = pathname === targetPath;
+      targetParams.forEach((val, key) => {
+        if (currentParams.get(key) !== val) match = false;
+      });
+      return match;
+    }
+    if (typeof window !== 'undefined' && window.location.search.includes('tab=')) {
+      if (href === '/admin/org-structure') return false;
+    }
+    return pathname === href || pathname.startsWith(href + '/');
+  };
 
   const userInitial = user?.name?.charAt(0).toUpperCase() ?? 'U';
 
@@ -716,7 +771,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
 
   // Filter menu items berdasarkan query pencarian (support 3 level)
   const filteredMenuItems = q
-    ? menuItems
+    ? allMenuItems
         .map((item) => {
           const menuMatches = item.label.toLowerCase().includes(q);
 
@@ -774,7 +829,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
           return null;
         })
         .filter(Boolean) as MenuItem[]
-    : menuItems;
+    : allMenuItems;
 
   return (
     <>
@@ -902,6 +957,7 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
           {filteredMenuItems.map((item, index) => {
             // Sembunyikan divider jika sedang search
             const isDivider = !q && index === filteredMenuItems.findIndex(i => i.id === 'safety-compliance');
+            const isAdminDivider = !q && item.id === 'admin-panel';
             const isMenuActive =
               item.href
                 ? isActive(item.href)
@@ -926,6 +982,19 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
             return (
               <React.Fragment key={item.id}>
                 {isDivider && <div className="h-px bg-[#E5E7EB] my-2 mx-2" />}
+                {isAdminDivider && (
+                  <div className="pt-3 pb-1.5 px-3">
+                    <div className="h-px bg-[#E5E7EB] mb-2" />
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider">
+                        Administrator
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-red-50 text-red-700 border border-red-200">
+                        ADMIN
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 <div className="mb-0.5">
                   {/* Menu header */}
