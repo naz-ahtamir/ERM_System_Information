@@ -106,6 +106,7 @@ const menuItems: MenuItem[] = [
       { label: 'Equipment Safety', href: '/accident-prevention/equipment-safety' },
       { label: 'LOTO / Tag Out', href: '/accident-prevention/loto' },
       { label: 'Chemical Safety', href: '/accident-prevention/chemical-safety' },
+      { label: 'Safety Sign', href: '/accident-prevention/safety-sign' },
       {
         label: 'Emergency Preparedness',
         children: [

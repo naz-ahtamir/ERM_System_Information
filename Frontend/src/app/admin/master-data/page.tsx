@@ -8,6 +8,7 @@ import {
   type Center, type Division,
 } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { trainingApi, MasterPelatihan, formatRupiah } from '@/lib/trainingApi';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -514,11 +515,307 @@ function TabDivisi({ centers }: { centers: Center[] }) {
   );
 }
 
+
+// ═══════════════════════════════════════════════════════════════════
+// TAB DAFTAR PELATIHAN (MASTER SERTIFIKAT)
+// ═══════════════════════════════════════════════════════════════════
+
+function TabPelatihan() {
+  const [list, setList] = useState<MasterPelatihan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [filterLembaga, setFilterLembaga] = useState('');
+  const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState<MasterPelatihan | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  // Form state
+  const [namaPelatihan, setNamaPelatihan] = useState('');
+  const [lembagaType, setLembagaType] = useState<'KEMNAKER' | 'BNSP' | 'Lainnya'>('KEMNAKER');
+  const [lembagaCustom, setLembagaCustom] = useState('');
+  const [durasiHari, setDurasiHari] = useState<number | string>(1);
+  const [harga, setHarga] = useState<number | string>(0);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await trainingApi.getAll();
+      setList(data);
+    } catch {
+      toast.error('Gagal memuat daftar pelatihan');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => {
+    setEditing(null);
+    setNamaPelatihan('');
+    setLembagaType('KEMNAKER');
+    setLembagaCustom('');
+    setDurasiHari(1);
+    setHarga(0);
+    setModal(true);
+  };
+
+  const openEdit = (item: MasterPelatihan) => {
+    setEditing(item);
+    setNamaPelatihan(item.namaPelatihan);
+    if (item.lembaga === 'KEMNAKER' || item.lembaga === 'BNSP') {
+      setLembagaType(item.lembaga);
+      setLembagaCustom('');
+    } else {
+      setLembagaType('Lainnya');
+      setLembagaCustom(item.lembaga);
+    }
+    setDurasiHari(item.durasiHari);
+    setHarga(item.harga);
+    setModal(true);
+  };
+
+  const close = () => {
+    setModal(false);
+    setEditing(null);
+  };
+
+  const save = async () => {
+    if (!namaPelatihan.trim()) {
+      toast.error('Nama pelatihan wajib diisi');
+      return;
+    }
+    const finalLembaga = lembagaType === 'Lainnya' ? (lembagaCustom.trim() || 'Lainnya') : lembagaType;
+    if (lembagaType === 'Lainnya' && !lembagaCustom.trim()) {
+      toast.error('Ketikkan nama lembaga');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const payload = {
+        namaPelatihan: namaPelatihan.trim(),
+        lembaga: finalLembaga,
+        durasiHari: Number(durasiHari) || 1,
+        harga: Number(harga) || 0,
+      };
+
+      if (editing) {
+        await trainingApi.update(editing.id, payload);
+        toast.success('Pelatihan diperbarui');
+      } else {
+        await trainingApi.create(payload);
+        toast.success('Pelatihan ditambahkan');
+      }
+      close();
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || 'Gagal menyimpan');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const del = async (item: MasterPelatihan) => {
+    if (!confirm(`Hapus pelatihan "${item.namaPelatihan}"?\n(Pelatihan ini tidak akan muncul lagi di opsi pendaftaran sertifikat baru)`)) return;
+    try {
+      await trainingApi.delete(item.id);
+      toast.success('Pelatihan dihapus');
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || 'Gagal menghapus');
+    }
+  };
+
+  const filtered = list.filter((p) => {
+    const matchSearch =
+      search === '' ||
+      p.namaPelatihan.toLowerCase().includes(search.toLowerCase()) ||
+      p.lembaga.toLowerCase().includes(search.toLowerCase());
+    const matchLembaga = filterLembaga === '' || p.lembaga.toUpperCase() === filterLembaga.toUpperCase();
+    return matchSearch && matchLembaga;
+  });
+
+  return (
+    <>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3 flex-1 flex-wrap">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama pelatihan atau lembaga..."
+            className="w-full max-w-xs border border-gray-200 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:border-[#FF6B1A] bg-white"
+          />
+          <select
+            value={filterLembaga}
+            onChange={(e) => setFilterLembaga(e.target.value)}
+            className="border border-gray-200 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:border-[#FF6B1A] bg-white"
+          >
+            <option value="">Semua Lembaga</option>
+            <option value="KEMNAKER">Kemnaker</option>
+            <option value="BNSP">BNSP</option>
+          </select>
+          <span className="text-[12px] text-gray-400">
+            {filtered.length} dari {list.length} pelatihan
+          </span>
+        </div>
+        <AddButton onClick={openAdd} label="Tambah Pelatihan" />
+      </div>
+
+      {loading ? (
+        <Spinner />
+      ) : filtered.length === 0 ? (
+        <EmptyState text={search ? 'Tidak ada pelatihan yang cocok' : 'Belum ada master pelatihan'} />
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr>
+                <Th>No</Th>
+                <Th>Nama Pelatihan (Sertifikat)</Th>
+                <Th>Lembaga</Th>
+                <Th>Durasi</Th>
+                <Th>Perkiraan Biaya</Th>
+                <Th c="text-right">Aksi</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((item, i) => (
+                <tr key={item.id} className="hover:bg-gray-50/60 transition-colors">
+                  <Td c="text-gray-400 font-mono text-[12px] w-12">{i + 1}</Td>
+                  <Td>
+                    <span className="font-semibold text-gray-900 block">{item.namaPelatihan}</span>
+                  </Td>
+                  <Td>
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                        item.lembaga.toUpperCase() === 'KEMNAKER'
+                          ? 'bg-blue-100 text-blue-700'
+                          : item.lembaga.toUpperCase() === 'BNSP'
+                          ? 'bg-purple-100 text-purple-700'
+                          : 'bg-amber-100 text-amber-700'
+                      }`}
+                    >
+                      {item.lembaga}
+                    </span>
+                  </Td>
+                  <Td>
+                    <span className="text-gray-600 font-medium">{item.durasiHari} Hari</span>
+                  </Td>
+                  <Td>
+                    <span className="text-gray-700 font-semibold">{formatRupiah(item.harga)}</span>
+                  </Td>
+                  <Td c="text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => openEdit(item)}
+                        className="p-1.5 text-gray-500 hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg transition-colors"
+                        title="Edit Pelatihan"
+                      >
+                        <EditIcon />
+                      </button>
+                      <button
+                        onClick={() => del(item)}
+                        className="p-1.5 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Hapus Pelatihan"
+                      >
+                        <TrashIcon />
+                      </button>
+                    </div>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {modal && (
+        <Modal
+          title={editing ? 'Edit Master Pelatihan' : 'Tambah Master Pelatihan'}
+          onClose={close}
+        >
+          <Field label="Nama Pelatihan / Jenis Sertifikat" required>
+            <input
+              type="text"
+              value={namaPelatihan}
+              onChange={(e) => setNamaPelatihan(e.target.value)}
+              placeholder="Contoh: SIO Forklift — Operator Forklift / Ahli K3 Umum"
+              className={inputCls}
+            />
+            <p className="text-[11px] text-gray-400 mt-1">Nama ini yang akan muncul pada dropdown Jenis Sertifikat di menu License & Certification.</p>
+          </Field>
+
+          <Field label="Lembaga Sertifikasi" required>
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              {(['KEMNAKER', 'BNSP', 'Lainnya'] as const).map((opt) => (
+                <button
+                  type="button"
+                  key={opt}
+                  onClick={() => setLembagaType(opt)}
+                  className={`py-2 px-3 text-[12px] font-bold rounded-lg border text-center transition-all ${
+                    lembagaType === opt
+                      ? 'border-[#FF6B1A] bg-[#FFF1E8] text-[#FF6B1A]'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+            {lembagaType === 'Lainnya' && (
+              <input
+                type="text"
+                value={lembagaCustom}
+                onChange={(e) => setLembagaCustom(e.target.value)}
+                placeholder="Ketik nama lembaga (cth: Kemenkes, Disnaker, IRCA)..."
+                className={`${inputCls} mt-1`}
+              />
+            )}
+          </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Durasi Pelatihan (Hari)" required>
+              <div className="relative">
+                <input
+                  type="number"
+                  min="1"
+                  value={durasiHari}
+                  onChange={(e) => setDurasiHari(e.target.value)}
+                  placeholder="3"
+                  className={inputCls}
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-gray-400">Hari</span>
+              </div>
+            </Field>
+
+            <Field label="Perkiraan Biaya / Harga (Rp)" required>
+              <input
+                type="number"
+                min="0"
+                step="50000"
+                value={harga}
+                onChange={(e) => setHarga(e.target.value)}
+                placeholder="3500000"
+                className={inputCls}
+              />
+              <p className="text-[11px] text-gray-400 mt-1">{formatRupiah(Number(harga) || 0)}</p>
+            </Field>
+          </div>
+
+          <ModalActions onCancel={close} onSave={save} saving={saving} />
+        </Modal>
+      )}
+    </>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // MAIN PAGE
 // ═══════════════════════════════════════════════════════════════════
 
-type TabKey = 'pusat' | 'departemen' | 'divisi';
+type TabKey = 'pusat' | 'departemen' | 'divisi' | 'pelatihan';
 
 export default function MasterDataPage() {
   const { user, isLoading } = useAuth();
@@ -529,6 +826,12 @@ export default function MasterDataPage() {
   useEffect(() => {
     if (!isLoading && user && user.role !== 'admin') router.push('/dashboard');
     if (!isLoading && !user) router.push('/login');
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('tab') as TabKey;
+      if (p && ['pusat', 'departemen', 'divisi', 'pelatihan'].includes(p)) {
+        setActiveTab(p);
+      }
+    }
   }, [user, isLoading, router]);
 
   if (isLoading || !user || user.role !== 'admin') return null;
@@ -537,6 +840,7 @@ export default function MasterDataPage() {
     { key: 'pusat',      label: 'Pusat' },
     { key: 'departemen', label: 'Departemen' },
     { key: 'divisi',     label: 'Divisi' },
+    { key: 'pelatihan',  label: 'Daftar Pelatihan (Sertifikat)' },
   ];
 
   return (
@@ -575,6 +879,7 @@ export default function MasterDataPage() {
           {activeTab === 'pusat'      && <TabPusat onCentersChange={setCenters} />}
           {activeTab === 'departemen' && <TabDepartemen centers={centers} />}
           {activeTab === 'divisi'     && <TabDivisi centers={centers} />}
+          {activeTab === 'pelatihan'  && <TabPelatihan />}
         </div>
       </div>
     </div>

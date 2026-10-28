@@ -293,18 +293,18 @@ function TreeItem({
           </div>
 
           {/* Aksi hover */}
-          <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit(node); }}
-              className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg transition-colors"
-              title="Edit"
-            >
-              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-              </svg>
-            </button>
-            {isAdmin && (
+          {isAdmin && (
+            <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); onEdit(node); }}
+                className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg transition-colors"
+                title="Edit"
+              >
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onDelete(node); }}
                 className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
@@ -316,8 +316,8 @@ function TreeItem({
                   <path d="M10 11v6M14 11v6M9 6V4h6v2" />
                 </svg>
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -776,14 +776,21 @@ function DetailPanel({
           </div>
         </div>
         <div className="flex items-center gap-3 px-6 py-4 border-t border-gray-100 flex-shrink-0">
-          <button onClick={onEdit}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors">
-            Edit
-          </button>
-          {isAdmin && (
-            <button onClick={onDelete}
-              className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
-              Hapus
+          {isAdmin ? (
+            <>
+              <button onClick={onEdit}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors">
+                Edit
+              </button>
+              <button onClick={onDelete}
+                className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
+                Hapus
+              </button>
+            </>
+          ) : (
+            <button onClick={onClose}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-[#1F2937] bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">
+              Tutup
             </button>
           )}
         </div>
@@ -1155,24 +1162,26 @@ export default function MasterListDocumentsPage() {
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <StatusValBadge val={doc.statusValidasi} />
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={(e) => { e.stopPropagation(); setEditDoc(doc); setModalOpen(true); }}
-                          className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg">
-                          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                          </svg>
-                        </button>
-                        {isAdmin && (
+                      {isAdmin && (
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={(e) => { e.stopPropagation(); setEditDoc(doc); setModalOpen(true); }}
+                            className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg"
+                            title="Edit">
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                          </button>
                           <button onClick={(e) => { e.stopPropagation(); handleDelete(doc); }}
-                            className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg">
+                            className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg"
+                            title="Hapus">
                             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <polyline points="3 6 5 6 21 6" />
                               <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                             </svg>
                           </button>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

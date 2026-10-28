@@ -27,6 +27,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { recordsApi, getStoredToken } from '@/lib/api';
 import type { SafetyRecord } from '@/lib/api';
+import { trainingApi, MasterPelatihan, DEFAULT_PELATIHAN_LIST } from '@/lib/trainingApi';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -187,9 +188,13 @@ interface FormModalProps {
   initialValues?: LicenseRecord | null;
   /** semua noSertifikat yang sudah ada (untuk validasi duplikat) */
   existingNoSertifikat: string[];
+  currentUser?: any;
+  canViewAll?: boolean;
+  trainingList: MasterPelatihan[];
+  isAdmin?: boolean;
 }
 
-function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifikat }: FormModalProps) {
+function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifikat, currentUser, canViewAll = true, trainingList, isAdmin = false }: FormModalProps) {
   const isEdit = !!initialValues;
 
   // idKaryawan lookup state
@@ -237,16 +242,32 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
       setAkhirPelatihan(d.akhirPelatihan ?? '');
       setMasaBerlaku(d.masaBerlaku ?? '');
     } else {
-      setIdKaryawanInput('');
-      setLookupUser(null);
       setNoSertifikat('');
       setLembaga('');
       setJenis('');
       setTanggalPelatihan('');
       setAkhirPelatihan('');
       setMasaBerlaku('');
+
+      // Jika user biasa (bukan Admin dan bukan Divisi Perencanaan), auto-isi data user sendiri
+      if (!canViewAll && currentUser?.idKaryawan) {
+        setIdKaryawanInput(currentUser.idKaryawan);
+        setLookupUser({
+          id: currentUser.id || '',
+          idKaryawan: currentUser.idKaryawan,
+          nama: currentUser.nama || '',
+          jabatan: currentUser.jabatan || '',
+          departemen: currentUser.departemen || '',
+          divisi: currentUser.divisi || '',
+          perusahaan: currentUser.perusahaan || '',
+        });
+        setLookupStatus('found');
+      } else {
+        setIdKaryawanInput('');
+        setLookupUser(null);
+      }
     }
-  }, [isOpen, isEdit, initialValues]);
+  }, [isOpen, isEdit, initialValues, canViewAll, currentUser]);
 
   // Debounced lookup saat idKaryawan berubah (hanya saat buat baru)
   useEffect(() => {
@@ -379,6 +400,13 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
               <div className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl bg-[#FAFAFA] text-[#6B7280]">
                 {idKaryawanInput}
               </div>
+            ) : !canViewAll && currentUser?.idKaryawan ? (
+              <div className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl bg-[#FAFAFA] text-[#1F2937] font-semibold flex items-center justify-between">
+                <span>{idKaryawanInput}</span>
+                <span className="text-[11px] font-normal text-green-700 bg-green-50 px-2 py-0.5 rounded-md border border-green-200">
+                  ID Anda (Otomatis)
+                </span>
+              </div>
             ) : (
               <div className="relative">
                 <input
@@ -475,21 +503,45 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
             {errors.lembaga && <p className="text-red-500 text-[11px] mt-1">{errors.lembaga}</p>}
           </div>
 
-          {/* ── Jenis Sertifikat ── */}
+          {/* ── Jenis Sertifikat / Pelatihan (Dinamis dari Master Data) ── */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
-              Jenis Sertifikat <span className="text-red-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937]">
+                Jenis Sertifikat / Pelatihan <span className="text-red-500">*</span>
+              </label>
+              {isAdmin && (
+                <a
+                  href="/admin/master-data?tab=pelatihan"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-[#FF6B1A] hover:underline font-semibold flex items-center gap-1"
+                >
+                  + Kelola Master Pelatihan
+                </a>
+              )}
+            </div>
             <select
               value={jenis}
-              onChange={(e) => setJenis(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setJenis(val);
+                // Auto-detect lembaga dari master data pelatihan
+                const found = trainingList.find((t) => t.namaPelatihan === val);
+                if (found) {
+                  const upper = found.lembaga.toUpperCase();
+                  if (upper === 'KEMNAKER') setLembaga('Kemnaker');
+                  else if (upper === 'BNSP') setLembaga('BNSP');
+                }
+              }}
               className={`w-full px-3.5 py-2.5 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] transition-colors ${
                 errors.jenis ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB]'
               }`}
             >
-              <option value="">-- Pilih Jenis Sertifikat --</option>
-              {JENIS_SERTIFIKAT.map((j) => (
-                <option key={j} value={j}>{j}</option>
+              <option value="">-- Pilih Jenis Sertifikat / Pelatihan --</option>
+              {trainingList.map((t) => (
+                <option key={t.id} value={t.namaPelatihan}>
+                  {t.namaPelatihan} [{t.lembaga}] — {t.durasiHari} Hari
+                </option>
               ))}
             </select>
             {errors.jenis && <p className="text-red-500 text-[11px] mt-1">{errors.jenis}</p>}
@@ -766,7 +818,7 @@ function DetailModal({
         </div>
 
         {/* Footer actions — admin only */}
-        {isAdmin && (
+        {isAdmin ? (
           <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
             <button
               onClick={onDelete}
@@ -779,6 +831,15 @@ function DetailModal({
               className="px-4 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors"
             >
               Edit
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-end px-6 py-4 border-t border-[#E5E7EB] flex-shrink-0">
+            <button
+              onClick={onClose}
+              className="px-5 py-2 text-[13px] font-semibold text-[#1F2937] bg-[#FAFAFA] rounded-xl hover:bg-[#E5E7EB] transition-colors"
+            >
+              Tutup
             </button>
           </div>
         )}
@@ -1117,9 +1178,25 @@ function LicenseExportModal({ isOpen, onClose, records }: LicenseExportModalProp
 
 export default function LicenseCertificationPage() {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin' || user?.role === 'supervisor';
+
+  // ── Hak Akses / Wewenang ──────────────────────────────────────────────────
+  // 1. Admin (role === 'admin') : Bisa semua (lihat all record, tambah, edit, hapus)
+  // 2. Divisi PERENCANAAN KEAMANAN & PELATIHAN SIMULASI : Bisa lihat all record + tambah record, TIDAK bisa edit/hapus
+  // 3. User biasa lainnya : HANYA bisa lihat record miliknya sendiri (sesuai no. ID Karyawan) + tambah record
+  const isAdmin = user?.role === 'admin';
+
+  const isDivisiPerencanaan = React.useMemo(() => {
+    if (!user?.divisi) return false;
+    const clean = user.divisi.toUpperCase().replace(/\s+/g, ' ').replace(/\s*&\s*/g, ' DAN ').trim();
+    return clean.includes('PERENCANAAN KEAMANAN') && clean.includes('PELATIHAN SIMULASI');
+  }, [user?.divisi]);
+
+  const canViewAll = isAdmin || isDivisiPerencanaan;
+  const canEdit = isAdmin;
+  const canDelete = isAdmin;
 
   const [records, setRecords] = useState<LicenseRecord[]>([]);
+  const [trainingList, setTrainingList] = useState<MasterPelatihan[]>(DEFAULT_PELATIHAN_LIST);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
@@ -1141,20 +1218,23 @@ export default function LicenseCertificationPage() {
     setIsLoading(true);
     setError('');
     try {
-      const data = await recordsApi.getAll(
-        CATEGORY,
-        undefined,
-        isAdmin ? undefined : user.id,
-      ) as LicenseRecord[];
+      const data = await recordsApi.getAll(CATEGORY) as LicenseRecord[];
       setRecords(data);
     } catch (e: any) {
       setError(e?.message ?? 'Gagal memuat data');
     } finally {
       setIsLoading(false);
     }
-  }, [user, isAdmin]);
+  }, [user]);
 
   useEffect(() => { fetchRecords(); }, [fetchRecords]);
+
+  // Load master pelatihan dinamis
+  useEffect(() => {
+    trainingApi.getAll().then((data) => {
+      if (data && data.length > 0) setTrainingList(data);
+    }).catch(() => {});
+  }, []);
 
   // ── Derived filter options ────────────────────────────────────────────────
   const perusahaanOptions = Array.from(
@@ -1162,11 +1242,27 @@ export default function LicenseCertificationPage() {
   ).sort();
 
   const jenisOptions = Array.from(
-    new Set(records.map((r) => r.data.jenisSertifikat).filter(Boolean))
+    new Set([
+      ...trainingList.map((t) => t.namaPelatihan),
+      ...records.map((r) => r.data.jenisSertifikat),
+    ].filter(Boolean))
   ).sort();
 
+  // ── Filter records berdasarkan wewenang user ─────────────────────────────
+  const visibleRecords = React.useMemo(() => {
+    if (canViewAll) return records;
+    const myIdKaryawan = user?.idKaryawan?.trim().toLowerCase();
+    const myUserId = user?.id;
+    return records.filter((r) => {
+      const recIdKaryawan = r.data?.idKaryawan?.trim().toLowerCase();
+      const matchId = !!(myIdKaryawan && recIdKaryawan === myIdKaryawan);
+      const matchCreator = !!(myUserId && r.createdById === myUserId);
+      return matchId || matchCreator;
+    });
+  }, [records, canViewAll, user]);
+
   // ── Filter records ─────────────────────────────────────────────────────────
-  const filtered = records.filter((r) => {
+  const filtered = visibleRecords.filter((r) => {
     const d = r.data;
     // text search
     if (search.trim()) {
@@ -1245,7 +1341,8 @@ export default function LicenseCertificationPage() {
           </h1>
           <p className="text-[#6B7280] text-[13px] mt-1.5">
             Inventaris lisensi K3, sertifikat kompetensi operator, dan izin kerja khusus.
-            {!isAdmin && ' Hanya menampilkan record milik Anda.'}
+            {!canViewAll && user?.idKaryawan && ` (Menampilkan sertifikat untuk No. ID: ${user.idKaryawan})`}
+            {isDivisiPerencanaan && !isAdmin && ' (Divisi Perencanaan Keamanan & Pelatihan Simulasi — Akses Lihat Seluruh Record)'}
           </p>
         </div>
       </div>
@@ -1273,6 +1370,19 @@ export default function LicenseCertificationPage() {
               </button>
             )}
           </div>
+          {/* Kelola Master Pelatihan (Khusus Admin) */}
+          {isAdmin && (
+            <a
+              href="/admin/master-data?tab=pelatihan"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors whitespace-nowrap shadow-xs"
+              title="Kelola Master Daftar Pelatihan & Sertifikat di Admin Panel"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              Daftar Pelatihan
+            </a>
+          )}
           {/* Export */}
           <button
             onClick={() => setShowExport(true)}
@@ -1347,12 +1457,28 @@ export default function LicenseCertificationPage() {
         {/* Info bar */}
         <div className="flex items-center justify-between mb-3 px-1 flex-wrap gap-2">
           <p className="text-[12px] text-[#6B7280]">
-            {isLoading ? 'Memuat data...' : `Menampilkan ${filtered.length} record${search || activeFilterCount > 0 ? ` dari ${records.length}` : ''}`}
-            {!isAdmin && !isLoading && <span className="ml-1.5 text-[#9CA3AF]">(hanya record Anda)</span>}
+            {isLoading ? 'Memuat data...' : `Menampilkan ${filtered.length} record${search || activeFilterCount > 0 ? ` dari total ${visibleRecords.length}` : ''}`}
+            {!canViewAll && !isLoading && (
+              <span className="ml-1.5 text-[#9CA3AF] font-medium">(khusus No. ID: {user?.idKaryawan || user?.nama})</span>
+            )}
           </p>
-          {isAdmin && !isLoading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">Mode Admin</span>
-          )}
+          <div className="flex items-center gap-2">
+            {isAdmin && !isLoading && (
+              <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
+                Mode Admin (CRUD Penuh)
+              </span>
+            )}
+            {isDivisiPerencanaan && !isAdmin && !isLoading && (
+              <span className="text-[11px] px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full font-semibold border border-blue-200">
+                Divisi Perencanaan (Lihat Seluruh Record)
+              </span>
+            )}
+            {!canViewAll && !isLoading && (
+              <span className="text-[11px] px-2.5 py-0.5 bg-gray-100 text-[#4B5563] rounded-full font-semibold border border-gray-200">
+                Record Pribadi
+              </span>
+            )}
+          </div>
         </div>
 
         {/* ── Table ── */}
@@ -1479,30 +1605,30 @@ export default function LicenseCertificationPage() {
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                               </svg>
                             </button>
-                            {isAdmin && (
-                              <>
-                                <button
-                                  onClick={() => { setEditRecord(rec); setShowForm(true); }}
-                                  className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
-                                  title="Edit"
-                                >
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                  </svg>
-                                </button>
-                                <button
-                                  onClick={() => setDeleteTarget(rec)}
-                                  className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                  title="Hapus"
-                                >
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <polyline points="3 6 5 6 21 6"/>
-                                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-                                    <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
-                                  </svg>
-                                </button>
-                              </>
+                            {canEdit && (
+                              <button
+                                onClick={() => { setEditRecord(rec); setShowForm(true); }}
+                                className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FFF1E8] rounded-lg transition-colors"
+                                title="Edit"
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                onClick={() => setDeleteTarget(rec)}
+                                className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Hapus"
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <polyline points="3 6 5 6 21 6"/>
+                                  <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                                  <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+                                </svg>
+                              </button>
                             )}
                           </div>
                         </td>
@@ -1527,12 +1653,16 @@ export default function LicenseCertificationPage() {
             ? existingNoSertifikat.filter((n) => n !== editRecord.data.noSertifikat)
             : existingNoSertifikat
         }
+        currentUser={user}
+        canViewAll={canViewAll}
+        trainingList={trainingList}
+        isAdmin={isAdmin}
       />
 
       <DetailModal
         record={detailRecord}
         onClose={() => setDetailRecord(null)}
-        isAdmin={isAdmin}
+        isAdmin={canEdit}
         onEdit={handleOpenEdit}
         onDelete={() => { setDeleteTarget(detailRecord); }}
       />
