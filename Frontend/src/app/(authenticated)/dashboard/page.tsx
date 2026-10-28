@@ -10,6 +10,7 @@ import { findingsApi, getApiErrorMessage } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { RecentFindings } from "@/components/dashboard/RecentFindings";
+import { ppeHandoverApi, PpeHandoverRecord } from "@/lib/ppeHandoverApi";
 
 interface Finding {
   id: string;
@@ -37,6 +38,11 @@ function DashboardContent() {
     closed: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [ppeRecords, setPpeRecords] = useState<PpeHandoverRecord[]>([]);
+
+  useEffect(() => {
+    ppeHandoverApi.getAll().then(setPpeRecords).catch(() => {});
+  }, []);
 
   // Fetch findings data
   useEffect(() => {
@@ -437,6 +443,135 @@ function DashboardContent() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── PPE Handover / Distribution Dashboard Section ── */}
+      <section className="py-12 md:py-16 px-5 md:px-10 bg-white border-b border-[#E5E7EB]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#FF6B1A] mb-1">
+                Accident Prevention • APD Compliance
+              </p>
+              <h2 className="text-xl md:text-2xl font-bold text-[#1F2937] tracking-tight">
+                Distribusi &amp; Pengambilan Alat Pelindung Diri (APD)
+              </h2>
+              <p className="text-xs text-[#6B7280] mt-0.5">
+                Ringkasan serah terima APD ke seluruh departemen operasional PT. QMB New Energy Materials
+              </p>
+            </div>
+            <Link
+              href="/accident-prevention/ppe-management"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#FFF1E8] text-[#FF6B1A] hover:bg-[#FFE5D4] border border-[#FF6B1A]/30 rounded-xl text-xs font-semibold transition-colors shadow-xs w-fit"
+            >
+              Lihat Detail Serah Terima APD →
+            </Link>
+          </div>
+
+          {/* Quick Metrics */}
+          {(() => {
+            const totalUnits = ppeRecords.reduce((acc, r) => acc + (r.totalUnitApd || 0), 0);
+            const totalTrx = ppeRecords.length;
+            const uniqueRecipients = new Set(ppeRecords.map(r => r.penerimaIdKaryawan || r.penerimaNama)).size;
+
+            // Group by APD
+            const apdMap: Record<string, number> = {};
+            const deptMap: Record<string, number> = {};
+            ppeRecords.forEach(r => {
+              const d = r.penerimaDepartemen || 'Lainnya';
+              deptMap[d] = (deptMap[d] || 0) + (r.totalUnitApd || 0);
+              r.items?.forEach(it => {
+                apdMap[it.namaApd] = (apdMap[it.namaApd] || 0) + (Number(it.jumlah) || 1);
+              });
+            });
+
+            const topApd = Object.entries(apdMap).sort((a,b) => b[1] - a[1]);
+            const topDept = Object.entries(deptMap).sort((a,b) => b[1] - a[1]);
+
+            return (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-[#FF6B1A]">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">Total APD Disalurkan</p>
+                    <p className="text-3xl font-extrabold text-[#1F2937] mt-1">{totalUnits} <span className="text-sm font-normal text-gray-500">Unit</span></p>
+                    <p className="text-[11px] text-[#FF6B1A] font-semibold mt-1">100% Tercatat &amp; Foto Lengkap</p>
+                  </div>
+
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-blue-600">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">Total Transaksi</p>
+                    <p className="text-3xl font-extrabold text-blue-700 mt-1">{totalTrx} <span className="text-sm font-normal text-gray-500">Berkas</span></p>
+                    <p className="text-[11px] text-gray-500 mt-1">Multi-item per serah terima</p>
+                  </div>
+
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-emerald-600">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">Karyawan Terlayani</p>
+                    <p className="text-3xl font-extrabold text-emerald-700 mt-1">{uniqueRecipients} <span className="text-sm font-normal text-gray-500">Personel</span></p>
+                    <p className="text-[11px] text-gray-500 mt-1">Penerima unik terdaftar</p>
+                  </div>
+
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-purple-600">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">Departemen Teraktif</p>
+                    <p className="text-xl font-bold text-purple-800 mt-2 truncate">{topDept[0]?.[0] || '—'}</p>
+                    <p className="text-[11px] text-purple-600 font-semibold mt-1">{topDept[0]?.[1] || 0} unit APD diserap</p>
+                  </div>
+                </div>
+
+                {/* 2 Breakdown Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Top APD */}
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-bold text-sm text-[#1F2937]">Top 5 Jenis APD Paling Banyak Diambil</h4>
+                      <span className="text-[11px] font-semibold text-[#FF6B1A]">Unit APD</span>
+                    </div>
+                    <div className="space-y-3">
+                      {topApd.slice(0, 5).map(([name, qty], idx) => {
+                        const maxVal = topApd[0]?.[1] || 1;
+                        const pct = Math.round((qty / maxVal) * 100);
+                        return (
+                          <div key={idx} className="space-y-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-medium text-[#1F2937] truncate max-w-[280px]">{idx + 1}. {name}</span>
+                              <span className="font-mono font-bold text-[#FF6B1A]">{qty} unit</span>
+                            </div>
+                            <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                              <div className="bg-[#FF6B1A] h-full rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Top Departments */}
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-bold text-sm text-[#1F2937]">Alokasi APD per Departemen</h4>
+                      <span className="text-[11px] font-semibold text-blue-600">Kebutuhan Unit</span>
+                    </div>
+                    <div className="space-y-3">
+                      {topDept.slice(0, 5).map(([dept, qty], idx) => {
+                        const maxVal = topDept[0]?.[1] || 1;
+                        const pct = Math.round((qty / maxVal) * 100);
+                        return (
+                          <div key={idx} className="space-y-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-medium text-[#1F2937] truncate max-w-[280px]">{dept}</span>
+                              <span className="font-mono font-bold text-blue-700">{qty} unit</span>
+                            </div>
+                            <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                              <div className="bg-blue-600 h-full rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </section>
 

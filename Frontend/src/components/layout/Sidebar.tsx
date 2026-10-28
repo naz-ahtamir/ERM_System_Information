@@ -641,6 +641,7 @@ const adminMenuItem: MenuItem = {
     { label: 'Struktur Organisasi', href: '/admin/org-structure' },
     { label: 'Ubah PIC Divisi', href: '/admin/org-structure?tab=pic' },
     { label: 'Daftar Pelatihan', href: '/admin/daftar-pelatihan' },
+    { label: 'Master Jenis APD', href: '/admin/master-apd' },
   ],
 };
 

@@ -950,6 +950,16 @@ export default function OrgStructurePage() {
                 </svg>
                 Daftar Pelatihan
               </Link>
+              <Link
+                href="/admin/master-apd"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2a5 5 0 0 1 5 5v2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2V7a5 5 0 0 1 5-5z" />
+                  <circle cx="12" cy="7" r="3" />
+                </svg>
+                Master Jenis APD
+              </Link>
             </div>
           </div>
         </div>
