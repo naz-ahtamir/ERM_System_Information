@@ -11,6 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { RecentFindings } from "@/components/dashboard/RecentFindings";
 import { ppeHandoverApi, PpeHandoverRecord } from "@/lib/ppeHandoverApi";
+import { masterApdApi, MasterApd } from "@/lib/masterApdApi";
 
 interface Finding {
   id: string;
@@ -39,9 +40,17 @@ function DashboardContent() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [ppeRecords, setPpeRecords] = useState<PpeHandoverRecord[]>([]);
+  const [masterApdList, setMasterApdList] = useState<MasterApd[]>([]);
+  const [ppeTimeRange, setPpeTimeRange] = useState<'ALL' | 'THIS_MONTH' | 'LAST_MONTH' | 'THIS_YEAR'>('ALL');
 
   useEffect(() => {
-    ppeHandoverApi.getAll().then(setPpeRecords).catch(() => {});
+    Promise.all([
+      ppeHandoverApi.getAll().catch(() => []),
+      masterApdApi.getAll().catch(() => []),
+    ]).then(([handoverData, apdData]) => {
+      setPpeRecords(handoverData);
+      setMasterApdList(apdData);
+    });
   }, []);
 
   // Fetch findings data
@@ -449,126 +458,293 @@ function DashboardContent() {
       {/* ── PPE Handover / Distribution Dashboard Section ── */}
       <section className="py-12 md:py-16 px-5 md:px-10 bg-white border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#FF6B1A] mb-1">
-                Accident Prevention • APD Compliance
-              </p>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF1E8] border border-[#FF6B1A]/20 text-[11px] font-semibold text-[#FF6B1A] mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B1A]"></span>
+                ACCIDENT PREVENTION • APD COMPLIANCE
+              </div>
               <h2 className="text-xl md:text-2xl font-bold text-[#1F2937] tracking-tight">
                 Distribusi &amp; Pengambilan Alat Pelindung Diri (APD)
               </h2>
               <p className="text-xs text-[#6B7280] mt-0.5">
-                Ringkasan serah terima APD ke seluruh departemen operasional PT. QMB New Energy Materials
+                Monitoring analitik serah terima APD karyawan PT. QMB New Energy Materials berdasarkan divisi dan jenis APD
               </p>
             </div>
-            <Link
-              href="/accident-prevention/ppe-management"
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#FFF1E8] text-[#FF6B1A] hover:bg-[#FFE5D4] border border-[#FF6B1A]/30 rounded-xl text-xs font-semibold transition-colors shadow-xs w-fit"
-            >
-              Lihat Detail Serah Terima APD →
-            </Link>
+
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {/* Filter Rentang Waktu */}
+              <div className="flex items-center bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-1 text-xs">
+                {[
+                  { id: 'ALL', label: 'Semua Waktu' },
+                  { id: 'THIS_MONTH', label: 'Bulan Ini' },
+                  { id: 'LAST_MONTH', label: 'Bulan Lalu' },
+                  { id: 'THIS_YEAR', label: 'Tahun Ini' },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setPpeTimeRange(t.id as any)}
+                    className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                      ppeTimeRange === t.id
+                        ? 'bg-[#FF6B1A] text-white shadow-xs'
+                        : 'text-[#6B7280] hover:text-[#1F2937]'
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              <Link
+                href="/accident-prevention/ppe-management"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#FF6B1A] hover:bg-[#E85D0F] text-white rounded-xl text-xs font-semibold transition-colors shadow-xs"
+              >
+                Kelola Serah Terima APD →
+              </Link>
+            </div>
           </div>
 
-          {/* Quick Metrics */}
+          {/* Computed Analytics */}
           {(() => {
-            const totalUnits = ppeRecords.reduce((acc, r) => acc + (r.totalUnitApd || 0), 0);
-            const totalTrx = ppeRecords.length;
-            const uniqueRecipients = new Set(ppeRecords.map(r => r.penerimaIdKaryawan || r.penerimaNama)).size;
+            const now = new Date();
+            const filteredRecords = ppeRecords.filter((r) => {
+              if (ppeTimeRange === 'ALL') return true;
+              const d = new Date(r.tanggal);
+              if (ppeTimeRange === 'THIS_MONTH') {
+                return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+              }
+              if (ppeTimeRange === 'LAST_MONTH') {
+                const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                return d.getFullYear() === lastMonth.getFullYear() && d.getMonth() === lastMonth.getMonth();
+              }
+              if (ppeTimeRange === 'THIS_YEAR') {
+                return d.getFullYear() === now.getFullYear();
+              }
+              return true;
+            });
 
-            // Group by APD
-            const apdMap: Record<string, number> = {};
-            const deptMap: Record<string, number> = {};
-            ppeRecords.forEach(r => {
-              const d = r.penerimaDepartemen || 'Lainnya';
-              deptMap[d] = (deptMap[d] || 0) + (r.totalUnitApd || 0);
-              r.items?.forEach(it => {
-                apdMap[it.namaApd] = (apdMap[it.namaApd] || 0) + (Number(it.jumlah) || 1);
+            const totalUnits = filteredRecords.reduce((acc, r) => acc + (r.totalUnitApd || 0), 0);
+            const totalTrx = filteredRecords.length;
+            const uniqueRecipients = new Set(filteredRecords.map((r) => r.penerimaIdKaryawan || r.penerimaNama)).size;
+
+            // Group by APD and Dept and Condition
+            const apdMap = {} as Record<string, { qty: number; satuan: string; kategori: string }>;
+            const deptMap = {} as Record<string, { qty: number; count: number }>;
+            const conditions = { Baru: 0, Penggantian: 0, Tambahan: 0 };
+
+            filteredRecords.forEach((r) => {
+              const d = r.penerimaDepartemen || 'Departemen Lain';
+              if (!deptMap[d]) deptMap[d] = { qty: 0, count: 0 };
+              deptMap[d].qty += r.totalUnitApd || 0;
+              deptMap[d].count += 1;
+
+              r.items?.forEach((it) => {
+                const qty = Number(it.jumlah) || 1;
+                const name = it.namaApd || 'Tidak Terdefinisi';
+                if (!apdMap[name]) {
+                  apdMap[name] = { qty: 0, satuan: it.satuan || 'Pcs', kategori: it.kategori || 'Umum' };
+                }
+                apdMap[name].qty += qty;
+
+                if (it.kondisi === 'Baru') conditions.Baru += qty;
+                else if (it.kondisi === 'Penggantian') conditions.Penggantian += qty;
+                else if (it.kondisi === 'Tambahan') conditions.Tambahan += qty;
               });
             });
 
-            const topApd = Object.entries(apdMap).sort((a,b) => b[1] - a[1]);
-            const topDept = Object.entries(deptMap).sort((a,b) => b[1] - a[1]);
+            const topApd = Object.entries(apdMap)
+              .map(([name, data]) => ({ name, ...data }))
+              .sort((a, b) => b.qty - a.qty);
+
+            const topDept = Object.entries(deptMap)
+              .map(([dept, data]) => ({ dept, ...data }))
+              .sort((a, b) => b.qty - a.qty);
 
             return (
               <div className="space-y-6">
+                {/* 4 Stat Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-[#FF6B1A]">
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-[#FF6B1A] shadow-xs">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">Total APD Disalurkan</p>
-                    <p className="text-3xl font-extrabold text-[#1F2937] mt-1">{totalUnits} <span className="text-sm font-normal text-gray-500">Unit</span></p>
-                    <p className="text-[11px] text-[#FF6B1A] font-semibold mt-1">100% Tercatat &amp; Foto Lengkap</p>
+                    <p className="text-3xl font-extrabold text-[#1F2937] mt-1">
+                      {totalUnits} <span className="text-sm font-normal text-gray-500">Unit</span>
+                    </p>
+                    <p className="text-[11px] text-[#FF6B1A] font-semibold mt-1">
+                      Dari {totalTrx} transaksi serah terima
+                    </p>
                   </div>
 
-                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-blue-600">
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-blue-600 shadow-xs">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">Total Transaksi</p>
-                    <p className="text-3xl font-extrabold text-blue-700 mt-1">{totalTrx} <span className="text-sm font-normal text-gray-500">Berkas</span></p>
-                    <p className="text-[11px] text-gray-500 mt-1">Multi-item per serah terima</p>
+                    <p className="text-3xl font-extrabold text-blue-700 mt-1">
+                      {totalTrx} <span className="text-sm font-normal text-gray-500">Berkas</span>
+                    </p>
+                    <p className="text-[11px] text-gray-500 mt-1">100% Bukti foto &amp; multi-item</p>
                   </div>
 
-                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-emerald-600">
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-emerald-600 shadow-xs">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">Karyawan Terlayani</p>
-                    <p className="text-3xl font-extrabold text-emerald-700 mt-1">{uniqueRecipients} <span className="text-sm font-normal text-gray-500">Personel</span></p>
+                    <p className="text-3xl font-extrabold text-emerald-700 mt-1">
+                      {uniqueRecipients} <span className="text-sm font-normal text-gray-500">Personel</span>
+                    </p>
                     <p className="text-[11px] text-gray-500 mt-1">Penerima unik terdaftar</p>
                   </div>
 
-                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-purple-600">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">Departemen Teraktif</p>
-                    <p className="text-xl font-bold text-purple-800 mt-2 truncate">{topDept[0]?.[0] || '—'}</p>
-                    <p className="text-[11px] text-purple-600 font-semibold mt-1">{topDept[0]?.[1] || 0} unit APD diserap</p>
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-purple-600 shadow-xs">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">Master Jenis APD</p>
+                    <p className="text-3xl font-extrabold text-purple-800 mt-1">
+                      {masterApdList.length || 15} <span className="text-sm font-normal text-gray-500">Katalog</span>
+                    </p>
+                    <p className="text-[11px] text-purple-600 font-semibold mt-1">
+                      Tersedia di gudang K3
+                    </p>
+                  </div>
+                </div>
+
+                {/* Kondisi Penyerahan Summary Pills */}
+                <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-[#1F2937]">Status Kondisi APD yang Diserahkan:</span>
+                  </div>
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                      <span className="text-gray-600 font-medium">Baru (Karyawan Baru/Rutin):</span>
+                      <strong className="text-emerald-700 font-mono">{conditions.Baru} unit</strong>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                      <span className="text-gray-600 font-medium">Penggantian Rusak / Aus:</span>
+                      <strong className="text-amber-700 font-mono">{conditions.Penggantian} unit</strong>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                      <span className="text-gray-600 font-medium">Tambahan Pekerjaan Khusus:</span>
+                      <strong className="text-blue-700 font-mono">{conditions.Tambahan} unit</strong>
+                    </div>
                   </div>
                 </div>
 
                 {/* 2 Breakdown Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Top APD */}
-                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5">
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 shadow-xs">
                     <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-bold text-sm text-[#1F2937]">Top 5 Jenis APD Paling Banyak Diambil</h4>
-                      <span className="text-[11px] font-semibold text-[#FF6B1A]">Unit APD</span>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#1F2937]">Distribusi Berdasarkan Jenis APD</h4>
+                        <p className="text-[11px] text-[#6B7280]">Peringkat APD paling banyak disalurkan</p>
+                      </div>
+                      <span className="text-[11px] font-bold bg-[#FFF1E8] text-[#FF6B1A] px-2.5 py-0.5 rounded-full">
+                        {topApd.length} Jenis
+                      </span>
                     </div>
                     <div className="space-y-3">
-                      {topApd.slice(0, 5).map(([name, qty], idx) => {
-                        const maxVal = topApd[0]?.[1] || 1;
-                        const pct = Math.round((qty / maxVal) * 100);
-                        return (
-                          <div key={idx} className="space-y-1">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium text-[#1F2937] truncate max-w-[280px]">{idx + 1}. {name}</span>
-                              <span className="font-mono font-bold text-[#FF6B1A]">{qty} unit</span>
+                      {topApd.length === 0 ? (
+                        <p className="text-xs text-gray-400 py-6 text-center">Tidak ada transaksi pada periode ini</p>
+                      ) : (
+                        topApd.slice(0, 6).map((item, idx) => {
+                          const maxVal = topApd[0]?.qty || 1;
+                          const pct = Math.round((item.qty / maxVal) * 100);
+                          return (
+                            <div key={idx} className="space-y-1">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="font-medium text-[#1F2937] truncate max-w-[260px]">
+                                  {idx + 1}. {item.name}
+                                </span>
+                                <span className="font-mono font-bold text-[#FF6B1A]">
+                                  {item.qty} {item.satuan}
+                                </span>
+                              </div>
+                              <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                                <div
+                                  className="bg-gradient-to-r from-[#FF6B1A] to-[#E85D0F] h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
                             </div>
-                            <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-                              <div className="bg-[#FF6B1A] h-full rounded-full" style={{ width: `${pct}%` }} />
-                            </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })
+                      )}
                     </div>
                   </div>
 
                   {/* Top Departments */}
-                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5">
+                  <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5 shadow-xs">
                     <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-bold text-sm text-[#1F2937]">Alokasi APD per Departemen</h4>
-                      <span className="text-[11px] font-semibold text-blue-600">Kebutuhan Unit</span>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#1F2937]">Alokasi APD per Departemen</h4>
+                        <p className="text-[11px] text-[#6B7280]">Departemen penerima alokasi APD terbesar</p>
+                      </div>
+                      <span className="text-[11px] font-bold bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full">
+                        {topDept.length} Departemen
+                      </span>
                     </div>
                     <div className="space-y-3">
-                      {topDept.slice(0, 5).map(([dept, qty], idx) => {
-                        const maxVal = topDept[0]?.[1] || 1;
-                        const pct = Math.round((qty / maxVal) * 100);
-                        return (
-                          <div key={idx} className="space-y-1">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium text-[#1F2937] truncate max-w-[280px]">{dept}</span>
-                              <span className="font-mono font-bold text-blue-700">{qty} unit</span>
+                      {topDept.length === 0 ? (
+                        <p className="text-xs text-gray-400 py-6 text-center">Tidak ada data departemen pada periode ini</p>
+                      ) : (
+                        topDept.slice(0, 6).map((item, idx) => {
+                          const maxVal = topDept[0]?.qty || 1;
+                          const pct = Math.round((item.qty / maxVal) * 100);
+                          return (
+                            <div key={idx} className="space-y-1">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="font-medium text-[#1F2937] truncate max-w-[260px]">{item.dept}</span>
+                                <div className="text-right">
+                                  <span className="font-mono font-bold text-blue-700">{item.qty} unit</span>
+                                  <span className="text-[10px] text-gray-400 ml-1">({item.count} transaksi)</span>
+                                </div>
+                              </div>
+                              <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                                <div
+                                  className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-500"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
                             </div>
-                            <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-                              <div className="bg-blue-600 h-full rounded-full" style={{ width: `${pct}%` }} />
-                            </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })
+                      )}
                     </div>
                   </div>
                 </div>
+
+                {/* Recent Handovers Strip */}
+                {filteredRecords.length > 0 && (
+                  <div className="bg-white border border-[#E5E7EB] rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3 text-xs">
+                      <span className="font-bold text-[#1F2937] uppercase tracking-wider text-[11px]">
+                        Aktivitas Transaksi Serah Terima Terkini
+                      </span>
+                      <Link
+                        href="/accident-prevention/ppe-management"
+                        className="text-[#FF6B1A] font-semibold hover:underline"
+                      >
+                        Buka Semua ({filteredRecords.length}) →
+                      </Link>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {filteredRecords.slice(0, 4).map((rec) => (
+                        <div
+                          key={rec.id}
+                          className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-3 text-xs space-y-1.5 hover:border-[#FF6B1A]/40 transition-colors"
+                        >
+                          <div className="flex items-center justify-between font-mono text-[11px] text-gray-500">
+                            <span>{rec.nomorTransaksi}</span>
+                            <span>{rec.tanggal}</span>
+                          </div>
+                          <p className="font-bold text-[#1F2937] truncate">{rec.penerimaNama}</p>
+                          <p className="text-[11px] text-[#6B7280] truncate">{rec.penerimaDepartemen}</p>
+                          <div className="pt-1 border-t border-gray-200 flex items-center justify-between text-[11px]">
+                            <span className="text-[#FF6B1A] font-semibold">{rec.items?.length || 1} jenis APD</span>
+                            <span className="font-mono font-bold text-gray-700">{rec.totalUnitApd} unit</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })()}

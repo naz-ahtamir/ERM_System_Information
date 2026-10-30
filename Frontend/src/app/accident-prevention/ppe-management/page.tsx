@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   ppeHandoverApi,
@@ -29,33 +30,39 @@ const KEPERLUAN_OPTIONS = [
 ];
 
 export default function PpeManagementPage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  return (
+    <Suspense fallback={null}>
+      <PpeManagementContent />
+    </Suspense>
+  );
+}
 
-  // Active View Tab
-  const [activeTab, setActiveTab] = useState<'records' | 'analytics' | 'form'>('records');
+function PpeManagementContent() {
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
 
-  // Master Data & Handover Records
+  // Data State
   const [records, setRecords] = useState<PpeHandoverRecord[]>([]);
   const [masterApdList, setMasterApdList] = useState<MasterApd[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Search & Filter (Records Tab)
+  // Search & Filter State
   const [search, setSearch] = useState('');
-  const [filterUserRoleScope, setFilterUserRoleScope] = useState<'all' | 'penerima' | 'pemberi'>('all');
   const [filterDept, setFilterDept] = useState('ALL');
-
-  // Time Range Filter (Analytics & Records)
+  const [filterKeperluan, setFilterKeperluan] = useState('ALL');
   const [timeRange, setTimeRange] = useState<'ALL' | 'THIS_MONTH' | 'LAST_MONTH' | 'THIS_YEAR' | 'CUSTOM'>('ALL');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+  const [filterUserRoleScope, setFilterUserRoleScope] = useState<'all' | 'penerima' | 'pemberi'>('all');
 
-  // Modals
+  // Modals State
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [detailRecord, setDetailRecord] = useState<PpeHandoverRecord | null>(null);
-  const [itemToDelete, setItemToDelete] = useState<PpeHandoverRecord | null>(null);
   const [editingRecord, setEditingRecord] = useState<PpeHandoverRecord | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<PpeHandoverRecord | null>(null);
 
-  // Form State (New Handover & Edit)
+  // Form State
   const [formTanggal, setFormTanggal] = useState('');
   const [formPenerimaNama, setFormPenerimaNama] = useState('');
   const [formPenerimaIdKaryawan, setFormPenerimaIdKaryawan] = useState('');
@@ -82,7 +89,7 @@ export default function PpeManagementPage() {
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Toast
+  // Toast State
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -97,7 +104,7 @@ export default function PpeManagementPage() {
   const isDivisiPerencanaan =
     userDivisi.includes('PERENCANAAN KEAMANAN') && userDivisi.includes('PELATIHAN SIMULASI');
 
-  const canModify = isAdmin; // Hanya admin yang bisa edit & hapus
+  const canModify = isAdmin;
   const canViewAll = isAdmin || isDivisiPerencanaan;
   const currentUserIdKaryawan = (user as any)?.idKaryawan || '';
   const currentUserName = (user as any)?.nama || user?.name || '';
@@ -126,6 +133,13 @@ export default function PpeManagementPage() {
   useEffect(() => {
     loadAllData();
   }, [loadAllData]);
+
+  // Check URL query param for quick add
+  useEffect(() => {
+    if (searchParams.get('action') === 'new') {
+      handleOpenAdd();
+    }
+  }, [searchParams]);
 
   // Set default tanggal form
   useEffect(() => {
@@ -200,6 +214,11 @@ export default function PpeManagementPage() {
       list = list.filter((r) => r.penerimaDepartemen === filterDept);
     }
 
+    // Filter Keperluan
+    if (filterKeperluan !== 'ALL') {
+      list = list.filter((r) => r.keperluan === filterKeperluan);
+    }
+
     // Filter Tanggal
     list = list.filter((r) => isDateInRange(r.tanggal));
 
@@ -225,66 +244,27 @@ export default function PpeManagementPage() {
     filterUserRoleScope,
     currentUserIdKaryawan,
     filterDept,
+    filterKeperluan,
     isDateInRange,
     search,
   ]);
 
-  // ── Analytics & Summary Computations ─────────────────────
-  const analyticsData = useMemo(() => {
-    const list = scopedRecords.filter((r) => isDateInRange(r.tanggal));
+  const hasActiveFilters =
+    search !== '' ||
+    filterDept !== 'ALL' ||
+    filterKeperluan !== 'ALL' ||
+    timeRange !== 'ALL' ||
+    filterUserRoleScope !== 'all';
 
-    const totalTransactions = list.length;
-    let totalUnitApd = 0;
-    const recipientSet = new Set<string>();
-    const apdCountMap: Record<string, { count: number; satuan: string; kategori: string }> = {};
-    const deptCountMap: Record<string, { trxCount: number; apdCount: number }> = {};
-    const conditionMap = { Baru: 0, Penggantian: 0, Tambahan: 0 };
-
-    list.forEach((r) => {
-      recipientSet.add(r.penerimaIdKaryawan || r.penerimaNama);
-
-      const dName = r.penerimaDepartemen || 'Departemen Lain';
-      if (!deptCountMap[dName]) {
-        deptCountMap[dName] = { trxCount: 0, apdCount: 0 };
-      }
-      deptCountMap[dName].trxCount += 1;
-
-      r.items.forEach((it) => {
-        const qty = Number(it.jumlah) || 1;
-        totalUnitApd += qty;
-        deptCountMap[dName].apdCount += qty;
-
-        const apdName = it.namaApd || 'Tidak Terdefinisi';
-        if (!apdCountMap[apdName]) {
-          apdCountMap[apdName] = { count: 0, satuan: it.satuan || 'Pcs', kategori: it.kategori || 'Umum' };
-        }
-        apdCountMap[apdName].count += qty;
-
-        if (it.kondisi === 'Baru') conditionMap.Baru += qty;
-        else if (it.kondisi === 'Penggantian') conditionMap.Penggantian += qty;
-        else if (it.kondisi === 'Tambahan') conditionMap.Tambahan += qty;
-      });
-    });
-
-    // Top APD sorted
-    const topApdList = Object.entries(apdCountMap)
-      .map(([name, data]) => ({ name, ...data }))
-      .sort((a, b) => b.count - a.count);
-
-    // Top Departemen sorted
-    const topDeptList = Object.entries(deptCountMap)
-      .map(([dept, data]) => ({ dept, ...data }))
-      .sort((a, b) => b.apdCount - a.apdCount);
-
-    return {
-      totalTransactions,
-      totalUnitApd,
-      totalRecipients: recipientSet.size,
-      topApdList,
-      topDeptList,
-      conditionMap,
-    };
-  }, [scopedRecords, isDateInRange]);
+  const handleResetFilters = () => {
+    setSearch('');
+    setFilterDept('ALL');
+    setFilterKeperluan('ALL');
+    setTimeRange('ALL');
+    setCustomStartDate('');
+    setCustomEndDate('');
+    setFilterUserRoleScope('all');
+  };
 
   // ── Form Handlers ─────────────────────────────────────────
   const resetForm = () => {
@@ -298,12 +278,13 @@ export default function PpeManagementPage() {
     setFormPenerimaPerusahaan('PT. QMB New Energy Materials');
     setFormKeperluan(KEPERLUAN_OPTIONS[0]);
     setFormCatatan('');
+    const firstApd = masterApdList[0];
     setFormItems([
       {
-        namaApd: masterApdList[0]?.namaApd || 'Helm Safety (Safety Helmet V-Gard)',
-        kategori: masterApdList[0]?.kategori || 'Pelindung Kepala',
+        namaApd: firstApd?.namaApd || 'Helm Safety (Safety Helmet V-Gard)',
+        kategori: firstApd?.kategori || 'Pelindung Kepala',
         jumlah: 1,
-        satuan: masterApdList[0]?.satuan || 'Pcs',
+        satuan: firstApd?.satuan || 'Pcs',
         ukuran: '',
         kondisi: 'Baru',
         keterangan: '',
@@ -314,12 +295,12 @@ export default function PpeManagementPage() {
     setFormErrors({});
   };
 
-  const openNewForm = () => {
+  const handleOpenAdd = () => {
     resetForm();
-    setActiveTab('form');
+    setIsFormModalOpen(true);
   };
 
-  const openEditModal = (rec: PpeHandoverRecord) => {
+  const handleOpenEdit = (rec: PpeHandoverRecord) => {
     setEditingRecord(rec);
     setFormTanggal(rec.tanggal);
     setFormPenerimaNama(rec.penerimaNama);
@@ -338,10 +319,9 @@ export default function PpeManagementPage() {
     setFormFotoUrl(rec.fotoBuktiUrl);
     setFormFotoName(rec.fotoBuktiName || 'bukti_serah_terima.jpg');
     setFormErrors({});
-    setActiveTab('form');
+    setIsFormModalOpen(true);
   };
 
-  // Multi-item rows handler
   const addItemRow = () => {
     const defaultApd = masterApdList[0];
     setFormItems((prev) => [
@@ -388,7 +368,6 @@ export default function PpeManagementPage() {
     });
   };
 
-  // Upload Foto Serah Terima Handler
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -413,7 +392,6 @@ export default function PpeManagementPage() {
     reader.readAsDataURL(file);
   };
 
-  // Submit Form
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     const errors: Record<string, string> = {};
@@ -434,7 +412,7 @@ export default function PpeManagementPage() {
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
-      showToast('Mohon lengkapi formulir dan unggah foto serah terima', 'error');
+      showToast('Mohon lengkapi formulir dan unggah foto bukti serah terima', 'error');
       return;
     }
 
@@ -471,8 +449,8 @@ export default function PpeManagementPage() {
         showToast('Transaksi serah terima APD berhasil disimpan');
       }
 
+      setIsFormModalOpen(false);
       resetForm();
-      setActiveTab('records');
       loadAllData();
     } catch (err: any) {
       showToast(err.message || 'Gagal menyimpan transaksi serah terima APD', 'error');
@@ -481,7 +459,6 @@ export default function PpeManagementPage() {
     }
   };
 
-  // Delete Action
   const handleDeleteConfirm = async () => {
     if (!itemToDelete) return;
     setDeleting(true);
@@ -497,7 +474,7 @@ export default function PpeManagementPage() {
     }
   };
 
-  // Export to CSV
+  // ── Export CSV Handler ────────────────────────────────────
   const handleExportCSV = () => {
     if (filteredRecords.length === 0) {
       showToast('Tidak ada data untuk diekspor', 'error');
@@ -510,12 +487,15 @@ export default function PpeManagementPage() {
       'Penerima (Nama)',
       'ID Karyawan Penerima',
       'Departemen Penerima',
+      'Divisi',
+      'Jabatan',
       'Perusahaan',
       'Pemberi (Nama)',
       'ID Karyawan Pemberi',
       'Keperluan',
       'Total Unit APD',
       'Rincian APD Diserahkan',
+      'Catatan',
     ];
 
     const rows = filteredRecords.map((r) => [
@@ -524,15 +504,20 @@ export default function PpeManagementPage() {
       `"${r.penerimaNama.replace(/"/g, '""')}"`,
       `"${r.penerimaIdKaryawan}"`,
       `"${r.penerimaDepartemen.replace(/"/g, '""')}"`,
+      `"${(r.penerimaDivisi || '').replace(/"/g, '""')}"`,
+      `"${(r.penerimaJabatan || '').replace(/"/g, '""')}"`,
       `"${(r.penerimaPerusahaan || '').replace(/"/g, '""')}"`,
       `"${r.pemberiNama.replace(/"/g, '""')}"`,
       `"${r.pemberiIdKaryawan}"`,
       `"${r.keperluan.replace(/"/g, '""')}"`,
       r.totalUnitApd,
       `"${r.items.map((it) => `${it.namaApd} (${it.jumlah} ${it.satuan} [${it.kondisi}])`).join('; ')}"`,
+      `"${(r.catatan || '').replace(/"/g, '""')}"`,
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const csvContent =
+      'data:text/csv;charset=utf-8,\uFEFF' +
+      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
@@ -543,7 +528,103 @@ export default function PpeManagementPage() {
     showToast('Data serah terima APD berhasil diekspor ke CSV');
   };
 
-  // Print Handover Slip
+  // ── Print / Save as PDF Rekapitulasi Data ─────────────────
+  const handlePrintRekap = () => {
+    if (filteredRecords.length === 0) {
+      showToast('Tidak ada data untuk dicetak', 'error');
+      return;
+    }
+
+    const rowsHtml = filteredRecords
+      .map(
+        (r, i) => `
+        <tr style="background:${i % 2 === 0 ? '#fff' : '#f9fafb'}">
+          <td style="text-align:center;">${i + 1}</td>
+          <td><strong>${r.nomorTransaksi}</strong></td>
+          <td>${r.tanggal}</td>
+          <td><strong>${r.penerimaNama}</strong><br><small>${r.penerimaIdKaryawan}</small></td>
+          <td>${r.penerimaDepartemen}</td>
+          <td>${r.pemberiNama}</td>
+          <td>${r.keperluan}</td>
+          <td>${r.items.map((it) => `${it.namaApd} (${it.jumlah} ${it.satuan})`).join(', ')}</td>
+          <td style="text-align:center; font-weight:bold;">${r.totalUnitApd}</td>
+        </tr>`
+      )
+      .join('');
+
+    const totalAllUnit = filteredRecords.reduce((acc, r) => acc + (r.totalUnitApd || 0), 0);
+
+    const printWin = window.open('', '_blank');
+    if (!printWin) return;
+
+    printWin.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Rekapitulasi Serah Terima APD - PT QMB</title>
+          <style>
+            body { font-family: Arial, sans-serif; font-size: 11px; color: #1f2937; padding: 16px; margin: 0; }
+            @media print {
+              body { padding: 4mm; font-size: 10px; }
+              .no-print { display: none !important; }
+              @page { margin: 8mm; size: A4 landscape; }
+            }
+            .header { background: #1F2937; color: white; padding: 14px 18px; margin-bottom: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+            .header h1 { font-size: 16px; margin: 0 0 3px; font-weight: bold; }
+            .header p { font-size: 10px; color: #9ca3af; margin: 0; }
+            .print-btn { background: #FF6B1A; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+            table { border-collapse: collapse; width: 100%; min-width: 900px; }
+            th { background: #1F2937; color: white; padding: 8px 10px; text-align: left; font-size: 11px; }
+            td { padding: 7px 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+            .summary-box { margin-top: 15px; padding: 10px; background: #FFF1E8; border-radius: 6px; font-weight: bold; color: #FF6B1A; display: flex; justify-content: space-between; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div>
+              <h1>PT. QMB NEW ENERGY MATERIALS</h1>
+              <p>Laporan Rekapitulasi Serah Terima Alat Pelindung Diri (APD) • Dicetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+            </div>
+            <div style="text-align:right">
+              <p style="font-size:14px; font-weight:bold; color:#FF6B1A;">${filteredRecords.length} Transaksi</p>
+              <p>Total APD: ${totalAllUnit} Unit</p>
+            </div>
+          </div>
+          <button class="print-btn no-print" onclick="window.print()">🖨️ Cetak / Simpan Rekap PDF</button>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:30px; text-align:center;">#</th>
+                <th>No. Transaksi</th>
+                <th>Tanggal</th>
+                <th>Penerima</th>
+                <th>Departemen</th>
+                <th>Petugas Pemberi</th>
+                <th>Keperluan</th>
+                <th>Item APD Diserahkan</th>
+                <th style="width:60px; text-align:center;">Total Unit</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+          <div class="summary-box">
+            <span>Total Berkas: ${filteredRecords.length} Transaksi</span>
+            <span>Total Unit APD Tersalurkan: ${totalAllUnit} Unit</span>
+          </div>
+        </body>
+      </html>
+    `);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => {
+      printWin.print();
+    }, 400);
+  };
+
+  // ── Print Individual Handover Slip ────────────────────────
   const handlePrintSlip = (rec: PpeHandoverRecord) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
@@ -553,28 +634,28 @@ export default function PpeManagementPage() {
         <head>
           <title>Bukti Serah Terima APD - ${rec.nomorTransaksi}</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 25px; color: #111; }
+            body { font-family: Arial, sans-serif; padding: 25px; color: #111; margin: 0; }
             .header { text-align: center; border-bottom: 2px solid #FF6B1A; padding-bottom: 12px; margin-bottom: 20px; }
-            .header h2 { margin: 0; color: #111; }
-            .header p { margin: 4px 0 0; font-size: 13px; color: #666; }
-            .meta-table { width: 100%; margin-bottom: 20px; font-size: 13px; border-collapse: collapse; }
-            .meta-table td { padding: 5px 8px; }
-            .meta-label { font-weight: bold; width: 180px; color: #444; }
-            .table-items { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+            .header h2 { margin: 0; color: #111; font-size: 18px; }
+            .header p { margin: 4px 0 0; font-size: 12px; color: #666; }
+            .meta-table { width: 100%; margin-bottom: 20px; font-size: 12px; border-collapse: collapse; }
+            .meta-table td { padding: 4px 6px; }
+            .meta-label { font-weight: bold; width: 170px; color: #444; }
+            .table-items { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
             .table-items th, .table-items td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; }
             .table-items th { background-color: #FFF1E8; color: #FF6B1A; font-weight: bold; }
-            .photo-box { margin-top: 25px; text-align: center; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; }
-            .photo-box img { max-width: 450px; max-height: 320px; border-radius: 6px; object-fit: contain; }
-            .signatures { margin-top: 40px; display: flex; justify-content: space-between; }
-            .sig-col { text-align: center; width: 220px; font-size: 13px; }
-            .sig-space { height: 70px; }
+            .photo-box { margin-top: 20px; text-align: center; border: 1px dashed #ccc; padding: 12px; border-radius: 8px; }
+            .photo-box img { max-width: 450px; max-height: 280px; border-radius: 6px; object-fit: contain; }
+            .signatures { margin-top: 35px; display: flex; justify-content: space-between; }
+            .sig-col { text-align: center; width: 220px; font-size: 12px; }
+            .sig-space { height: 60px; }
           </style>
         </head>
         <body>
           <div class="header">
             <h2>PT. QMB NEW ENERGY MATERIALS</h2>
             <p>DEPARTEMEN HEALTH, SAFETY & ENVIRONMENT (HSE)</p>
-            <h3 style="color:#FF6B1A; margin-top:10px;">FORMULIR BUKTI SERAH TERIMA ALAT PELINDUNG DIRI (APD)</h3>
+            <h3 style="color:#FF6B1A; margin-top:8px; font-size:15px;">FORMULIR BUKTI SERAH TERIMA ALAT PELINDUNG DIRI (APD)</h3>
           </div>
           <table class="meta-table">
             <tr>
@@ -590,10 +671,16 @@ export default function PpeManagementPage() {
               <td>${rec.pemberiNama} (${rec.pemberiIdKaryawan})</td>
             </tr>
             <tr>
-              <td class="meta-label">Departemen Penerima:</td>
+              <td class="meta-label">Departemen / Divisi:</td>
               <td>${rec.penerimaDepartemen} / ${rec.penerimaDivisi || '-'}</td>
               <td class="meta-label">Keperluan:</td>
               <td>${rec.keperluan}</td>
+            </tr>
+            <tr>
+              <td class="meta-label">Perusahaan:</td>
+              <td>${rec.penerimaPerusahaan || 'PT. QMB New Energy Materials'}</td>
+              <td class="meta-label">Total Item APD:</td>
+              <td><strong>${rec.totalUnitApd} Unit</strong></td>
             </tr>
           </table>
 
@@ -617,7 +704,7 @@ export default function PpeManagementPage() {
                   <td style="text-align:center;">${i + 1}</td>
                   <td><strong>${it.namaApd}</strong></td>
                   <td>${it.kategori}</td>
-                  <td style="text-align:center;">${it.jumlah} ${it.satuan}</td>
+                  <td style="text-align:center; font-weight:bold;">${it.jumlah} ${it.satuan}</td>
                   <td style="text-align:center;">${it.ukuran || '-'}</td>
                   <td style="text-align:center;">${it.kondisi}</td>
                   <td>${it.keterangan || '-'}</td>
@@ -631,7 +718,7 @@ export default function PpeManagementPage() {
             rec.fotoBuktiUrl
               ? `
             <div class="photo-box">
-              <p style="font-size:12px; font-weight:bold; color:#666; margin-top:0;">DOKUMENTASI FOTO SERAH TERIMA APD</p>
+              <p style="font-size:11px; font-weight:bold; color:#666; margin-top:0;">DOKUMENTASI FOTO SERAH TERIMA APD</p>
               <img src="${rec.fotoBuktiUrl}" alt="Bukti Serah Terima" />
             </div>`
               : ''
@@ -639,7 +726,7 @@ export default function PpeManagementPage() {
 
           <div class="signatures">
             <div class="sig-col">
-              <p>Yang Menyerahkan (Pemberi),</p>
+              <p>Yang Menyerahkan (Petugas K3),</p>
               <div class="sig-space"></div>
               <p><strong>(${rec.pemberiNama})</strong><br>ID: ${rec.pemberiIdKaryawan}</p>
             </div>
@@ -664,7 +751,7 @@ export default function PpeManagementPage() {
       {/* Toast Alert */}
       {toast && (
         <div
-          className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-xl shadow-lg text-[13px] font-semibold text-white transition-all flex items-center gap-2 ${
+          className={`fixed top-5 right-5 z-[700] px-5 py-3 rounded-xl shadow-lg text-[13px] font-semibold text-white transition-all flex items-center gap-2 ${
             toast.type === 'success' ? 'bg-emerald-600' : 'bg-red-600'
           }`}
         >
@@ -673,11 +760,11 @@ export default function PpeManagementPage() {
         </div>
       )}
 
-      {/* Header Banner */}
+      {/* ── Page Header ── */}
       <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-[12px] text-[#6B7280] mb-4 flex-wrap">
+          <div className="flex items-center gap-2 text-[12px] text-[#6B7280] mb-3 flex-wrap">
             <Link href="/" className="hover:text-[#FF6B1A] transition-colors flex items-center gap-1">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -686,32 +773,47 @@ export default function PpeManagementPage() {
               Home
             </Link>
             <span>/</span>
-            <Link href="/dashboard" className="hover:text-[#FF6B1A] transition-colors">Dashboard</Link>
+            <Link href="/dashboard" className="hover:text-[#FF6B1A] transition-colors">
+              Dashboard
+            </Link>
             <span>/</span>
             <span className="text-[#6B7280]">Accident Prevention</span>
             <span>/</span>
-            <span className="text-[#FF6B1A] font-medium">PPE Management (Serah Terima APD)</span>
+            <span className="text-[#FF6B1A] font-medium">PPE Management</span>
           </div>
 
-          <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">
-                Accident Prevention • APD Compliance
-              </div>
-              <h1 className="font-bold text-[#1F2937] text-[clamp(24px,4vw,34px)] leading-tight">
+              <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-1.5">
+                Accident Prevention › PPE Management
+              </p>
+              <h1 className="font-bold text-[#1F2937] text-[clamp(22px,3.5vw,34px)] leading-tight">
                 Pencatatan Serah Terima Alat Pelindung Diri (APD)
               </h1>
-              <p className="text-[#6B7280] text-[13px] mt-1.5 max-w-3xl">
-                Sistem pengelolaan distribusi dan serah terima APD karyawan PT. QMB New Energy Materials dengan multi-item, dokumentasi foto serah terima wajib, dan ringkasan analitik per departemen.
+              <p className="text-[#6B7280] text-[13px] mt-1 max-w-3xl">
+                Sistem pengelolaan distribusi dan serah terima APD karyawan PT. QMB New Energy Materials dengan multi-item, bukti foto fisik penyerahan, dan pencetakan slip resmi.
               </p>
             </div>
 
-            {/* Quick Action Buttons */}
+            {/* Header Right Action */}
             <div className="flex items-center gap-2.5 flex-wrap">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="7" height="9" />
+                  <rect x="14" y="3" width="7" height="5" />
+                  <rect x="14" y="12" width="7" height="9" />
+                  <rect x="3" y="16" width="7" height="5" />
+                </svg>
+                Dashboard Utama
+              </Link>
+
               {isAdmin && (
                 <Link
                   href="/admin/master-apd"
-                  className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs"
+                  className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 2a5 5 0 0 1 5 5v2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2V7a5 5 0 0 1 5-5z" />
@@ -720,675 +822,443 @@ export default function PpeManagementPage() {
                   Master Jenis APD
                 </Link>
               )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main Content Container ── */}
+      <div className="max-w-7xl mx-auto px-6 md:px-10 py-8 space-y-5">
+        {/* ── Toolbar Row 1: Search + Export + Tambah Record (Di bawah Header) ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          {/* Search Box */}
+          <div className="relative flex-1">
+            <svg
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cari nomor transaksi, nama penerima, ID karyawan, dept, atau jenis APD..."
+              className="w-full pl-10 pr-9 py-2.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors shadow-xs"
+            />
+            {search && (
               <button
-                onClick={openNewForm}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors shadow-xs"
+                onClick={() => setSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]"
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-                + Catat Serah Terima APD
+              </button>
+            )}
+          </div>
+
+          {/* Export Buttons */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportCSV}
+              title="Download format CSV Excel"
+              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-emerald-400 hover:text-emerald-700 transition-colors shadow-xs whitespace-nowrap"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Export CSV
+            </button>
+
+            <button
+              onClick={handlePrintRekap}
+              title="Cetak atau simpan rekap data PDF"
+              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-blue-400 hover:text-blue-700 transition-colors shadow-xs whitespace-nowrap"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="6 9 6 2 18 2 18 9" />
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                <rect x="6" y="14" width="12" height="8" />
+              </svg>
+              Cetak Rekap
+            </button>
+          </div>
+
+          {/* Tombol Tambah Record (Di bawah Header) */}
+          <button
+            onClick={handleOpenAdd}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-all shadow-xs whitespace-nowrap"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            + Tambah Record Serah Terima
+          </button>
+        </div>
+
+        {/* ── Toolbar Row 2: Filter Dropdowns & Role Scope ── */}
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-xs space-y-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Filter Departemen */}
+            <select
+              value={filterDept}
+              onChange={(e) => setFilterDept(e.target.value)}
+              className="py-2 px-3 text-[13px] bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] font-medium text-[#374151]"
+            >
+              <option value="ALL">Semua Departemen</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.name}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Filter Keperluan */}
+            <select
+              value={filterKeperluan}
+              onChange={(e) => setFilterKeperluan(e.target.value)}
+              className="py-2 px-3 text-[13px] bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] font-medium text-[#374151]"
+            >
+              <option value="ALL">Semua Keperluan Penyerahan</option>
+              {KEPERLUAN_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+
+            {/* Filter Rentang Waktu */}
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value as any)}
+              className="py-2 px-3 text-[13px] bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] font-medium text-[#374151]"
+            >
+              <option value="ALL">Semua Waktu</option>
+              <option value="THIS_MONTH">Bulan Berjalan</option>
+              <option value="LAST_MONTH">Bulan Lalu</option>
+              <option value="THIS_YEAR">Tahun Ini</option>
+              <option value="CUSTOM">Rentang Tanggal Khusus</option>
+            </select>
+
+            {/* Custom Date Pickers */}
+            {timeRange === 'CUSTOM' && (
+              <div className="flex items-center gap-2 text-[12px] bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl">
+                <span>Dari:</span>
+                <input
+                  type="date"
+                  value={customStartDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                  className="px-2 py-0.5 text-[12px] bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#FF6B1A]"
+                />
+                <span>Sampai:</span>
+                <input
+                  type="date"
+                  value={customEndDate}
+                  onChange={(e) => setCustomEndDate(e.target.value)}
+                  className="px-2 py-0.5 text-[12px] bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#FF6B1A]"
+                />
+              </div>
+            )}
+
+            {/* Reset Filter Button */}
+            {hasActiveFilters && (
+              <button
+                onClick={handleResetFilters}
+                className="py-2 px-3 text-[12px] text-gray-500 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded-xl transition-colors font-semibold"
+              >
+                ✕ Reset Filter
+              </button>
+            )}
+          </div>
+
+          {/* Non-Admin User Scope Buttons */}
+          {!canViewAll && (
+            <div className="flex items-center gap-2 pt-2 border-t border-[#E5E7EB] text-[12px]">
+              <span className="text-[#6B7280] font-medium">Tampilkan:</span>
+              <button
+                onClick={() => setFilterUserRoleScope('all')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+                  filterUserRoleScope === 'all'
+                    ? 'bg-[#FF6B1A] text-white shadow-xs'
+                    : 'bg-gray-100 text-[#4B5563] hover:bg-gray-200'
+                }`}
+              >
+                Semua Terkait Saya ({scopedRecords.length})
+              </button>
+              <button
+                onClick={() => setFilterUserRoleScope('penerima')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+                  filterUserRoleScope === 'penerima'
+                    ? 'bg-[#FF6B1A] text-white shadow-xs'
+                    : 'bg-gray-100 text-[#4B5563] hover:bg-gray-200'
+                }`}
+              >
+                Saya Sebagai Penerima
+              </button>
+              <button
+                onClick={() => setFilterUserRoleScope('pemberi')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+                  filterUserRoleScope === 'pemberi'
+                    ? 'bg-[#FF6B1A] text-white shadow-xs'
+                    : 'bg-gray-100 text-[#4B5563] hover:bg-gray-200'
+                }`}
+              >
+                Saya Sebagai Pemberi
               </button>
             </div>
-          </div>
-
-          {/* Access Banner Notice */}
-          <div className="mt-6 p-3.5 bg-orange-50/70 border border-orange-200/80 rounded-2xl flex items-center justify-between text-[12px] text-orange-900 flex-wrap gap-2">
-            <div className="flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-[#FF6B1A] flex-shrink-0" />
-              <span>
-                {isAdmin ? (
-                  <strong>Hak Akses Admin:</strong>
-                ) : isDivisiPerencanaan ? (
-                  <strong>Hak Akses Divisi Perencanaan Keamanan &amp; Pelatihan Simulasi:</strong>
-                ) : (
-                  <strong>Hak Akses Pengguna:</strong>
-                )}{' '}
-                {isAdmin
-                  ? 'Anda memiliki wewenang penuh untuk melihat semua data, menambah, mengedit, dan menghapus record.'
-                  : isDivisiPerencanaan
-                  ? 'Anda memiliki wewenang melihat semua riwayat serah terima APD (Read-Only) serta mencatat penyerahan baru.'
-                  : 'Anda dapat mencatat penyerahan APD (otomatis sebagai pemberi) dan melihat riwayat APD yang telah diserahkan atau diterima.'}
-              </span>
-            </div>
-            <div className="text-[11px] font-mono text-[#FF6B1A] font-semibold">
-              Petugas: {currentUserName} ({currentUserIdKaryawan || 'Karyawan'})
-            </div>
-          </div>
+          )}
         </div>
-      </div>
 
-      {/* Tabs Navigation */}
-      <div className="max-w-7xl mx-auto px-6 md:px-10 pt-6">
-        <div className="flex items-center gap-2 border-b border-[#E5E7EB] pb-px">
-          <button
-            onClick={() => setActiveTab('records')}
-            className={`flex items-center gap-2 px-4 py-3 text-[13px] font-semibold border-b-2 transition-all ${
-              activeTab === 'records'
-                ? 'border-[#FF6B1A] text-[#FF6B1A]'
-                : 'border-transparent text-[#6B7280] hover:text-[#1F2937]'
-            }`}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M3 9h18" />
-              <path d="M9 21V9" />
-            </svg>
-            Daftar Serah Terima ({filteredRecords.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('analytics')}
-            className={`flex items-center gap-2 px-4 py-3 text-[13px] font-semibold border-b-2 transition-all ${
-              activeTab === 'analytics'
-                ? 'border-[#FF6B1A] text-[#FF6B1A]'
-                : 'border-transparent text-[#6B7280] hover:text-[#1F2937]'
-            }`}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="20" x2="18" y2="10" />
-              <line x1="12" y1="20" x2="12" y2="4" />
-              <line x1="6" y1="20" x2="6" y2="14" />
-            </svg>
-            Dashboard &amp; Ringkasan APD
-          </button>
-
-          <button
-            onClick={openNewForm}
-            className={`flex items-center gap-2 px-4 py-3 text-[13px] font-semibold border-b-2 transition-all ${
-              activeTab === 'form'
-                ? 'border-[#FF6B1A] text-[#FF6B1A]'
-                : 'border-transparent text-[#6B7280] hover:text-[#1F2937]'
-            }`}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-            {editingRecord ? 'Edit Serah Terima APD' : 'Formulir Serah Terima Baru'}
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-6 md:px-10 py-6">
-
-        {/* ════════════════════════════════════════════════════════════
-            TAB 1: DAFTAR TRANSAKSI SERAH TERIMA APD
-           ════════════════════════════════════════════════════════════ */}
-        {activeTab === 'records' && (
-          <div className="space-y-6">
-            {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 text-center shadow-xs">
-                <div className="text-[26px] font-bold text-[#1F2937]">{analyticsData.totalTransactions}</div>
-                <div className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider mt-0.5">
-                  Total Transaksi
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 text-center shadow-xs">
-                <div className="text-[26px] font-bold text-[#FF6B1A]">{analyticsData.totalUnitApd}</div>
-                <div className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider mt-0.5">
-                  Total APD Diserahkan
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 text-center shadow-xs">
-                <div className="text-[26px] font-bold text-blue-600">{analyticsData.totalRecipients}</div>
-                <div className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider mt-0.5">
-                  Karyawan Penerima
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 text-center shadow-xs">
-                <div className="text-[26px] font-bold text-emerald-600">{masterApdList.length}</div>
-                <div className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider mt-0.5">
-                  Jenis APD Tersedia
-                </div>
-              </div>
-            </div>
-
-            {/* Filter Toolbar */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs p-5 space-y-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-3 flex-1 flex-wrap">
-                  {/* Search Bar */}
-                  <div className="relative min-w-[240px] flex-1 max-w-md">
-                    <svg
-                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
-                      width="15"
-                      height="15"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <circle cx="11" cy="11" r="8" />
-                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <input
-                      type="text"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Cari penerima, ID karyawan, no transaksi, atau jenis APD..."
-                      className="w-full pl-9 pr-8 py-2 text-[13px] bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-all"
-                    />
-                    {search && (
-                      <button
-                        onClick={() => setSearch('')}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+        {/* ── Records Table ── */}
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#FAFAFA] border-b border-[#E5E7EB] text-[12px] font-bold text-[#6B7280] uppercase tracking-wider">
+                  <th className="py-3 px-4 w-12 text-center">#</th>
+                  <th className="py-3 px-4">No. Transaksi / Tgl</th>
+                  <th className="py-3 px-4">Penerima (Receiver)</th>
+                  <th className="py-3 px-4">Departemen</th>
+                  <th className="py-3 px-4">Keperluan</th>
+                  <th className="py-3 px-4">Rincian APD Diserahkan</th>
+                  <th className="py-3 px-4 text-center">Total Unit</th>
+                  <th className="py-3 px-4 text-center">Pemberi</th>
+                  <th className="py-3 px-4 text-center">Foto Bukti</th>
+                  <th className="py-3 px-4 text-center w-32">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E5E7EB] text-[13px]">
+                {loading ? (
+                  <tr>
+                    <td colSpan={10} className="py-14 text-center text-[#6B7280]">
+                      <div className="w-8 h-8 border-4 border-[#FF6B1A] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                      Memuat data serah terima APD...
+                    </td>
+                  </tr>
+                ) : filteredRecords.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="py-14 text-center text-[#9CA3AF]">
+                      <svg
+                        className="w-12 h-12 mx-auto mb-2 text-gray-300"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
                       >
-                        ✕
-                      </button>
-                    )}
-                  </div>
+                        <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+                      </svg>
+                      <p className="font-semibold text-[#4B5563]">Belum ada catatan serah terima APD</p>
+                      <p className="text-[12px] mt-0.5">
+                        Gunakan tombol <strong>+ Tambah Record Serah Terima</strong> di atas untuk mencatat penyerahan baru.
+                      </p>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredRecords.map((rec, idx) => (
+                    <tr key={rec.id} className="hover:bg-orange-50/20 transition-colors">
+                      <td className="py-3.5 px-4 text-center text-[#9CA3AF] font-mono text-[12px]">
+                        {idx + 1}
+                      </td>
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <div className="font-semibold text-[#1F2937] font-mono text-[12px]">
+                          {rec.nomorTransaksi}
+                        </div>
+                        <div className="text-[11px] text-[#6B7280]">{rec.tanggal}</div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="font-semibold text-[#1F2937]">{rec.penerimaNama}</div>
+                        <div className="text-[11px] font-mono text-gray-500">
+                          {rec.penerimaIdKaryawan} {rec.penerimaJabatan ? `• ${rec.penerimaJabatan}` : ''}
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="text-[12px] font-medium text-[#374151]">{rec.penerimaDepartemen}</div>
+                        {rec.penerimaDivisi && (
+                          <div className="text-[11px] text-[#9CA3AF]">{rec.penerimaDivisi}</div>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 max-w-[170px]">
+                        <span className="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-gray-100 text-gray-700 truncate max-w-full">
+                          {rec.keperluan}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 max-w-xs">
+                        <div className="space-y-1">
+                          {rec.items.slice(0, 2).map((item, i) => (
+                            <div key={i} className="flex items-center gap-1.5 text-[12px]">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B1A]" />
+                              <span className="font-medium text-[#1F2937]">{item.namaApd}</span>
+                              <span className="text-[#6B7280] font-mono">
+                                ({item.jumlah} {item.satuan})
+                              </span>
+                              <span
+                                className={`px-1.5 py-0.2 rounded text-[10px] font-medium ${
+                                  item.kondisi === 'Baru'
+                                    ? 'bg-emerald-50 text-emerald-700'
+                                    : item.kondisi === 'Penggantian'
+                                    ? 'bg-amber-50 text-amber-700'
+                                    : 'bg-blue-50 text-blue-700'
+                                }`}
+                              >
+                                {item.kondisi}
+                              </span>
+                            </div>
+                          ))}
+                          {rec.items.length > 2 && (
+                            <div className="text-[11px] text-[#FF6B1A] font-semibold">
+                              +{rec.items.length - 2} jenis APD lainnya
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-center font-mono font-bold text-[#1F2937]">
+                        {rec.totalUnitApd}
+                      </td>
+                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                        <div className="text-[12px] font-medium text-[#374151]">{rec.pemberiNama}</div>
+                        <div className="text-[10px] font-mono text-gray-400">{rec.pemberiIdKaryawan}</div>
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        {rec.fotoBuktiUrl ? (
+                          <button
+                            onClick={() => setDetailRecord(rec)}
+                            title="Klik untuk melihat foto dokumentasi"
+                            className="relative group inline-block"
+                          >
+                            <img
+                              src={rec.fotoBuktiUrl}
+                              alt="Bukti"
+                              className="w-10 h-10 object-cover rounded-lg border border-[#E5E7EB] group-hover:scale-105 transition-transform shadow-xs"
+                            />
+                            <span className="absolute bottom-0 right-0 bg-[#FF6B1A] text-white p-0.5 rounded-full text-[9px]">
+                              ✓
+                            </span>
+                          </button>
+                        ) : (
+                          <span className="text-[11px] text-gray-400 italic">Tidak ada foto</span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {/* Detail Button */}
+                          <button
+                            onClick={() => setDetailRecord(rec)}
+                            title="Detail Transaksi & Foto"
+                            className="p-1.5 rounded-lg text-gray-600 hover:text-[#FF6B1A] hover:bg-[#FFF1E8] transition-colors"
+                          >
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                              <circle cx="12" cy="12" r="3" />
+                            </svg>
+                          </button>
 
-                  {/* Filter Rentang Waktu */}
-                  <select
-                    value={timeRange}
-                    onChange={(e) => setTimeRange(e.target.value as any)}
-                    className="py-2 px-3 text-[13px] bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] font-medium text-[#374151]"
-                  >
-                    <option value="ALL">Semua Waktu</option>
-                    <option value="THIS_MONTH">Bulan Ini</option>
-                    <option value="LAST_MONTH">Bulan Lalu</option>
-                    <option value="THIS_YEAR">Tahun Ini</option>
-                    <option value="CUSTOM">Rentang Tanggal Khusus</option>
-                  </select>
+                          {/* Cetak Slip */}
+                          <button
+                            onClick={() => handlePrintSlip(rec)}
+                            title="Cetak Formulir Serah Terima (PDF)"
+                            className="p-1.5 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                          >
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="6 9 6 2 18 2 18 9" />
+                              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                              <rect x="6" y="14" width="12" height="8" />
+                            </svg>
+                          </button>
 
-                  {/* Filter Departemen */}
-                  <select
-                    value={filterDept}
-                    onChange={(e) => setFilterDept(e.target.value)}
-                    className="py-2 px-3 text-[13px] bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] font-medium text-[#374151]"
-                  >
-                    <option value="ALL">Semua Departemen</option>
-                    {departments.map((d) => (
-                      <option key={d.id} value={d.name}>
-                        {d.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                          {/* Edit (Hanya Admin) */}
+                          {canModify && (
+                            <button
+                              onClick={() => handleOpenEdit(rec)}
+                              title="Edit Transaksi (Admin)"
+                              className="p-1.5 rounded-lg text-gray-500 hover:text-[#FF6B1A] hover:bg-[#FFF1E8] transition-colors"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                            </button>
+                          )}
 
-                {/* Export & Action */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleExportCSV}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 text-[12px] font-semibold text-[#374151] bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl hover:bg-gray-100 transition-colors shadow-xs"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="7 10 12 15 17 10" />
-                      <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    Export CSV
-                  </button>
-                </div>
-              </div>
-
-              {/* Custom Date Picker Inputs */}
-              {timeRange === 'CUSTOM' && (
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 text-[12px] flex-wrap">
-                  <span className="font-semibold text-gray-700">Pilih Rentang:</span>
-                  <div className="flex items-center gap-1.5">
-                    <span>Dari:</span>
-                    <input
-                      type="date"
-                      value={customStartDate}
-                      onChange={(e) => setCustomStartDate(e.target.value)}
-                      className="px-2.5 py-1 text-[12px] bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#FF6B1A]"
-                    />
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span>Sampai:</span>
-                    <input
-                      type="date"
-                      value={customEndDate}
-                      onChange={(e) => setCustomEndDate(e.target.value)}
-                      className="px-2.5 py-1 text-[12px] bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#FF6B1A]"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Non-Admin Quick Filter (Penerima vs Pemberi) */}
-              {!canViewAll && (
-                <div className="flex items-center gap-2 pt-2 border-t border-[#E5E7EB] text-[12px]">
-                  <span className="text-[#6B7280] font-medium">Tampilkan:</span>
-                  <button
-                    onClick={() => setFilterUserRoleScope('all')}
-                    className={`px-3 py-1 rounded-lg font-semibold transition-all ${
-                      filterUserRoleScope === 'all'
-                        ? 'bg-[#FF6B1A] text-white shadow-xs'
-                        : 'bg-gray-100 text-[#4B5563] hover:bg-gray-200'
-                    }`}
-                  >
-                    Semua Terkait Saya ({scopedRecords.length})
-                  </button>
-                  <button
-                    onClick={() => setFilterUserRoleScope('penerima')}
-                    className={`px-3 py-1 rounded-lg font-semibold transition-all ${
-                      filterUserRoleScope === 'penerima'
-                        ? 'bg-[#FF6B1A] text-white shadow-xs'
-                        : 'bg-gray-100 text-[#4B5563] hover:bg-gray-200'
-                    }`}
-                  >
-                    Saya Sebagai Penerima
-                  </button>
-                  <button
-                    onClick={() => setFilterUserRoleScope('pemberi')}
-                    className={`px-3 py-1 rounded-lg font-semibold transition-all ${
-                      filterUserRoleScope === 'pemberi'
-                        ? 'bg-[#FF6B1A] text-white shadow-xs'
-                        : 'bg-gray-100 text-[#4B5563] hover:bg-gray-200'
-                    }`}
-                  >
-                    Saya Sebagai Pemberi
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Table */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#FAFAFA] border-b border-[#E5E7EB] text-[12px] font-bold text-[#6B7280] uppercase tracking-wider">
-                      <th className="py-3 px-4 w-12 text-center">No</th>
-                      <th className="py-3 px-4">No. Transaksi / Tgl</th>
-                      <th className="py-3 px-4">Penerima (Receiver)</th>
-                      <th className="py-3 px-4">Departemen</th>
-                      <th className="py-3 px-4">Rincian APD Diserahkan</th>
-                      <th className="py-3 px-4 text-center">Pemberi</th>
-                      <th className="py-3 px-4 text-center">Foto Bukti</th>
-                      <th className="py-3 px-4 text-center w-32">Aksi</th>
+                          {/* Hapus (Hanya Admin) */}
+                          {canModify && (
+                            <button
+                              onClick={() => setItemToDelete(rec)}
+                              title="Hapus Transaksi (Admin)"
+                              className="p-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#E5E7EB] text-[13px]">
-                    {loading ? (
-                      <tr>
-                        <td colSpan={8} className="py-12 text-center text-[#6B7280]">
-                          <div className="w-8 h-8 border-4 border-[#FF6B1A] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                          Memuat transaksi serah terima APD...
-                        </td>
-                      </tr>
-                    ) : filteredRecords.length === 0 ? (
-                      <tr>
-                        <td colSpan={8} className="py-14 text-center text-[#9CA3AF]">
-                          <svg className="w-12 h-12 mx-auto mb-2 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
-                          </svg>
-                          <p className="font-semibold text-[#4B5563]">Belum ada data serah terima APD</p>
-                          <p className="text-[12px] mt-0.5">
-                            Klik tombol <strong>+ Catat Serah Terima APD</strong> untuk membuat rekaman baru.
-                          </p>
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredRecords.map((rec, idx) => (
-                        <tr key={rec.id} className="hover:bg-orange-50/20 transition-colors">
-                          <td className="py-3.5 px-4 text-center text-[#9CA3AF] font-mono text-[12px]">
-                            {idx + 1}
-                          </td>
-                          <td className="py-3.5 px-4 whitespace-nowrap">
-                            <div className="font-semibold text-[#1F2937] font-mono text-[12px]">
-                              {rec.nomorTransaksi}
-                            </div>
-                            <div className="text-[11px] text-[#6B7280]">{rec.tanggal}</div>
-                          </td>
-                          <td className="py-3.5 px-4">
-                            <div className="font-semibold text-[#1F2937]">{rec.penerimaNama}</div>
-                            <div className="text-[11px] font-mono text-gray-500">
-                              {rec.penerimaIdKaryawan} {rec.penerimaJabatan ? `• ${rec.penerimaJabatan}` : ''}
-                            </div>
-                          </td>
-                          <td className="py-3.5 px-4">
-                            <div className="text-[12px] font-medium text-[#374151]">{rec.penerimaDepartemen}</div>
-                            {rec.penerimaDivisi && (
-                              <div className="text-[11px] text-[#9CA3AF]">{rec.penerimaDivisi}</div>
-                            )}
-                          </td>
-                          <td className="py-3.5 px-4 max-w-sm">
-                            <div className="space-y-1">
-                              {rec.items.slice(0, 2).map((item, i) => (
-                                <div key={i} className="flex items-center gap-1.5 text-[12px]">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B1A]" />
-                                  <span className="font-medium text-[#1F2937]">{item.namaApd}</span>
-                                  <span className="text-[#6B7280] font-mono">
-                                    ({item.jumlah} {item.satuan})
-                                  </span>
-                                  <span className="px-1.5 py-0.2 rounded text-[10px] bg-gray-100 text-gray-600">
-                                    {item.kondisi}
-                                  </span>
-                                </div>
-                              ))}
-                              {rec.items.length > 2 && (
-                                <div className="text-[11px] text-[#FF6B1A] font-semibold">
-                                  +{rec.items.length - 2} jenis APD lainnya (Total {rec.totalUnitApd} unit)
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                            <div className="text-[12px] font-medium text-[#374151]">{rec.pemberiNama}</div>
-                            <div className="text-[10px] font-mono text-gray-400">{rec.pemberiIdKaryawan}</div>
-                          </td>
-                          <td className="py-3.5 px-4 text-center">
-                            {rec.fotoBuktiUrl ? (
-                              <button
-                                onClick={() => setDetailRecord(rec)}
-                                title="Lihat Foto Bukti"
-                                className="relative group inline-block"
-                              >
-                                <img
-                                  src={rec.fotoBuktiUrl}
-                                  alt="Bukti"
-                                  className="w-10 h-10 object-cover rounded-lg border border-[#E5E7EB] group-hover:scale-105 transition-transform shadow-xs"
-                                />
-                                <span className="absolute bottom-0 right-0 bg-[#FF6B1A] text-white p-0.5 rounded-full text-[9px]">
-                                  ✓
-                                </span>
-                              </button>
-                            ) : (
-                              <span className="text-[11px] text-gray-400 italic">Tidak ada foto</span>
-                            )}
-                          </td>
-                          <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                            <div className="flex items-center justify-center gap-1.5">
-                              {/* Detail Button */}
-                              <button
-                                onClick={() => setDetailRecord(rec)}
-                                title="Detail Transaksi & Foto"
-                                className="p-1.5 rounded-lg text-gray-600 hover:text-[#FF6B1A] hover:bg-[#FFF1E8] transition-colors"
-                              >
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                  <circle cx="12" cy="12" r="3" />
-                                </svg>
-                              </button>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
 
-                              {/* Cetak Bukti */}
-                              <button
-                                onClick={() => handlePrintSlip(rec)}
-                                title="Cetak Formulir Serah Terima"
-                                className="p-1.5 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                              >
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <polyline points="6 9 6 2 18 2 18 9" />
-                                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                                  <rect x="6" y="14" width="12" height="8" />
-                                </svg>
-                              </button>
-
-                              {/* Edit & Delete (Hanya Admin) */}
-                              {canModify && (
-                                <>
-                                  <button
-                                    onClick={() => openEditModal(rec)}
-                                    title="Edit Transaksi (Admin)"
-                                    className="p-1.5 rounded-lg text-gray-500 hover:text-[#FF6B1A] hover:bg-[#FFF1E8] transition-colors"
-                                  >
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                    </svg>
-                                  </button>
-                                  <button
-                                    onClick={() => setItemToDelete(rec)}
-                                    title="Hapus Transaksi (Admin)"
-                                    className="p-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
-                                  >
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                      <polyline points="3 6 5 6 21 6" />
-                                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                    </svg>
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Table Footer */}
-              <div className="p-4 bg-[#FAFAFA] border-t border-[#E5E7EB] flex items-center justify-between text-[12px] text-[#6B7280]">
-                <div>
-                  Menampilkan <strong>{filteredRecords.length}</strong> dari <strong>{scopedRecords.length}</strong> transaksi serah terima
-                </div>
-                <div className="text-[11px] text-[#9CA3AF]">
-                  * Seluruh data terhubung dengan sistem pelaporan SMK3 PT QMB
-                </div>
-              </div>
+          {/* Table Footer Summary */}
+          <div className="p-4 bg-[#FAFAFA] border-t border-[#E5E7EB] flex items-center justify-between text-[12px] text-[#6B7280] flex-wrap gap-2">
+            <div>
+              Menampilkan <strong>{filteredRecords.length}</strong> dari <strong>{scopedRecords.length}</strong> transaksi serah terima
+            </div>
+            <div className="text-[11px] text-[#9CA3AF]">
+              * Data tersinkronisasi otomatis dengan kepatuhan SMK3 PT. QMB New Energy Materials
             </div>
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* ════════════════════════════════════════════════════════════
-            TAB 2: DASHBOARD & SUMMARY ANALITIK PENGAMBILAN APD
-           ════════════════════════════════════════════════════════════ */}
-        {activeTab === 'analytics' && (
-          <div className="space-y-8">
-            {/* Filter Time Bar */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* ════════════════════════════════════════════════════════════
+          MODAL FORMULIR SERAH TERIMA APD (MODAL POPUP)
+         ════════════════════════════════════════════════════════════ */}
+      {isFormModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-[#E5E7EB] animate-scale-in">
+            {/* Modal Header */}
+            <div className="px-6 py-5 border-b border-[#E5E7EB] flex items-center justify-between sticky top-0 bg-white z-10">
               <div>
-                <h3 className="font-bold text-[16px] text-[#1F2937]">Ringkasan Distribusi &amp; Penyerahan APD</h3>
-                <p className="text-[12px] text-[#6B7280] mt-0.5">
-                  Analisis kuantitas APD yang telah diserahkan berdasarkan rentang waktu, departemen, dan jenis APD.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3 flex-wrap">
-                <select
-                  value={timeRange}
-                  onChange={(e) => setTimeRange(e.target.value as any)}
-                  className="py-2 px-3 text-[13px] bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] font-semibold text-[#374151]"
-                >
-                  <option value="ALL">Semua Waktu Kumulatif</option>
-                  <option value="THIS_MONTH">Bulan Berjalan ({new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' })})</option>
-                  <option value="LAST_MONTH">Bulan Lalu</option>
-                  <option value="THIS_YEAR">Tahun {new Date().getFullYear()}</option>
-                  <option value="CUSTOM">Rentang Tanggal Khusus</option>
-                </select>
-
-                <button
-                  onClick={handleExportCSV}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#FF6B1A] text-white text-[12px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors shadow-xs"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Tarik Data / Export
-                </button>
-              </div>
-            </div>
-
-            {/* Metric KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-xs border-l-4 border-l-[#FF6B1A]">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">
-                  Total APD Disalurkan
-                </div>
-                <div className="text-[32px] font-black text-[#1F2937] mt-1">
-                  {analyticsData.totalUnitApd} <span className="text-[14px] font-medium text-gray-500">Unit</span>
-                </div>
-                <div className="text-[11px] text-[#FF6B1A] mt-2 font-medium">
-                  Dari {analyticsData.totalTransactions} berkas transaksi serah terima
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-xs border-l-4 border-l-blue-600">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">
-                  Karyawan Terlayani
-                </div>
-                <div className="text-[32px] font-black text-blue-700 mt-1">
-                  {analyticsData.totalRecipients} <span className="text-[14px] font-medium text-gray-500">Orang</span>
-                </div>
-                <div className="text-[11px] text-gray-500 mt-2">
-                  Penerima unik terdaftar di sistem
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-xs border-l-4 border-l-emerald-600">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">
-                  Departemen Terbanyak
-                </div>
-                <div className="text-[20px] font-bold text-emerald-800 mt-2 truncate">
-                  {analyticsData.topDeptList[0]?.dept || '—'}
-                </div>
-                <div className="text-[11px] text-emerald-600 mt-2 font-medium">
-                  {analyticsData.topDeptList[0]?.apdCount || 0} unit APD diserahkan
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-xs border-l-4 border-l-purple-600">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">
-                  Kondisi Penyerahan
-                </div>
-                <div className="flex items-center gap-3 mt-2">
-                  <div>
-                    <span className="text-[10px] text-gray-500">Baru</span>
-                    <p className="font-bold text-[16px] text-emerald-600">{analyticsData.conditionMap.Baru}</p>
-                  </div>
-                  <div className="border-l border-gray-200 pl-3">
-                    <span className="text-[10px] text-gray-500">Ganti</span>
-                    <p className="font-bold text-[16px] text-amber-600">{analyticsData.conditionMap.Penggantian}</p>
-                  </div>
-                  <div className="border-l border-gray-200 pl-3">
-                    <span className="text-[10px] text-gray-500">Tambah</span>
-                    <p className="font-bold text-[16px] text-blue-600">{analyticsData.conditionMap.Tambahan}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 2-Columns Breakdowns: Per APD vs Per Departemen */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Kolom 1: Distribusi Jenis APD Terbanyak */}
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 shadow-xs">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="font-bold text-[15px] text-[#1F2937]">Distribusi Berdasarkan Jenis APD</h4>
-                    <p className="text-[12px] text-[#6B7280]">Peringkat APD yang paling banyak diserahkan</p>
-                  </div>
-                  <span className="text-[11px] font-bold bg-[#FFF1E8] text-[#FF6B1A] px-2.5 py-1 rounded-full">
-                    {analyticsData.topApdList.length} Jenis
-                  </span>
-                </div>
-
-                <div className="space-y-4">
-                  {analyticsData.topApdList.length === 0 ? (
-                    <p className="text-[12px] text-gray-400 py-6 text-center">Tidak ada data penyerahan pada rentang ini</p>
-                  ) : (
-                    analyticsData.topApdList.slice(0, 7).map((item, i) => {
-                      const maxCount = analyticsData.topApdList[0]?.count || 1;
-                      const pct = Math.round((item.count / maxCount) * 100);
-                      return (
-                        <div key={i} className="space-y-1.5">
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="font-semibold text-[#1F2937] truncate max-w-[260px]">
-                              {i + 1}. {item.name}
-                            </span>
-                            <span className="font-mono font-bold text-[#FF6B1A]">
-                              {item.count} {item.satuan}
-                            </span>
-                          </div>
-                          <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
-                            <div
-                              className="bg-gradient-to-r from-[#FF6B1A] to-[#E85D0F] h-full rounded-full transition-all duration-500"
-                              style={{ width: `${pct}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-
-              {/* Kolom 2: Distribusi Berdasarkan Departemen Penerima */}
-              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 shadow-xs">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="font-bold text-[15px] text-[#1F2937]">Distribusi Berdasarkan Departemen</h4>
-                    <p className="text-[12px] text-[#6B7280]">Departemen yang paling banyak menerima alokasi APD</p>
-                  </div>
-                  <span className="text-[11px] font-bold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">
-                    {analyticsData.topDeptList.length} Departemen
-                  </span>
-                </div>
-
-                <div className="space-y-4">
-                  {analyticsData.topDeptList.length === 0 ? (
-                    <p className="text-[12px] text-gray-400 py-6 text-center">Tidak ada data pada rentang ini</p>
-                  ) : (
-                    analyticsData.topDeptList.map((item, i) => {
-                      const maxDeptApd = analyticsData.topDeptList[0]?.apdCount || 1;
-                      const pct = Math.round((item.apdCount / maxDeptApd) * 100);
-                      return (
-                        <div key={i} className="space-y-1.5">
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="font-semibold text-[#1F2937] truncate max-w-[250px]">
-                              {item.dept}
-                            </span>
-                            <div className="text-right">
-                              <span className="font-mono font-bold text-blue-700">{item.apdCount} unit</span>
-                              <span className="text-[11px] text-gray-400 ml-1.5">({item.trxCount} transaksi)</span>
-                            </div>
-                          </div>
-                          <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
-                            <div
-                              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-500"
-                              style={{ width: `${pct}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ════════════════════════════════════════════════════════════
-            TAB 3: FORMULIR SERAH TERIMA APD (MULTI-ITEMS & FOTO WAJIB)
-           ════════════════════════════════════════════════════════════ */}
-        {activeTab === 'form' && (
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs p-6 md:p-8 max-w-4xl mx-auto animate-scale-in">
-            <div className="border-b border-[#E5E7EB] pb-5 mb-6 flex items-start justify-between">
-              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#FF6B1A]">
+                  {editingRecord ? 'Perbarui Transaksi' : 'Pencatatan Baru'}
+                </span>
                 <h3 className="text-[18px] font-bold text-[#1F2937]">
                   {editingRecord ? 'Edit Catatan Serah Terima APD' : 'Formulir Serah Terima APD'}
                 </h3>
-                <p className="text-[13px] text-[#6B7280] mt-1">
-                  Catat serah terima APD ke karyawan secara lengkap. Pemberi otomatis tercatat dari akun Anda yang sedang login.
-                </p>
               </div>
               <button
+                type="button"
                 onClick={() => {
+                  setIsFormModalOpen(false);
                   resetForm();
-                  setActiveTab('records');
                 }}
-                className="text-gray-400 hover:text-gray-600 text-sm font-semibold p-1"
+                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-xl hover:bg-gray-100 transition-colors text-lg"
               >
-                ✕ Batal
+                ✕
               </button>
             </div>
 
-            <form onSubmit={handleSubmitForm} className="space-y-6">
-              {/* Box Info Pemberi (Locked) */}
-              <div className="p-4 bg-orange-50/60 border border-orange-200/70 rounded-xl">
+            {/* Modal Form Content */}
+            <form onSubmit={handleSubmitForm} className="p-6 md:p-8 space-y-6">
+              {/* Bagian 1: Data Pemberi (Auto-Filled) */}
+              <div className="p-4 bg-orange-50/70 border border-orange-200/80 rounded-2xl">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#FF6B1A]">
-                    Data Petugas Penyerah APD (Pemberi)
+                    1. Data Petugas Penyerah APD (Pemberi)
                   </span>
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FF6B1A] text-white">
                     Auto-Filled
@@ -1396,12 +1266,12 @@ export default function PpeManagementPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[13px]">
                   <div>
-                    <span className="text-[11px] text-gray-500 block">Nama Pemberi:</span>
+                    <span className="text-[11px] text-gray-500 block">Nama Petugas:</span>
                     <strong className="text-[#1F2937]">{currentUserName || 'User Sedang Login'}</strong>
                   </div>
                   <div>
                     <span className="text-[11px] text-gray-500 block">ID Karyawan:</span>
-                    <span className="font-mono font-semibold text-[#1F2937]">{currentUserIdKaryawan || 'USER-001'}</span>
+                    <span className="font-mono font-semibold text-[#1F2937]">{currentUserIdKaryawan || 'PETUGAS-K3'}</span>
                   </div>
                   <div>
                     <span className="text-[11px] text-gray-500 block">Departemen:</span>
@@ -1410,11 +1280,11 @@ export default function PpeManagementPage() {
                 </div>
               </div>
 
-              {/* Data Penerima */}
+              {/* Bagian 2: Data Penerima */}
               <div>
                 <h4 className="font-bold text-[14px] text-[#1F2937] mb-3 flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-[#FFF1E8] text-[#FF6B1A] flex items-center justify-center text-xs font-bold">
-                    1
+                    2
                   </span>
                   Data Karyawan Penerima APD
                 </h4>
@@ -1560,14 +1430,14 @@ export default function PpeManagementPage() {
                 </div>
               </div>
 
-              {/* Rincian APD yang Diserahkan (Multi-Items) */}
+              {/* Bagian 3: Rincian APD Diserahkan (Multi-Items) */}
               <div className="pt-4 border-t border-[#E5E7EB]">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-bold text-[14px] text-[#1F2937] flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-[#FFF1E8] text-[#FF6B1A] flex items-center justify-center text-xs font-bold">
-                      2
+                      3
                     </span>
-                    Rincian APD yang Diserahkan (Bisa Lebih Dari Satu Jenis)
+                    Rincian APD yang Diserahkan (Multi-Item)
                   </h4>
                   <button
                     type="button"
@@ -1677,7 +1547,7 @@ export default function PpeManagementPage() {
                         <div className="sm:col-span-6">
                           <input
                             type="text"
-                            placeholder="Keterangan tambahan item ini..."
+                            placeholder="Keterangan spesifik item ini..."
                             value={item.keterangan || ''}
                             onChange={(e) => handleItemFieldChange(idx, 'keterangan', e.target.value)}
                             className="w-full px-3 py-1.5 text-[11px] bg-white border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#FF6B1A]"
@@ -1689,16 +1559,16 @@ export default function PpeManagementPage() {
                 </div>
               </div>
 
-              {/* Upload Foto Bukti Serah Terima (Wajib) */}
+              {/* Bagian 4: Upload Foto Bukti Serah Terima (Wajib) */}
               <div className="pt-4 border-t border-[#E5E7EB]">
                 <h4 className="font-bold text-[14px] text-[#1F2937] mb-2 flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-[#FFF1E8] text-[#FF6B1A] flex items-center justify-center text-xs font-bold">
-                    3
+                    4
                   </span>
                   Unggah Foto Bukti Serah Terima APD <span className="text-red-500">* (Wajib)</span>
                 </h4>
                 <p className="text-[12px] text-[#6B7280] mb-3">
-                  Wajib menyertakan foto dokumentasi saat penyerahan APD kepada penerima sebagai bukti fisik audit SMK3.
+                  Wajib menyertakan foto penyerahan fisik APD kepada penerima sebagai dokumentasi resmi audit SMK3.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -1729,7 +1599,7 @@ export default function PpeManagementPage() {
                       <circle cx="12" cy="13" r="4" />
                     </svg>
                     <p className="font-semibold text-[13px] text-[#1F2937]">
-                      Klik untuk memilih foto dokumentasi
+                      Klik untuk memilih foto dokumentasi serah terima
                     </p>
                     <p className="text-[11px] text-[#6B7280] mt-0.5">
                       Mendukung format JPG, PNG, atau WebP (Maksimal 5MB)
@@ -1759,7 +1629,7 @@ export default function PpeManagementPage() {
                 {formErrors.foto && <p className="text-red-500 text-[11px] mt-2 font-medium">{formErrors.foto}</p>}
               </div>
 
-              {/* Catatan / Keterangan Penyerahan */}
+              {/* Bagian 5: Catatan Tambahan */}
               <div>
                 <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
                   Catatan Tambahan Penyerahan
@@ -1773,13 +1643,13 @@ export default function PpeManagementPage() {
                 />
               </div>
 
-              {/* Form Action Buttons */}
-              <div className="pt-4 border-t border-[#E5E7EB] flex items-center justify-end gap-3">
+              {/* Modal Form Actions */}
+              <div className="pt-4 border-t border-[#E5E7EB] flex items-center justify-end gap-3 sticky bottom-0 bg-white z-10">
                 <button
                   type="button"
                   onClick={() => {
+                    setIsFormModalOpen(false);
                     resetForm();
-                    setActiveTab('records');
                   }}
                   className="px-5 py-2.5 text-[13px] font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
                 >
@@ -1793,19 +1663,19 @@ export default function PpeManagementPage() {
                   {submitting && (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   )}
-                  {submitting ? 'Menyimpan Transaksi...' : editingRecord ? 'Simpan Perubahan' : 'Catat Serah Terima APD'}
+                  {submitting ? 'Menyimpan...' : editingRecord ? 'Simpan Perubahan' : 'Simpan Transaksi Serah Terima'}
                 </button>
               </div>
             </form>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* ════════════════════════════════════════════════════════════
-          MODAL DETAIL TRANSAKSI & FOTO BUKTI BESAR
+          MODAL DETAIL TRANSAKSI & FOTO BUKTI
          ════════════════════════════════════════════════════════════ */}
       {detailRecord && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-[#E5E7EB] animate-scale-in">
             {/* Modal Header */}
             <div className="p-6 border-b border-[#E5E7EB] flex items-center justify-between sticky top-0 bg-white z-10">
@@ -1819,7 +1689,7 @@ export default function PpeManagementPage() {
               </div>
               <button
                 onClick={() => setDetailRecord(null)}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg text-lg"
+                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-xl hover:bg-gray-100 transition-colors text-lg"
               >
                 ✕
               </button>
@@ -1899,7 +1769,15 @@ export default function PpeManagementPage() {
                           </td>
                           <td className="py-2.5 px-3 text-center">{it.ukuran || '—'}</td>
                           <td className="py-2.5 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded text-[11px] bg-gray-100 text-gray-700">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[11px] font-medium ${
+                                it.kondisi === 'Baru'
+                                  ? 'bg-emerald-50 text-emerald-700'
+                                  : it.kondisi === 'Penggantian'
+                                  ? 'bg-amber-50 text-amber-700'
+                                  : 'bg-blue-50 text-blue-700'
+                              }`}
+                            >
                               {it.kondisi}
                             </span>
                           </td>
@@ -1949,7 +1827,7 @@ export default function PpeManagementPage() {
           MODAL KONFIRMASI HAPUS (ADMIN)
          ════════════════════════════════════════════════════════════ */}
       {itemToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border border-[#E5E7EB] animate-scale-in">
             <div className="w-12 h-12 rounded-full bg-red-50 border border-red-200 text-red-600 flex items-center justify-center mx-auto mb-4">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
