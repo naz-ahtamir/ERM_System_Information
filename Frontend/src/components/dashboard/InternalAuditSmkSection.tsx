@@ -617,31 +617,31 @@ export function InternalAuditSmkSection() {
               </div>
             </div>
 
-            {/* ── Row 3: Bar Chart Temuan masing-masing Divisi ── */}
-            <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-2xl p-6 shadow-xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            {/* ── Row 3: Bar Chart Temuan masing-masing Divisi (Compact) ── */}
+            <div className="bg-[#FAFAFA] border border-[#E5E7EB] rounded-2xl p-5 md:p-6 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
                   <h3 className="text-base font-bold text-[#1F2937]">
                     Distribusi Temuan per Divisi
                   </h3>
                   <p className="text-xs text-[#6B7280] mt-0.5">
-                    Jumlah temuan per divisi (vertikal) dengan rincian status OPEN, INPG, dan CLSD (horisontal)
+                    Jumlah akumulasi temuan per divisi berdasarkan proporsi status perbaikan
                   </p>
                 </div>
 
-                <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex items-center gap-3 flex-wrap">
                   {/* Legend */}
-                  <div className="flex items-center gap-3 text-xs bg-white border border-[#E5E7EB] px-3 py-1.5 rounded-xl shadow-2xs">
+                  <div className="flex items-center gap-3 text-xs bg-white border border-[#E5E7EB] px-3 py-1 rounded-lg shadow-2xs">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-xs bg-[#EF4444]" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
                       <span className="text-[#1F2937] font-semibold text-[11px]">OPEN</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-xs bg-[#3B82F6]" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#3B82F6]" />
                       <span className="text-[#1F2937] font-semibold text-[11px]">INPG</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-xs bg-[#10B981]" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
                       <span className="text-[#1F2937] font-semibold text-[11px]">CLSD</span>
                     </div>
                   </div>
@@ -650,16 +650,16 @@ export function InternalAuditSmkSection() {
                   <button
                     type="button"
                     onClick={() => setShowAllDivisions((prev) => !prev)}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-gray-50 text-[#6B7280] hover:text-[#1F2937] transition-colors shadow-2xs"
+                    className="text-xs font-semibold px-3 py-1 rounded-lg border border-[#E5E7EB] bg-white hover:bg-gray-50 text-[#6B7280] hover:text-[#1F2937] transition-colors shadow-2xs"
                   >
-                    {showAllDivisions ? 'Tampilkan Divisi Aktif Saja' : 'Tampilkan Semua Divisi (20)'}
+                    {showAllDivisions ? 'Divisi Aktif Saja' : 'Semua Divisi (20)'}
                   </button>
                 </div>
               </div>
 
-              {/* Bar List */}
+              {/* Compact Bar List */}
               {divisionStats.length === 0 ? (
-                <div className="py-12 text-center text-xs text-gray-500 bg-white rounded-xl border border-[#E5E7EB]">
+                <div className="py-8 text-center text-xs text-gray-500 bg-white rounded-xl border border-[#E5E7EB]">
                   <p className="font-semibold text-gray-600">Belum Ada Data Temuan untuk Divisi</p>
                   <p className="text-gray-400 mt-1">
                     {selectedYear === 'ALL'
@@ -668,13 +668,10 @@ export function InternalAuditSmkSection() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3.5">
+                <div className="bg-white border border-[#E5E7EB] rounded-xl p-3 sm:p-4 space-y-1.5 shadow-2xs">
                   {divisionStats.map((item, idx) => {
                     const total = item.total;
-                    // Width of the overall stacked bar relative to the maximum division count
-                    const barWidthPct = total > 0 ? Math.max(6, (total / maxDivisionCount) * 100) : 0;
-
-                    // Proportions within the division's total
+                    const barWidthPct = total > 0 ? Math.max(4, (total / maxDivisionCount) * 100) : 0;
                     const pctOpenDiv = total > 0 ? (item.open / total) * 100 : 0;
                     const pctInpgDiv = total > 0 ? (item.inpg / total) * 100 : 0;
                     const pctClsdDiv = total > 0 ? (item.clsd / total) * 100 : 0;
@@ -682,76 +679,63 @@ export function InternalAuditSmkSection() {
                     return (
                       <div
                         key={idx}
-                        className="bg-white border border-[#E5E7EB] rounded-xl p-3.5 hover:border-[#FF6B1A]/40 transition-colors shadow-2xs flex flex-col md:flex-row md:items-center gap-2 md:gap-4"
+                        className="flex items-center gap-2 sm:gap-3 py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                        title={`${item.divisionName} — Total: ${total} Temuan (OPEN: ${item.open}, INPG: ${item.inpg}, CLSD: ${item.clsd})`}
                       >
                         {/* Vertical Left Axis: Nama Divisi */}
-                        <div className="w-full md:w-64 shrink-0 flex items-center justify-between md:justify-start gap-2">
-                          <span className="font-semibold text-xs text-[#1F2937] truncate" title={item.divisionName}>
+                        <div className="w-36 sm:w-52 md:w-64 shrink-0 truncate">
+                          <span className="text-[11px] sm:text-xs font-semibold text-[#1F2937] group-hover:text-[#FF6B1A] transition-colors truncate block">
                             {idx + 1}. {item.divisionName}
-                          </span>
-                          <span className="text-[10px] font-mono font-bold text-gray-400 md:hidden">
-                            {total} temuan
                           </span>
                         </div>
 
                         {/* Horizontal Bar: Stacked OPEN, INPG, CLSD */}
-                        <div className="flex-1 flex items-center gap-3">
-                          <div className="flex-1 bg-[#F3F4F6] h-7 rounded-lg overflow-hidden flex relative">
-                            {total === 0 ? (
-                              <div className="w-full h-full flex items-center px-3 text-[11px] text-gray-400 italic">
-                                0 temuan
-                              </div>
-                            ) : (
-                              <div
-                                className="h-full flex rounded-lg overflow-hidden transition-all duration-700 ease-out"
-                                style={{ width: `${barWidthPct}%` }}
-                              >
-                                {item.open > 0 && (
-                                  <div
-                                    className="bg-[#EF4444] h-full flex items-center justify-center text-white text-[10px] font-bold transition-all hover:brightness-110"
-                                    style={{ width: `${pctOpenDiv}%` }}
-                                    title={`OPEN: ${item.open} temuan`}
-                                  >
-                                    {item.open >= 1 && pctOpenDiv > 12 ? item.open : ''}
-                                  </div>
-                                )}
-                                {item.inpg > 0 && (
-                                  <div
-                                    className="bg-[#3B82F6] h-full flex items-center justify-center text-white text-[10px] font-bold transition-all hover:brightness-110"
-                                    style={{ width: `${pctInpgDiv}%` }}
-                                    title={`INPG: ${item.inpg} temuan`}
-                                  >
-                                    {item.inpg >= 1 && pctInpgDiv > 12 ? item.inpg : ''}
-                                  </div>
-                                )}
-                                {item.clsd > 0 && (
-                                  <div
-                                    className="bg-[#10B981] h-full flex items-center justify-center text-white text-[10px] font-bold transition-all hover:brightness-110"
-                                    style={{ width: `${pctClsdDiv}%` }}
-                                    title={`CLSD: ${item.clsd} temuan`}
-                                  >
-                                    {item.clsd >= 1 && pctClsdDiv > 12 ? item.clsd : ''}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
+                        <div className="flex-1 bg-[#F3F4F6] h-5 rounded-md overflow-hidden flex relative">
+                          {total === 0 ? (
+                            <div className="w-full h-full flex items-center px-2 text-[10px] text-gray-400 italic">
+                              0 temuan
+                            </div>
+                          ) : (
+                            <div
+                              className="h-full flex rounded-md overflow-hidden transition-all duration-500 ease-out"
+                              style={{ width: `${barWidthPct}%` }}
+                            >
+                              {item.open > 0 && (
+                                <div
+                                  className="bg-[#EF4444] h-full flex items-center justify-center text-white text-[9px] font-bold transition-all hover:brightness-110"
+                                  style={{ width: `${pctOpenDiv}%` }}
+                                  title={`OPEN: ${item.open}`}
+                                >
+                                  {pctOpenDiv > 15 ? item.open : ''}
+                                </div>
+                              )}
+                              {item.inpg > 0 && (
+                                <div
+                                  className="bg-[#3B82F6] h-full flex items-center justify-center text-white text-[9px] font-bold transition-all hover:brightness-110"
+                                  style={{ width: `${pctInpgDiv}%` }}
+                                  title={`INPG: ${item.inpg}`}
+                                >
+                                  {pctInpgDiv > 15 ? item.inpg : ''}
+                                </div>
+                              )}
+                              {item.clsd > 0 && (
+                                <div
+                                  className="bg-[#10B981] h-full flex items-center justify-center text-white text-[9px] font-bold transition-all hover:brightness-110"
+                                  style={{ width: `${pctClsdDiv}%` }}
+                                  title={`CLSD: ${item.clsd}`}
+                                >
+                                  {pctClsdDiv > 15 ? item.clsd : ''}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
 
-                          {/* Detail Indicators Pill (OPEN, INPG, CLSD, Total) */}
-                          <div className="shrink-0 flex items-center gap-1.5 text-xs font-mono">
-                            <span className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 text-red-700 rounded-md font-bold text-[11px]" title="OPEN">
-                              O: {item.open}
-                            </span>
-                            <span className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md font-bold text-[11px]" title="INPG">
-                              I: {item.inpg}
-                            </span>
-                            <span className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-md font-bold text-[11px]" title="CLSD">
-                              C: {item.clsd}
-                            </span>
-                            <span className="px-2.5 py-0.5 bg-[#FFF1E8] text-[#FF6B1A] font-bold rounded-md text-[11px]">
-                              {total} Temuan
-                            </span>
-                          </div>
+                        {/* Right: Only Total Number (O/I/C removed) */}
+                        <div className="w-16 sm:w-20 shrink-0 text-right">
+                          <span className="font-mono font-bold text-[11px] sm:text-xs text-[#1F2937]">
+                            {total} <span className="text-[10px] font-normal text-gray-500">tmn</span>
+                          </span>
                         </div>
                       </div>
                     );
