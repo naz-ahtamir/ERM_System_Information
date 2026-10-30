@@ -3,22 +3,19 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import {
   ppeHandoverApi,
   PpeHandoverRecord,
   PpeHandoverItem,
   CreatePpeHandoverDto,
-  DEFAULT_PPE_HANDOVER_LIST,
 } from '@/lib/ppeHandoverApi';
 import {
   masterApdApi,
   MasterApd,
-  DEFAULT_MASTER_APD_LIST,
 } from '@/lib/masterApdApi';
 import { departmentsApi, type Department } from '@/lib/api';
 
-// Keperluan Options
+// Keperluan Options untuk Formulir
 const KEPERLUAN_OPTIONS = [
   'Paket APD Karyawan Baru',
   'Penggantian APD Rusak / Aus',
@@ -50,7 +47,6 @@ function PpeManagementContent() {
   // Search & Filter State
   const [search, setSearch] = useState('');
   const [filterDept, setFilterDept] = useState('ALL');
-  const [filterKeperluan, setFilterKeperluan] = useState('ALL');
   const [timeRange, setTimeRange] = useState<'ALL' | 'THIS_MONTH' | 'LAST_MONTH' | 'THIS_YEAR' | 'CUSTOM'>('ALL');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
@@ -214,11 +210,6 @@ function PpeManagementContent() {
       list = list.filter((r) => r.penerimaDepartemen === filterDept);
     }
 
-    // Filter Keperluan
-    if (filterKeperluan !== 'ALL') {
-      list = list.filter((r) => r.keperluan === filterKeperluan);
-    }
-
     // Filter Tanggal
     list = list.filter((r) => isDateInRange(r.tanggal));
 
@@ -232,7 +223,6 @@ function PpeManagementContent() {
           r.penerimaIdKaryawan.toLowerCase().includes(q) ||
           r.penerimaDepartemen.toLowerCase().includes(q) ||
           r.pemberiNama.toLowerCase().includes(q) ||
-          r.keperluan.toLowerCase().includes(q) ||
           r.items.some((it) => it.namaApd.toLowerCase().includes(q))
       );
     }
@@ -244,7 +234,6 @@ function PpeManagementContent() {
     filterUserRoleScope,
     currentUserIdKaryawan,
     filterDept,
-    filterKeperluan,
     isDateInRange,
     search,
   ]);
@@ -252,14 +241,12 @@ function PpeManagementContent() {
   const hasActiveFilters =
     search !== '' ||
     filterDept !== 'ALL' ||
-    filterKeperluan !== 'ALL' ||
     timeRange !== 'ALL' ||
     filterUserRoleScope !== 'all';
 
   const handleResetFilters = () => {
     setSearch('');
     setFilterDept('ALL');
-    setFilterKeperluan('ALL');
     setTimeRange('ALL');
     setCustomStartDate('');
     setCustomEndDate('');
@@ -309,7 +296,7 @@ function PpeManagementContent() {
     setFormPenerimaDepartemen(rec.penerimaDepartemen);
     setFormPenerimaDivisi(rec.penerimaDivisi || '');
     setFormPenerimaPerusahaan(rec.penerimaPerusahaan || 'PT. QMB New Energy Materials');
-    setFormKeperluan(rec.keperluan);
+    setFormKeperluan(rec.keperluan || KEPERLUAN_OPTIONS[0]);
     setFormCatatan(rec.catatan || '');
     setFormItems(
       rec.items.map((it) => ({
@@ -492,7 +479,6 @@ function PpeManagementContent() {
       'Perusahaan',
       'Pemberi (Nama)',
       'ID Karyawan Pemberi',
-      'Keperluan',
       'Total Unit APD',
       'Rincian APD Diserahkan',
       'Catatan',
@@ -509,7 +495,6 @@ function PpeManagementContent() {
       `"${(r.penerimaPerusahaan || '').replace(/"/g, '""')}"`,
       `"${r.pemberiNama.replace(/"/g, '""')}"`,
       `"${r.pemberiIdKaryawan}"`,
-      `"${r.keperluan.replace(/"/g, '""')}"`,
       r.totalUnitApd,
       `"${r.items.map((it) => `${it.namaApd} (${it.jumlah} ${it.satuan} [${it.kondisi}])`).join('; ')}"`,
       `"${(r.catatan || '').replace(/"/g, '""')}"`,
@@ -526,102 +511,6 @@ function PpeManagementContent() {
     link.click();
     document.body.removeChild(link);
     showToast('Data serah terima APD berhasil diekspor ke CSV');
-  };
-
-  // ── Print / Save as PDF Rekapitulasi Data ─────────────────
-  const handlePrintRekap = () => {
-    if (filteredRecords.length === 0) {
-      showToast('Tidak ada data untuk dicetak', 'error');
-      return;
-    }
-
-    const rowsHtml = filteredRecords
-      .map(
-        (r, i) => `
-        <tr style="background:${i % 2 === 0 ? '#fff' : '#f9fafb'}">
-          <td style="text-align:center;">${i + 1}</td>
-          <td><strong>${r.nomorTransaksi}</strong></td>
-          <td>${r.tanggal}</td>
-          <td><strong>${r.penerimaNama}</strong><br><small>${r.penerimaIdKaryawan}</small></td>
-          <td>${r.penerimaDepartemen}</td>
-          <td>${r.pemberiNama}</td>
-          <td>${r.keperluan}</td>
-          <td>${r.items.map((it) => `${it.namaApd} (${it.jumlah} ${it.satuan})`).join(', ')}</td>
-          <td style="text-align:center; font-weight:bold;">${r.totalUnitApd}</td>
-        </tr>`
-      )
-      .join('');
-
-    const totalAllUnit = filteredRecords.reduce((acc, r) => acc + (r.totalUnitApd || 0), 0);
-
-    const printWin = window.open('', '_blank');
-    if (!printWin) return;
-
-    printWin.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Rekapitulasi Serah Terima APD - PT QMB</title>
-          <style>
-            body { font-family: Arial, sans-serif; font-size: 11px; color: #1f2937; padding: 16px; margin: 0; }
-            @media print {
-              body { padding: 4mm; font-size: 10px; }
-              .no-print { display: none !important; }
-              @page { margin: 8mm; size: A4 landscape; }
-            }
-            .header { background: #1F2937; color: white; padding: 14px 18px; margin-bottom: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-            .header h1 { font-size: 16px; margin: 0 0 3px; font-weight: bold; }
-            .header p { font-size: 10px; color: #9ca3af; margin: 0; }
-            .print-btn { background: #FF6B1A; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
-            table { border-collapse: collapse; width: 100%; min-width: 900px; }
-            th { background: #1F2937; color: white; padding: 8px 10px; text-align: left; font-size: 11px; }
-            td { padding: 7px 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
-            .summary-box { margin-top: 15px; padding: 10px; background: #FFF1E8; border-radius: 6px; font-weight: bold; color: #FF6B1A; display: flex; justify-content: space-between; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <div>
-              <h1>PT. QMB NEW ENERGY MATERIALS</h1>
-              <p>Laporan Rekapitulasi Serah Terima Alat Pelindung Diri (APD) • Dicetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-            </div>
-            <div style="text-align:right">
-              <p style="font-size:14px; font-weight:bold; color:#FF6B1A;">${filteredRecords.length} Transaksi</p>
-              <p>Total APD: ${totalAllUnit} Unit</p>
-            </div>
-          </div>
-          <button class="print-btn no-print" onclick="window.print()">🖨️ Cetak / Simpan Rekap PDF</button>
-          <table>
-            <thead>
-              <tr>
-                <th style="width:30px; text-align:center;">#</th>
-                <th>No. Transaksi</th>
-                <th>Tanggal</th>
-                <th>Penerima</th>
-                <th>Departemen</th>
-                <th>Petugas Pemberi</th>
-                <th>Keperluan</th>
-                <th>Item APD Diserahkan</th>
-                <th style="width:60px; text-align:center;">Total Unit</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-          </table>
-          <div class="summary-box">
-            <span>Total Berkas: ${filteredRecords.length} Transaksi</span>
-            <span>Total Unit APD Tersalurkan: ${totalAllUnit} Unit</span>
-          </div>
-        </body>
-      </html>
-    `);
-    printWin.document.close();
-    printWin.focus();
-    setTimeout(() => {
-      printWin.print();
-    }, 400);
   };
 
   // ── Print Individual Handover Slip ────────────────────────
@@ -760,76 +649,24 @@ function PpeManagementContent() {
         </div>
       )}
 
-      {/* ── Page Header ── */}
+      {/* ── Page Header (Sesuai Formulir Lain: Tanpa Breadcrumbs & Tanpa Tombol Ekstra) ── */}
       <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto">
-          {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-[12px] text-[#6B7280] mb-3 flex-wrap">
-            <Link href="/" className="hover:text-[#FF6B1A] transition-colors flex items-center gap-1">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-              Home
-            </Link>
-            <span>/</span>
-            <Link href="/dashboard" className="hover:text-[#FF6B1A] transition-colors">
-              Dashboard
-            </Link>
-            <span>/</span>
-            <span className="text-[#6B7280]">Accident Prevention</span>
-            <span>/</span>
-            <span className="text-[#FF6B1A] font-medium">PPE Management</span>
-          </div>
-
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-1.5">
-                Accident Prevention › PPE Management
-              </p>
-              <h1 className="font-bold text-[#1F2937] text-[clamp(22px,3.5vw,34px)] leading-tight">
-                Pencatatan Serah Terima Alat Pelindung Diri (APD)
-              </h1>
-              <p className="text-[#6B7280] text-[13px] mt-1 max-w-3xl">
-                Sistem pengelolaan distribusi dan serah terima APD karyawan PT. QMB New Energy Materials dengan multi-item, bukti foto fisik penyerahan, dan pencetakan slip resmi.
-              </p>
-            </div>
-
-            {/* Header Right Action */}
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="9" />
-                  <rect x="14" y="3" width="7" height="5" />
-                  <rect x="14" y="12" width="7" height="9" />
-                  <rect x="3" y="16" width="7" height="5" />
-                </svg>
-                Dashboard Utama
-              </Link>
-
-              {isAdmin && (
-                <Link
-                  href="/admin/master-apd"
-                  className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2a5 5 0 0 1 5 5v2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2V7a5 5 0 0 1 5-5z" />
-                    <circle cx="12" cy="7" r="3" />
-                  </svg>
-                  Master Jenis APD
-                </Link>
-              )}
-            </div>
-          </div>
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-1.5">
+            Accident Prevention
+          </p>
+          <h1 className="font-bold text-[#1F2937] text-[clamp(22px,3.5vw,34px)] leading-tight">
+            Pencatatan Serah Terima Alat Pelindung Diri (APD)
+          </h1>
+          <p className="text-[#6B7280] text-[13px] mt-1.5 max-w-3xl">
+            Sistem pengelolaan distribusi dan serah terima APD karyawan PT. QMB New Energy Materials dengan multi-item dan dokumentasi foto fisik penyerahan.
+          </p>
         </div>
       </div>
 
       {/* ── Main Content Container ── */}
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-8 space-y-5">
-        {/* ── Toolbar Row 1: Search + Export + Tambah Record (Di bawah Header) ── */}
+        {/* ── Toolbar Row 1: Search + Export + + Tambah Record (Di bawah Header) ── */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           {/* Search Box */}
           <div className="relative flex-1">
@@ -865,36 +702,21 @@ function PpeManagementContent() {
             )}
           </div>
 
-          {/* Export Buttons */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleExportCSV}
-              title="Download format CSV Excel"
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-emerald-400 hover:text-emerald-700 transition-colors shadow-xs whitespace-nowrap"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-              Export CSV
-            </button>
+          {/* Export CSV Button */}
+          <button
+            onClick={handleExportCSV}
+            title="Download format CSV Excel"
+            className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-emerald-400 hover:text-emerald-700 transition-colors shadow-xs whitespace-nowrap"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export CSV
+          </button>
 
-            <button
-              onClick={handlePrintRekap}
-              title="Cetak atau simpan rekap data PDF"
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-blue-400 hover:text-blue-700 transition-colors shadow-xs whitespace-nowrap"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 6 2 18 2 18 9" />
-                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                <rect x="6" y="14" width="12" height="8" />
-              </svg>
-              Cetak Rekap
-            </button>
-          </div>
-
-          {/* Tombol Tambah Record (Di bawah Header) */}
+          {/* Tombol + Tambah Record (Di bawah Header) */}
           <button
             onClick={handleOpenAdd}
             className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-all shadow-xs whitespace-nowrap"
@@ -903,7 +725,7 @@ function PpeManagementContent() {
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            + Tambah Record Serah Terima
+            + Tambah Record
           </button>
         </div>
 
@@ -920,20 +742,6 @@ function PpeManagementContent() {
               {departments.map((d) => (
                 <option key={d.id} value={d.name}>
                   {d.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Filter Keperluan */}
-            <select
-              value={filterKeperluan}
-              onChange={(e) => setFilterKeperluan(e.target.value)}
-              className="py-2 px-3 text-[13px] bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] font-medium text-[#374151]"
-            >
-              <option value="ALL">Semua Keperluan Penyerahan</option>
-              {KEPERLUAN_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
                 </option>
               ))}
             </select>
@@ -1020,7 +828,7 @@ function PpeManagementContent() {
           )}
         </div>
 
-        {/* ── Records Table ── */}
+        {/* ── Records Table (Kolom Keperluan Dihilangkan Sesuai Request) ── */}
         <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -1030,7 +838,6 @@ function PpeManagementContent() {
                   <th className="py-3 px-4">No. Transaksi / Tgl</th>
                   <th className="py-3 px-4">Penerima (Receiver)</th>
                   <th className="py-3 px-4">Departemen</th>
-                  <th className="py-3 px-4">Keperluan</th>
                   <th className="py-3 px-4">Rincian APD Diserahkan</th>
                   <th className="py-3 px-4 text-center">Total Unit</th>
                   <th className="py-3 px-4 text-center">Pemberi</th>
@@ -1041,14 +848,14 @@ function PpeManagementContent() {
               <tbody className="divide-y divide-[#E5E7EB] text-[13px]">
                 {loading ? (
                   <tr>
-                    <td colSpan={10} className="py-14 text-center text-[#6B7280]">
+                    <td colSpan={9} className="py-14 text-center text-[#6B7280]">
                       <div className="w-8 h-8 border-4 border-[#FF6B1A] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                       Memuat data serah terima APD...
                     </td>
                   </tr>
                 ) : filteredRecords.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="py-14 text-center text-[#9CA3AF]">
+                    <td colSpan={9} className="py-14 text-center text-[#9CA3AF]">
                       <svg
                         className="w-12 h-12 mx-auto mb-2 text-gray-300"
                         viewBox="0 0 24 24"
@@ -1060,7 +867,7 @@ function PpeManagementContent() {
                       </svg>
                       <p className="font-semibold text-[#4B5563]">Belum ada catatan serah terima APD</p>
                       <p className="text-[12px] mt-0.5">
-                        Gunakan tombol <strong>+ Tambah Record Serah Terima</strong> di atas untuk mencatat penyerahan baru.
+                        Klik tombol <strong>+ Tambah Record</strong> di atas untuk membuat catatan baru.
                       </p>
                     </td>
                   </tr>
@@ -1088,12 +895,7 @@ function PpeManagementContent() {
                           <div className="text-[11px] text-[#9CA3AF]">{rec.penerimaDivisi}</div>
                         )}
                       </td>
-                      <td className="py-3.5 px-4 max-w-[170px]">
-                        <span className="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-gray-100 text-gray-700 truncate max-w-full">
-                          {rec.keperluan}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 max-w-xs">
+                      <td className="py-3.5 px-4 max-w-sm">
                         <div className="space-y-1">
                           {rec.items.slice(0, 2).map((item, i) => (
                             <div key={i} className="flex items-center gap-1.5 text-[12px]">

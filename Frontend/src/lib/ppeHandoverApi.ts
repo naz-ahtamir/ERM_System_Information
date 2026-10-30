@@ -89,212 +89,25 @@ function getStoredToken(): string | null {
 /**
  * Data awal transaksi serah terima APD
  */
-export const DEFAULT_PPE_HANDOVER_LIST: PpeHandoverRecord[] = [
-  {
-    id: 'trx-apd-1',
-    nomorTransaksi: 'TRX-APD-202410-001',
-    tanggal: '2024-10-15',
-    pemberiNama: 'Ahmad Fauzi',
-    pemberiIdKaryawan: 'ADM-001',
-    pemberiDepartemen: 'HSE & Sustainability',
-    pemberiDivisi: 'PERENCANAAN KEAMANAN & PELATIHAN SIMULASI',
-    penerimaNama: 'Rudi Hermawan',
-    penerimaIdKaryawan: 'OPR-1042',
-    penerimaJabatan: 'Operator Hydrometallurgy',
-    penerimaDepartemen: 'Smelter & Refining',
-    penerimaDivisi: 'Leaching & Extraction',
-    penerimaPerusahaan: 'PT. QMB New Energy Materials',
-    items: [
-      {
-        namaApd: 'Helm Safety (Safety Helmet V-Gard)',
-        kategori: 'Pelindung Kepala',
-        jumlah: 1,
-        satuan: 'Pcs',
-        ukuran: 'All Size (Kuning)',
-        kondisi: 'Baru',
-        keterangan: 'Karyawan baru operasional',
-      },
-      {
-        namaApd: 'Sepatu Safety (Steel Toe Shoes)',
-        kategori: 'Pelindung Kaki',
-        jumlah: 1,
-        satuan: 'Pasang',
-        ukuran: '42',
-        kondisi: 'Baru',
-        keterangan: 'Steel toe cap EN ISO 20345',
-      },
-      {
-        namaApd: 'Kacamata Safety (Clear Safety Glasses)',
-        kategori: 'Pelindung Mata & Wajah',
-        jumlah: 1,
-        satuan: 'Pcs',
-        ukuran: 'Standard',
-        kondisi: 'Baru',
-        keterangan: 'Anti-fog lens',
-      },
-      {
-        namaApd: 'Rompi Reflektif (Hi-Vis Safety Vest)',
-        kategori: 'Pelindung Tubuh',
-        jumlah: 1,
-        satuan: 'Pcs',
-        ukuran: 'XL',
-        kondisi: 'Baru',
-        keterangan: 'Warna Orange',
-      },
-    ],
-    totalUnitApd: 4,
-    keperluan: 'Paket APD Karyawan Baru',
-    catatan: 'Telah diberikan pengarahan cara pemakaian & perawatan APD.',
-    fotoBuktiUrl: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=600&q=80',
-    fotoBuktiName: 'serah_terima_rudi.jpg',
-    createdAt: '2024-10-15T09:30:00.000Z',
-  },
-  {
-    id: 'trx-apd-2',
-    nomorTransaksi: 'TRX-APD-202410-002',
-    tanggal: '2024-10-18',
-    pemberiNama: 'Bambang Sutejo',
-    pemberiIdKaryawan: 'HSE-008',
-    pemberiDepartemen: 'HSE & Sustainability',
-    pemberiDivisi: 'INSPEKSI & PENGENDALIAN BAHAYA',
-    penerimaNama: 'Indra Saputra',
-    penerimaIdKaryawan: 'MTC-2015',
-    penerimaJabatan: 'Teknisi Mekanik',
-    penerimaDepartemen: 'Maintenance & Utility',
-    penerimaDivisi: 'Mechanical Workshop',
-    penerimaPerusahaan: 'PT. QMB New Energy Materials',
-    items: [
-      {
-        namaApd: 'Sarung Tangan Kulit Las (Welding Leather Gloves)',
-        kategori: 'Pelindung Tangan',
-        jumlah: 2,
-        satuan: 'Pasang',
-        ukuran: '16 inch',
-        kondisi: 'Penggantian',
-        keterangan: 'Sarung tangan lama robek akibat panas',
-      },
-      {
-        namaApd: 'Apron Kulit Dada (Leather Welding Apron)',
-        kategori: 'Pelindung Tubuh',
-        jumlah: 1,
-        satuan: 'Pcs',
-        ukuran: 'Free Size',
-        kondisi: 'Penggantian',
-        keterangan: 'Penggantian APD usang',
-      },
-      {
-        namaApd: 'Kacamata Las / Chemical Splash Goggles',
-        kategori: 'Pelindung Mata & Wajah',
-        jumlah: 1,
-        satuan: 'Pcs',
-        ukuran: 'Standard',
-        kondisi: 'Baru',
-        keterangan: 'Untuk pekerjaan pemotongan oxy-acetylene',
-      },
-    ],
-    totalUnitApd: 4,
-    keperluan: 'Penggantian APD Rusak & Aus',
-    catatan: 'APD lama ditarik untuk dimusnahkan/scrap.',
-    fotoBuktiUrl: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80',
-    fotoBuktiName: 'serah_terima_indra.jpg',
-    createdAt: '2024-10-18T14:15:00.000Z',
-  },
-  {
-    id: 'trx-apd-3',
-    nomorTransaksi: 'TRX-APD-202410-020',
-    tanggal: '2024-10-22',
-    pemberiNama: 'Ahmad Fauzi',
-    pemberiIdKaryawan: 'ADM-001',
-    pemberiDepartemen: 'HSE & Sustainability',
-    pemberiDivisi: 'PERENCANAAN KEAMANAN & PELATIHAN SIMULASI',
-    penerimaNama: 'Siti Nurhaliza',
-    penerimaIdKaryawan: 'LAB-3004',
-    penerimaJabatan: 'Analis Laboratorium Kimia',
-    penerimaDepartemen: 'Quality Assurance & Lab',
-    penerimaDivisi: 'Analytical Chemistry',
-    penerimaPerusahaan: 'PT. QMB New Energy Materials',
-    items: [
-      {
-        namaApd: 'Sarung Tangan Kimia Nitrile (Chemical Resistant)',
-        kategori: 'Pelindung Tangan',
-        jumlah: 3,
-        satuan: 'Pasang',
-        ukuran: 'M',
-        kondisi: 'Baru',
-        keterangan: 'Tahan asam pekat titrasi',
-      },
-      {
-        namaApd: 'Half Face Respirator (Double Cartridge)',
-        kategori: 'Pelindung Pernapasan',
-        jumlah: 1,
-        satuan: 'Pcs',
-        ukuran: 'M',
-        kondisi: 'Baru',
-        keterangan: 'Lengkap cartridge uap asam & organik',
-      },
-    ],
-    totalUnitApd: 4,
-    keperluan: 'Kebutuhan Rutin Uji Sampel Kimia',
-    catatan: 'Diserahkan langsung di lab sentral.',
-    fotoBuktiUrl: 'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?auto=format&fit=crop&w=600&q=80',
-    fotoBuktiName: 'serah_terima_siti.jpg',
-    createdAt: '2024-10-22T11:00:00.000Z',
-  },
-  {
-    id: 'trx-apd-4',
-    nomorTransaksi: 'TRX-APD-202410-025',
-    tanggal: '2024-10-25',
-    pemberiNama: 'Dedi Kurniawan',
-    pemberiIdKaryawan: 'LOG-004',
-    pemberiDepartemen: 'Logistics & Warehouse',
-    pemberiDivisi: 'Gudang APD & Material',
-    penerimaNama: 'Faisal Akbar',
-    penerimaIdKaryawan: 'PRJ-4011',
-    penerimaJabatan: 'Rigger / Scaffolder',
-    penerimaDepartemen: 'Project & Construction',
-    penerimaDivisi: 'Civil & Structural',
-    penerimaPerusahaan: 'PT. QMB New Energy Materials',
-    items: [
-      {
-        namaApd: 'Full Body Harness (Double Lanyard Absorber)',
-        kategori: 'Pelindung Jatuh',
-        jumlah: 1,
-        satuan: 'Set',
-        ukuran: 'Universal',
-        kondisi: 'Baru',
-        keterangan: 'Pekerjaan konstruksi tangki ketinggian 18m',
-      },
-      {
-        namaApd: 'Helm Safety (Safety Helmet V-Gard)',
-        kategori: 'Pelindung Kepala',
-        jumlah: 1,
-        satuan: 'Pcs',
-        ukuran: 'Putih (Chin Strap 4-Point)',
-        kondisi: 'Baru',
-        keterangan: 'Dilengkapi tali dagu elastis',
-      },
-    ],
-    totalUnitApd: 2,
-    keperluan: 'Pekerjaan Ketinggian (Working at Height)',
-    catatan: 'Sudah diinspeksi oleh safety officer sebelum diserahkan.',
-    fotoBuktiUrl: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80',
-    fotoBuktiName: 'serah_terima_faisal.jpg',
-    createdAt: '2024-10-25T15:45:00.000Z',
-  },
-];
+export const DEFAULT_PPE_HANDOVER_LIST: PpeHandoverRecord[] = [];
 
 function getLocalList(): PpeHandoverRecord[] {
-  if (typeof window === 'undefined') return DEFAULT_PPE_HANDOVER_LIST;
+  if (typeof window === 'undefined') return [];
   const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-  if (!raw) {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_PPE_HANDOVER_LIST));
-    return DEFAULT_PPE_HANDOVER_LIST;
-  }
+  if (!raw) return [];
   try {
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_PPE_HANDOVER_LIST;
+    if (!Array.isArray(parsed)) return [];
+    // Bersihkan data dummy hardcode sampel jika tersimpan sebelumnya
+    const cleanList = parsed.filter(
+      (r) => !['trx-apd-1', 'trx-apd-2', 'trx-apd-3', 'trx-apd-4'].includes(r?.id)
+    );
+    if (cleanList.length !== parsed.length) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cleanList));
+    }
+    return cleanList;
   } catch {
-    return DEFAULT_PPE_HANDOVER_LIST;
+    return [];
   }
 }
 
