@@ -224,8 +224,10 @@ export function InternalAuditSmkSection() {
   // (2) HITUNG PIE CHART 2: PEMENUHAN SMK3 (SESUAI, MAYOR, MINOR)
   // Aturan:
   // - Total Kriteria SMK3 = 166
-  // - JUMLAH MAYOR = jumlah kategori MAYOR unik berdasarkan kriteriaId (misal: 10 temuan 6.4.4 dan 5 temuan 9.3.2 -> 2)
-  // - JUMLAH MINOR = jumlah kategori MINOR unik berdasarkan kriteriaId
+  // - HANYA temuan yang statusnya OPEN atau INPG yang terhitung sebagai ketidaksesuaian aktif
+  // - Temuan berstatus CLSD sudah selesai perbaikannya sehingga kriteria kembali SESUAI
+  // - JUMLAH MAYOR = jumlah kategori MAYOR unik (status OPEN/INPG) berdasarkan kriteriaId
+  // - JUMLAH MINOR = jumlah kategori MINOR unik (status OPEN/INPG) berdasarkan kriteriaId
   // - SESUAI = 166 - JUMLAH MAYOR - JUMLAH MINOR
   // ───────────────────────────────────────────────────────────────────────────
   const { jumlahMayor, jumlahMinor, jumlahSesuai, pctMayor, pctMinor, pctSesuai } = useMemo(() => {
@@ -233,6 +235,11 @@ export function InternalAuditSmkSection() {
     const minorCriteriaSet = new Set<string>();
 
     filteredRecords.forEach((r) => {
+      // Hanya temuan yang masih berstatus OPEN atau INPG yang dihitung sebagai temuan aktif
+      if (r.statusPerbaikan !== 'OPEN' && r.statusPerbaikan !== 'INPG') {
+        return;
+      }
+
       const kat = (r.kategori || '').trim().toUpperCase();
       let critKey = (r.kriteriaId || '').trim();
       if (!critKey && r.kriteriaDeskripsi) {
@@ -274,21 +281,21 @@ export function InternalAuditSmkSection() {
   const pemenuhanSlices: PieSlice[] = [
     {
       label: 'SESUAI',
-      subLabel: 'Kriteria Terpenuhi',
+      subLabel: 'Kriteria Terpenuhi (Bebas Temuan Aktif)',
       value: jumlahSesuai,
       color: '#10B981', // Green
       percentage: pctSesuai,
     },
     {
-      label: 'MAYOR',
-      subLabel: 'Ketidaksesuaian Mayor',
+      label: 'MAYOR (Aktif)',
+      subLabel: 'Ketidaksesuaian Mayor (OPEN/INPG)',
       value: jumlahMayor,
       color: '#EF4444', // Red
       percentage: pctMayor,
     },
     {
-      label: 'MINOR',
-      subLabel: 'Ketidaksesuaian Minor',
+      label: 'MINOR (Aktif)',
+      subLabel: 'Ketidaksesuaian Minor (OPEN/INPG)',
       value: jumlahMinor,
       color: '#F59E0B', // Amber
       percentage: pctMinor,
@@ -554,7 +561,7 @@ export function InternalAuditSmkSection() {
                     </span>
                   </div>
                   <p className="text-xs text-[#6B7280] mb-6">
-                    Kategori SESUAI (166 - Mayor - Minor), Kategori MAYOR &amp; MINOR dihitung unik
+                    Kategori SESUAI (166 - Mayor - Minor). Hanya temuan aktif (OPEN / INPG) yang dihitung, sehingga chart dinamis mengikuti progres perbaikan.
                   </p>
 
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-8 py-2">
@@ -602,9 +609,9 @@ export function InternalAuditSmkSection() {
                 </div>
 
                 <div className="mt-6 pt-3.5 border-t border-[#E5E7EB] flex items-center justify-between text-[11px] text-[#6B7280]">
-                  <span>Total Master Kriteria: 166</span>
-                  <span className="font-semibold text-[#1F2937]">
-                    Kesesuaian: {jumlahSesuai}/166 Kriteria
+                  <span>Kriteria Non-Conformance Aktif: {jumlahMayor + jumlahMinor}</span>
+                  <span className="font-semibold text-emerald-600">
+                    Kesesuaian: {jumlahSesuai}/166 Kriteria ({pctSesuai.toFixed(1)}%)
                   </span>
                 </div>
               </div>
