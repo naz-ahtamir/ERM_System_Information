@@ -13,7 +13,12 @@ import {
   masterApdApi,
   MasterApd,
 } from '@/lib/masterApdApi';
-import { departmentsApi, type Department } from '@/lib/api';
+import {
+  departmentsApi,
+  usersApi,
+  type Department,
+  type SystemUser,
+} from '@/lib/api';
 
 // Keperluan Options untuk Formulir
 const KEPERLUAN_OPTIONS = [
@@ -42,6 +47,7 @@ function PpeManagementContent() {
   const [records, setRecords] = useState<PpeHandoverRecord[]>([]);
   const [masterApdList, setMasterApdList] = useState<MasterApd[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [systemUsers, setSystemUsers] = useState<SystemUser[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Search & Filter State
@@ -85,6 +91,11 @@ function PpeManagementContent() {
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Auto-Fill User Lookup State
+  const [idLookupStatus, setIdLookupStatus] = useState<'idle' | 'searching' | 'found' | 'not_found'>('idle');
+  const [matchedUser, setMatchedUser] = useState<SystemUser | null>(null);
+  const lookupDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
   // Toast State
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -111,14 +122,16 @@ function PpeManagementContent() {
   const loadAllData = useCallback(async () => {
     setLoading(true);
     try {
-      const [handoverData, apdData, deptData] = await Promise.all([
+      const [handoverData, apdData, deptData, usersData] = await Promise.all([
         ppeHandoverApi.getAll(),
         masterApdApi.getAll(),
         departmentsApi.getAll().catch(() => []),
+        usersApi.getAll().catch(() => []),
       ]);
       setRecords(handoverData);
       setMasterApdList(apdData);
       setDepartments(deptData);
+      setSystemUsers(usersData);
     } catch {
       showToast('Gagal memuat data serah terima APD', 'error');
     } finally {
@@ -143,6 +156,82 @@ function PpeManagementContent() {
       setFormTanggal(new Date().toISOString().slice(0, 10));
     }
   }, [formTanggal]);
+
+  // ── Auto-Fill Employee ID Lookup Handler ──────────────────
+  const performLookupId = useCallback(
+    async (idToSearch: string) => {
+      const clean = idToSearch.trim().toUpperCase();
+      if (!clean) {
+        setIdLookupStatus('idle');
+        setMatchedUser(null);
+        setFormPenerimaNama('');
+        setFormPenerimaDepartemen('');
+        setFormPenerimaDivisi('');
+        setFormPenerimaJabatan('');
+        setFormPenerimaPerusahaan('PT. QMB New Energy Materials');
+        return;
+      }
+
+      setIdLookupStatus('searching');
+
+      // 1. Cek pada daftar systemUsers yang sudah di-cache
+      let found = systemUsers.find(
+        (u) => u.idKaryawan && u.idKaryawan.trim().toUpperCase() === clean
+      );
+
+      // 2. Jika belum ditemukan di cache, coba fetch langsung dari backend
+      if (!found) {
+        try {
+          found = await usersApi.getByIdKaryawan(clean) || undefined;
+          if (found) {
+            setSystemUsers((prev) => [...prev, found!]);
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      if (found) {
+        setIdLookupStatus('found');
+        setMatchedUser(found);
+        setFormPenerimaNama(found.nama || '');
+        setFormPenerimaDepartemen(found.departemen || departments[0]?.name || '');
+        setFormPenerimaDivisi(found.divisi || '');
+        setFormPenerimaJabatan(found.jabatan || '');
+        setFormPenerimaPerusahaan(found.perusahaan || 'PT. QMB New Energy Materials');
+        setFormErrors((prev) => ({
+          ...prev,
+          penerimaIdKaryawan: '',
+          penerimaNama: '',
+          penerimaDepartemen: '',
+        }));
+      } else {
+        setIdLookupStatus('not_found');
+        setMatchedUser(null);
+        setFormPenerimaNama('');
+        setFormPenerimaDepartemen('');
+        setFormPenerimaDivisi('');
+        setFormPenerimaJabatan('');
+        setFormPenerimaPerusahaan('PT. QMB New Energy Materials');
+      }
+    },
+    [systemUsers, departments]
+  );
+
+  const handleIdKaryawanChange = (value: string) => {
+    setFormPenerimaIdKaryawan(value);
+    if (formErrors.penerimaIdKaryawan) {
+      setFormErrors((prev) => ({ ...prev, penerimaIdKaryawan: '' }));
+    }
+
+    if (lookupDebounceRef.current) {
+      clearTimeout(lookupDebounceRef.current);
+    }
+
+    lookupDebounceRef.current = setTimeout(() => {
+      performLookupId(value);
+    }, 350);
+  };
 
   // ── Filter Date Helper ───────────────────────────────────
   const isDateInRange = useCallback(
@@ -260,11 +349,13 @@ function PpeManagementContent() {
     setFormPenerimaNama('');
     setFormPenerimaIdKaryawan('');
     setFormPenerimaJabatan('');
-    setFormPenerimaDepartemen(departments[0]?.name || 'Smelter & Refining');
+    setFormPenerimaDepartemen('');
     setFormPenerimaDivisi('');
     setFormPenerimaPerusahaan('PT. QMB New Energy Materials');
     setFormKeperluan(KEPERLUAN_OPTIONS[0]);
     setFormCatatan('');
+    setIdLookupStatus('idle');
+    setMatchedUser(null);
     const firstApd = masterApdList[0];
     setFormItems([
       {
@@ -298,6 +389,7 @@ function PpeManagementContent() {
     setFormPenerimaPerusahaan(rec.penerimaPerusahaan || 'PT. QMB New Energy Materials');
     setFormKeperluan(rec.keperluan || KEPERLUAN_OPTIONS[0]);
     setFormCatatan(rec.catatan || '');
+    setIdLookupStatus('found');
     setFormItems(
       rec.items.map((it) => ({
         ...it,
@@ -383,10 +475,22 @@ function PpeManagementContent() {
     e.preventDefault();
     const errors: Record<string, string> = {};
 
-    if (!formPenerimaNama.trim()) errors.penerimaNama = 'Nama penerima wajib diisi';
-    if (!formPenerimaIdKaryawan.trim()) errors.penerimaIdKaryawan = 'ID Karyawan penerima wajib diisi';
-    if (!formPenerimaDepartemen) errors.penerimaDepartemen = 'Departemen penerima wajib dipilih';
-    if (!formFotoUrl) errors.foto = 'Foto bukti serah terima APD wajib diunggah!';
+    if (!formPenerimaIdKaryawan.trim()) {
+      errors.penerimaIdKaryawan = 'No. ID Karyawan penerima wajib diisi';
+    } else if (idLookupStatus !== 'found') {
+      errors.penerimaIdKaryawan =
+        'ID Karyawan tidak terdaftar di sistem. Silakan hubungi Admin untuk meminta penambahan user.';
+    }
+
+    if (!formPenerimaNama.trim()) {
+      errors.penerimaNama = 'Nama penerima belum terisi (perlu ID terdaftar)';
+    }
+    if (!formPenerimaDepartemen) {
+      errors.penerimaDepartemen = 'Departemen penerima belum terisi (perlu ID terdaftar)';
+    }
+    if (!formFotoUrl) {
+      errors.foto = 'Foto bukti serah terima APD wajib diunggah!';
+    }
 
     if (formItems.length === 0) {
       errors.items = 'Minimal sertakan 1 item APD yang diserahkan';
@@ -399,7 +503,12 @@ function PpeManagementContent() {
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
-      showToast('Mohon lengkapi formulir dan unggah foto bukti serah terima', 'error');
+      showToast(
+        idLookupStatus === 'not_found'
+          ? 'ID Karyawan tidak terdaftar. Hubungi Admin untuk menambah user.'
+          : 'Mohon lengkapi formulir dan unggah foto bukti serah terima',
+        'error'
+      );
       return;
     }
 
@@ -1027,7 +1136,7 @@ function PpeManagementContent() {
       </div>
 
       {/* ════════════════════════════════════════════════════════════
-          MODAL FORMULIR SERAH TERIMA APD (MODAL POPUP)
+          MODAL FORMULIR SERAH TERIMA APD (DENGAN AUTO-FILL USER)
          ════════════════════════════════════════════════════════════ */}
       {isFormModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
@@ -1056,14 +1165,14 @@ function PpeManagementContent() {
 
             {/* Modal Form Content */}
             <form onSubmit={handleSubmitForm} className="p-6 md:p-8 space-y-6">
-              {/* Bagian 1: Data Pemberi (Auto-Filled) */}
+              {/* Bagian 1: Data Pemberi (Auto-Filled dari Akun Login) */}
               <div className="p-4 bg-orange-50/70 border border-orange-200/80 rounded-2xl">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#FF6B1A]">
                     1. Data Petugas Penyerah APD (Pemberi)
                   </span>
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FF6B1A] text-white">
-                    Auto-Filled
+                    Auto-Filled Akun
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[13px]">
@@ -1082,124 +1191,224 @@ function PpeManagementContent() {
                 </div>
               </div>
 
-              {/* Bagian 2: Data Penerima */}
+              {/* Bagian 2: Data Penerima (Auto-Fill Berdasarkan No. ID) */}
               <div>
-                <h4 className="font-bold text-[14px] text-[#1F2937] mb-3 flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#FFF1E8] text-[#FF6B1A] flex items-center justify-center text-xs font-bold">
-                    2
-                  </span>
-                  Data Karyawan Penerima APD
-                </h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-bold text-[14px] text-[#1F2937] flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-[#FFF1E8] text-[#FF6B1A] flex items-center justify-center text-xs font-bold">
+                      2
+                    </span>
+                    Data Karyawan Penerima APD (Otomatis dari No. ID)
+                  </h4>
+                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Input No. ID Karyawan dengan Auto-Check */}
+                <div className="space-y-4">
                   <div>
                     <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
-                      ID Karyawan Penerima <span className="text-red-500">*</span>
+                      No. ID Karyawan Penerima <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      placeholder="Contoh: OPR-1042 / KTR-009"
-                      value={formPenerimaIdKaryawan}
-                      onChange={(e) => {
-                        setFormPenerimaIdKaryawan(e.target.value);
-                        if (formErrors.penerimaIdKaryawan) {
-                          setFormErrors((prev) => ({ ...prev, penerimaIdKaryawan: '' }));
-                        }
-                      }}
-                      className={`w-full px-3.5 py-2.5 text-[13px] bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 transition-all font-mono uppercase ${
-                        formErrors.penerimaIdKaryawan ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB] focus:border-[#FF6B1A]'
-                      }`}
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Ketik No. ID Karyawan (cth: 82400469 / OPR-1042)..."
+                        value={formPenerimaIdKaryawan}
+                        onChange={(e) => handleIdKaryawanChange(e.target.value)}
+                        onBlur={() => performLookupId(formPenerimaIdKaryawan)}
+                        className={`w-full pl-3.5 pr-28 py-2.5 text-[13px] bg-white border rounded-xl font-mono uppercase focus:outline-none transition-all ${
+                          idLookupStatus === 'found'
+                            ? 'border-emerald-500 bg-emerald-50/20 text-[#1F2937] ring-1 ring-emerald-500/30'
+                            : idLookupStatus === 'not_found'
+                            ? 'border-red-400 bg-red-50/30 text-red-900 ring-1 ring-red-400/30'
+                            : 'border-[#E5E7EB] focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20'
+                        }`}
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                        {idLookupStatus === 'searching' && (
+                          <div className="flex items-center gap-1 text-[11px] text-[#FF6B1A] font-medium">
+                            <div className="w-3.5 h-3.5 border-2 border-[#FF6B1A] border-t-transparent rounded-full animate-spin" />
+                            <span>Mengecek...</span>
+                          </div>
+                        )}
+                        {idLookupStatus === 'found' && (
+                          <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                            ✓ Terdaftar
+                          </span>
+                        )}
+                        {idLookupStatus === 'not_found' && (
+                          <span className="text-[11px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                            ✕ Tidak Ditemukan
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Feedback Not Found (Peringatan Hubungi Admin) */}
+                    {idLookupStatus === 'not_found' && (
+                      <div className="mt-2.5 p-3.5 bg-red-50 border border-red-200 rounded-2xl text-[12px] text-red-800 flex items-start gap-2.5 animate-fade-in shadow-xs">
+                        <svg className="w-5 h-5 text-red-600 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        <div>
+                          <p className="font-bold text-red-900">ID Karyawan Tidak Terdaftar atau Tidak Terbaca!</p>
+                          <p className="text-red-700 text-[11px] mt-1 leading-relaxed">
+                            Data penerima APD tidak dapat diisi otomatis karena No. ID ini belum ada di sistem pengguna. <strong>Silakan hubungi Admin</strong> untuk meminta penambahan user / akun karyawan terlebih dahulu di modul Manajemen User.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Feedback Found (Status Sukses Terisi) */}
+                    {idLookupStatus === 'found' && (
+                      <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-[12px] text-emerald-800 flex items-center justify-between animate-fade-in">
+                        <span className="font-medium flex items-center gap-1.5">
+                          <span className="text-emerald-600 font-bold">✓</span>
+                          Data user ditemukan: <strong>{formPenerimaNama}</strong> ({formPenerimaDepartemen || 'Departemen Terdaftar'})
+                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-200/70 text-emerald-900 px-2 py-0.5 rounded-md">
+                          Data Terisi Otomatis
+                        </span>
+                      </div>
+                    )}
+
                     {formErrors.penerimaIdKaryawan && (
                       <p className="text-red-500 text-[11px] mt-1">{formErrors.penerimaIdKaryawan}</p>
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
-                      Nama Lengkap Penerima <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Contoh: Rudi Hermawan"
-                      value={formPenerimaNama}
-                      onChange={(e) => {
-                        setFormPenerimaNama(e.target.value);
-                        if (formErrors.penerimaNama) {
-                          setFormErrors((prev) => ({ ...prev, penerimaNama: '' }));
-                        }
-                      }}
-                      className={`w-full px-3.5 py-2.5 text-[13px] bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/20 transition-all ${
-                        formErrors.penerimaNama ? 'border-red-400 bg-red-50' : 'border-[#E5E7EB] focus:border-[#FF6B1A]'
-                      }`}
-                    />
-                    {formErrors.penerimaNama && (
-                      <p className="text-red-500 text-[11px] mt-1">{formErrors.penerimaNama}</p>
-                    )}
+                  {/* Field Penerima yang Terisi Otomatis */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Nama Lengkap */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[13px] font-semibold text-[#1F2937]">
+                          Nama Lengkap Penerima <span className="text-red-500">*</span>
+                        </label>
+                        {idLookupStatus === 'found' && (
+                          <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.2 rounded">
+                            Auto-Filled
+                          </span>
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder={idLookupStatus === 'found' ? formPenerimaNama : 'Terisi otomatis setelah No. ID dimasukkan...'}
+                        value={formPenerimaNama}
+                        readOnly={idLookupStatus === 'found'}
+                        disabled={idLookupStatus !== 'found'}
+                        className={`w-full px-3.5 py-2.5 text-[13px] border rounded-xl transition-all ${
+                          idLookupStatus === 'found'
+                            ? 'bg-gray-100/80 border-[#E5E7EB] text-[#1F2937] font-semibold cursor-not-allowed'
+                            : 'bg-[#FAFAFA] border-gray-200 text-gray-400 placeholder:italic'
+                        }`}
+                      />
+                      {formErrors.penerimaNama && (
+                        <p className="text-red-500 text-[11px] mt-1">{formErrors.penerimaNama}</p>
+                      )}
+                    </div>
+
+                    {/* Departemen */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[13px] font-semibold text-[#1F2937]">
+                          Departemen Penerima <span className="text-red-500">*</span>
+                        </label>
+                        {idLookupStatus === 'found' && (
+                          <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.2 rounded">
+                            Auto-Filled
+                          </span>
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder={idLookupStatus === 'found' ? formPenerimaDepartemen : 'Terisi otomatis dari data user...'}
+                        value={formPenerimaDepartemen}
+                        readOnly={idLookupStatus === 'found'}
+                        disabled={idLookupStatus !== 'found'}
+                        className={`w-full px-3.5 py-2.5 text-[13px] border rounded-xl transition-all ${
+                          idLookupStatus === 'found'
+                            ? 'bg-gray-100/80 border-[#E5E7EB] text-[#1F2937] font-semibold cursor-not-allowed'
+                            : 'bg-[#FAFAFA] border-gray-200 text-gray-400 placeholder:italic'
+                        }`}
+                      />
+                      {formErrors.penerimaDepartemen && (
+                        <p className="text-red-500 text-[11px] mt-1">{formErrors.penerimaDepartemen}</p>
+                      )}
+                    </div>
+
+                    {/* Divisi / Unit Kerja */}
+                    <div>
+                      <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
+                        Divisi / Unit Kerja
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={idLookupStatus === 'found' ? formPenerimaDivisi || '—' : 'Terisi otomatis dari data user...'}
+                        value={formPenerimaDivisi}
+                        readOnly={idLookupStatus === 'found'}
+                        disabled={idLookupStatus !== 'found'}
+                        className={`w-full px-3.5 py-2.5 text-[13px] border rounded-xl transition-all ${
+                          idLookupStatus === 'found'
+                            ? 'bg-gray-100/80 border-[#E5E7EB] text-[#1F2937] cursor-not-allowed'
+                            : 'bg-[#FAFAFA] border-gray-200 text-gray-400 placeholder:italic'
+                        }`}
+                      />
+                    </div>
+
+                    {/* Jabatan */}
+                    <div>
+                      <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
+                        Jabatan
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={idLookupStatus === 'found' ? formPenerimaJabatan || '—' : 'Terisi otomatis dari data user...'}
+                        value={formPenerimaJabatan}
+                        readOnly={idLookupStatus === 'found'}
+                        disabled={idLookupStatus !== 'found'}
+                        className={`w-full px-3.5 py-2.5 text-[13px] border rounded-xl transition-all ${
+                          idLookupStatus === 'found'
+                            ? 'bg-gray-100/80 border-[#E5E7EB] text-[#1F2937] cursor-not-allowed'
+                            : 'bg-[#FAFAFA] border-gray-200 text-gray-400 placeholder:italic'
+                        }`}
+                      />
+                    </div>
+
+                    {/* Perusahaan */}
+                    <div>
+                      <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
+                        Perusahaan
+                      </label>
+                      <input
+                        type="text"
+                        value={formPenerimaPerusahaan}
+                        readOnly={idLookupStatus === 'found'}
+                        disabled={idLookupStatus !== 'found'}
+                        className={`w-full px-3.5 py-2.5 text-[13px] border rounded-xl transition-all ${
+                          idLookupStatus === 'found'
+                            ? 'bg-gray-100/80 border-[#E5E7EB] text-[#1F2937] cursor-not-allowed'
+                            : 'bg-[#FAFAFA] border-gray-200 text-gray-400'
+                        }`}
+                      />
+                    </div>
+
+                    {/* Tanggal Penyerahan */}
+                    <div>
+                      <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
+                        Tanggal Penyerahan <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={formTanggal}
+                        onChange={(e) => setFormTanggal(e.target.value)}
+                        className="w-full px-3.5 py-2.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A]"
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
-                      Departemen Penerima <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      value={formPenerimaDepartemen}
-                      onChange={(e) => setFormPenerimaDepartemen(e.target.value)}
-                      className="w-full px-3.5 py-2.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] font-medium text-[#374151]"
-                    >
-                      <option value="">-- Pilih Departemen --</option>
-                      {departments.map((d) => (
-                        <option key={d.id} value={d.name}>
-                          {d.name}
-                        </option>
-                      ))}
-                      <option value="Departemen Lainnya">Departemen Lainnya</option>
-                    </select>
-                    {formErrors.penerimaDepartemen && (
-                      <p className="text-red-500 text-[11px] mt-1">{formErrors.penerimaDepartemen}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
-                      Divisi / Unit Kerja
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Contoh: Leaching & Extraction / Workshop"
-                      value={formPenerimaDivisi}
-                      onChange={(e) => setFormPenerimaDivisi(e.target.value)}
-                      className="w-full px-3.5 py-2.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
-                      Jabatan
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Contoh: Operator Smelter / Teknisi Listrik"
-                      value={formPenerimaJabatan}
-                      onChange={(e) => setFormPenerimaJabatan(e.target.value)}
-                      className="w-full px-3.5 py-2.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
-                      Tanggal Penyerahan <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      value={formTanggal}
-                      onChange={(e) => setFormTanggal(e.target.value)}
-                      className="w-full px-3.5 py-2.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  {/* Keperluan Penyerahan */}
                   <div>
                     <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
                       Keperluan Penyerahan APD <span className="text-red-500">*</span>
@@ -1215,19 +1424,6 @@ function PpeManagementContent() {
                         </option>
                       ))}
                     </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[13px] font-semibold text-[#1F2937] mb-1">
-                      Perusahaan
-                    </label>
-                    <input
-                      type="text"
-                      value={formPenerimaPerusahaan}
-                      onChange={(e) => setFormPenerimaPerusahaan(e.target.value)}
-                      placeholder="PT. QMB New Energy Materials / Kontraktor"
-                      className="w-full px-3.5 py-2.5 text-[13px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A]"
-                    />
                   </div>
                 </div>
               </div>
@@ -1459,8 +1655,8 @@ function PpeManagementContent() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitting}
-                  className="px-6 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] hover:bg-[#E85D0F] rounded-xl transition-colors shadow-xs disabled:opacity-60 flex items-center gap-2"
+                  disabled={submitting || (formPenerimaIdKaryawan !== '' && idLookupStatus !== 'found')}
+                  className="px-6 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] hover:bg-[#E85D0F] rounded-xl transition-colors shadow-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {submitting && (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

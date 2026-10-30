@@ -1023,3 +1023,88 @@ export const divisionsApi = {
   remove: async (id: string): Promise<void> =>
     fetchWithAuth(`/divisions/${id}`, { method: 'DELETE' }),
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Users API & Employee Lookup
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface SystemUser {
+  id: string;
+  idKaryawan: string;
+  nama: string;
+  jabatan?: string;
+  role: 'admin' | 'supervisor' | 'user';
+  departemen?: string;
+  divisi?: string;
+  pusat?: string;
+  perusahaan?: string;
+  approved?: boolean;
+}
+
+export const usersApi = {
+  getAll: async (): Promise<SystemUser[]> => {
+    // 1. Coba proxy Next.js /api/users
+    try {
+      const token = getStoredToken();
+      const res = await fetch('/api/users', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          return data.map((u: any) => ({
+            ...u,
+            nama: u.nama || u.name || '',
+          }));
+        }
+      }
+    } catch {
+      // fallback
+    }
+
+    // 2. Direct backend fallback
+    try {
+      const data = await fetchWithAuth('/auth/users');
+      if (Array.isArray(data)) {
+        return data.map((u: any) => ({
+          ...u,
+          nama: u.nama || u.name || '',
+        }));
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  },
+
+  getByIdKaryawan: async (idKaryawan: string): Promise<SystemUser | null> => {
+    const cleanId = idKaryawan.trim().toUpperCase();
+    if (!cleanId) return null;
+
+    // 1. Coba endpoint lookup spesifik jika backend sudah siap
+    try {
+      const token = getStoredToken();
+      const res = await fetch(`/api/users/lookup/${encodeURIComponent(cleanId)}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.ok) {
+        const u = await res.json();
+        if (u && u.idKaryawan) {
+          return {
+            ...u,
+            nama: u.nama || u.name || '',
+          };
+        }
+      }
+    } catch {
+      // fallback
+    }
+
+    // 2. Fallback: filter dari daftar getAll()
+    const all = await usersApi.getAll();
+    const matched = all.find(
+      (u) => u.idKaryawan && u.idKaryawan.trim().toUpperCase() === cleanId
+    );
+    return matched || null;
+  },
+};
