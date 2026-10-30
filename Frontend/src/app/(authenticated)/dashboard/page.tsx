@@ -12,6 +12,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { RecentFindings } from "@/components/dashboard/RecentFindings";
 import { ppeHandoverApi, PpeHandoverRecord } from "@/lib/ppeHandoverApi";
 import { masterApdApi, MasterApd } from "@/lib/masterApdApi";
+import { InternalAuditSmkSection } from "@/components/dashboard/InternalAuditSmkSection";
 
 interface Finding {
   id: string;
@@ -454,6 +455,9 @@ function DashboardContent() {
           </div>
         </div>
       </section>
+
+      {/* ── Internal Audit SMK3 (PICA) Section ── */}
+      <InternalAuditSmkSection />
 
       {/* ── PPE Handover / Distribution Dashboard Section ── */}
       <section className="py-12 md:py-16 px-5 md:px-10 bg-white border-b border-[#E5E7EB]">
