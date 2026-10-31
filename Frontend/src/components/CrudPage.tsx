@@ -1623,17 +1623,7 @@ function CrudPageInner({ config }: { config: CrudPageConfig }) {
             {isRegularUser && !loading && !isK3 && (
               <span className="ml-1.5 text-gray-400">(hanya record Anda)</span>
             )}
-            {isK3 && !isAdmin && !loading && (
-              <span className="text-[11px] px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded-full font-semibold border border-gray-200">Mode Lihat (Read-Only)</span>
-            )}
-          </p>
-          {isAdmin && !loading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#FFF1E8] text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">Mode Admin</span>
-          )}
-          {isSupervisor && !isAdmin && !loading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full font-semibold border border-blue-200">Mode Supervisor</span>
-          )}
-        </div>
+          </p>        </div>
 
         {/* Table */}
         <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs overflow-hidden">

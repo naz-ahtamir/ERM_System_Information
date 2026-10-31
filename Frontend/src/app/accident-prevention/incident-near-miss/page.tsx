@@ -1150,13 +1150,7 @@ export default function InvestigasiKecelakaanPage() {
         <div className="flex items-center justify-between mb-3 px-1 flex-wrap gap-2">
           <p className="text-[12px] text-[#6B7280]">
             {loading ? "Memuat data..." : `Menampilkan ${filtered.length} record${search ? ` dari ${records.length}` : ""}`}
-          </p>
-          {isAdmin && !loading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
-              Mode Admin
-            </span>
-          )}
-        </div>
+          </p>        </div>
 
         {/* Table */}
         <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">

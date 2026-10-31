@@ -1462,13 +1462,7 @@ export default function LicenseCertificationPage() {
               <span className="ml-1.5 text-[#9CA3AF] font-medium">(khusus No. ID: {user?.idKaryawan || user?.nama})</span>
             )}
           </p>
-          <div className="flex items-center gap-2">
-            {isAdmin && !isLoading && (
-              <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
-                Mode Admin (CRUD Penuh)
-              </span>
-            )}
-            {isDivisiPerencanaan && !isAdmin && !isLoading && (
+          <div className="flex items-center gap-2">            {isDivisiPerencanaan && !isAdmin && !isLoading && (
               <span className="text-[11px] px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full font-semibold border border-blue-200">
                 Divisi Perencanaan (Lihat Seluruh Record)
               </span>

@@ -276,7 +276,7 @@ export default function SafetySignPage() {
             Export
           </button>
 
-          {/* Tombol + Tambah Record (Posisi & Nama Seragam dengan Form Lain) */}
+          {/* Tombol Tambah Record (Posisi & Nama Seragam dengan Form Lain) */}
           <button
             onClick={handleOpenAdd}
             className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-xs font-semibold rounded-xl hover:bg-[#E85D0F] transition-all whitespace-nowrap shadow-xs hover:shadow"
@@ -285,7 +285,7 @@ export default function SafetySignPage() {
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            + Tambah Record
+            Tambah Record
           </button>
         </div>
 
@@ -296,11 +296,6 @@ export default function SafetySignPage() {
               ? 'Memuat data rambu...'
               : `Menampilkan ${filteredSigns.length} record${search ? ` dari total ${signs.length}` : ''}`}
           </p>
-          {isAdmin && !loading && (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#FFF1E8] text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
-              Mode Admin
-            </span>
-          )}
         </div>
 
         {/* ── Gallery Grid / Empty State ── */}
@@ -330,7 +325,7 @@ export default function SafetySignPage() {
             <p className="text-[#6B7280] text-xs max-w-sm mb-5">
               {search
                 ? 'Coba ganti kata kunci pencarian Anda.'
-                : 'Belum ada data rambu safety sign yang tersimpan. Klik tombol "+ Tambah Record" di atas untuk menambahkan rambu baru.'}
+                : 'Belum ada data rambu safety sign yang tersimpan. Klik tombol "Tambah Record" di atas untuk menambahkan rambu baru.'}
             </p>
             {search ? (
               <button
@@ -348,7 +343,7 @@ export default function SafetySignPage() {
                   <line x1="12" y1="5" x2="12" y2="19" />
                   <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
-                + Tambah Record Pertama
+                Tambah Record Pertama
               </button>
             )}
           </div>
@@ -690,7 +685,7 @@ export default function SafetySignPage() {
                   ) : editingSign ? (
                     'Simpan Perubahan'
                   ) : (
-                    '+ Tambah Record'
+                    'Tambah Record'
                   )}
                 </button>
               </div>

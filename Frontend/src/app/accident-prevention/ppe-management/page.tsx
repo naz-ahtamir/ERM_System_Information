@@ -759,12 +759,12 @@ function PpeManagementContent() {
       )}
 
       {/* ── Page Header (Sesuai Formulir Lain: Tanpa Breadcrumbs & Tanpa Tombol Ekstra) ── */}
-      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-1.5">
+      <div className="bg-white px-6 md:px-10 py-7 border-b border-[#E5E7EB] shadow-xs">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#FF6B1A] mb-1.5">
             Accident Prevention
           </p>
-          <h1 className="font-bold text-[#1F2937] text-[clamp(22px,3.5vw,34px)] leading-tight">
+          <h1 className="text-xl md:text-2xl font-bold text-[#1F2937]">
             Pencatatan Serah Terima Alat Pelindung Diri (APD)
           </h1>
           <p className="text-[#6B7280] text-[13px] mt-1.5 max-w-3xl">
@@ -774,7 +774,7 @@ function PpeManagementContent() {
       </div>
 
       {/* ── Main Content Container ── */}
-      <div className="max-w-7xl mx-auto px-6 md:px-10 py-8 space-y-5">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-8 space-y-5">
         {/* ── Toolbar Row 1: Search + Export + + Tambah Record (Di bawah Header) ── */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           {/* Search Box */}
@@ -825,7 +825,7 @@ function PpeManagementContent() {
             Export CSV
           </button>
 
-          {/* Tombol + Tambah Record (Di bawah Header) */}
+          {/* Tombol Tambah Record (Di bawah Header) */}
           <button
             onClick={handleOpenAdd}
             className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-all shadow-xs whitespace-nowrap"
@@ -834,7 +834,7 @@ function PpeManagementContent() {
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            + Tambah Record
+            Tambah Record
           </button>
         </div>
 
@@ -976,7 +976,7 @@ function PpeManagementContent() {
                       </svg>
                       <p className="font-semibold text-[#4B5563]">Belum ada catatan serah terima APD</p>
                       <p className="text-[12px] mt-0.5">
-                        Klik tombol <strong>+ Tambah Record</strong> di atas untuk membuat catatan baru.
+                        Klik tombol <strong>Tambah Record</strong> di atas untuk membuat catatan baru.
                       </p>
                     </td>
                   </tr>

@@ -1141,7 +1141,7 @@ export default function MasterListDocumentsPage() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              + Tambah Record
+              Tambah Record
             </button>
           </div>
 
@@ -1166,19 +1166,7 @@ export default function MasterListDocumentsPage() {
           <p className="text-[12px] text-[#6B7280]">
             {loading ? 'Memuat data...' : `Menampilkan ${filtered.length} dokumen${search || filterDept || filterJenis ? ` dari ${allDocs.length} total` : ''}`}
           </p>
-          {isAdmin ? (
-            <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
-              Mode Admin
-            </span>
-          ) : isSupervisor ? (
-            <span className="text-[11px] px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full font-semibold border border-blue-200">
-              Mode Supervisor
-            </span>
-          ) : (
-            <span className="text-[11px] px-2.5 py-0.5 bg-gray-100 text-gray-700 rounded-full font-semibold border border-gray-200">
-              Mode User
-            </span>
-          )}
+          
         </div>
 
         {/* Content */}
