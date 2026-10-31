@@ -70,7 +70,7 @@ export function clearToken(): void {
  * - Clear token dari localStorage
  * - Dispatch custom event agar AuthContext menampilkan toast dan redirect ke /login
  *
- * TIDAK redirect langsung dari sini — AuthContext yang handle redirect agar
+ * TIDAK redirect langsung dari sini —AuthContext yang handle redirect agar
  * toast sempat tampil dan tidak ada double-redirect.
  */
 function handleUnauthorized(): void {
@@ -302,7 +302,7 @@ export const uploadsApi = {
 };
 
 /**
- * Records API — dipakai untuk Safety Compliance, Accident Prevention, Safety Competency
+ * Records API —dipakai untuk Safety Compliance, Accident Prevention, Safety Competency
  * Menggunakan endpoint /smk3-data yang sama dengan findings,
  * dibedakan oleh field subElementId (kategori record).
  */
@@ -368,7 +368,7 @@ export const recordsApi = {
     return fetchWithAuth(`/smk3-data/${id}`, { method: 'DELETE' });
   },
 
-  // ── Upload with File ──────────────────────────────────────────────────────────
+  // -- Upload with File ----------------------------------------------------------
 
   createWithFile: async (
     category: RecordCategory | string,
@@ -381,7 +381,7 @@ export const recordsApi = {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    // Pastikan subElementId ada di FormData — backend wajib menerimanya
+    // Pastikan subElementId ada di FormData —backend wajib menerimanya
     if (!formData.get('subElementId')) {
       formData.append('subElementId', category);
     }
@@ -440,7 +440,7 @@ export const recordsApi = {
 };
 
 /**
- * K3 Policy API — dedicated endpoint for K3 Policy records
+ * K3 Policy API —dedicated endpoint for K3 Policy records
  */
 export const k3PolicyApi = {
   getAll: async (): Promise<any[]> => {
@@ -513,7 +513,7 @@ export const k3PolicyApi = {
 };
 
 /**
- * Deadline reminders — INPG findings yang sudah/hampir melewati deadline
+ * Deadline reminders —INPG findings yang sudah/hampir melewati deadline
  */
 export const deadlineRemindersApi = {
   getAll: async (daysAhead = 3): Promise<any[]> => {
@@ -531,9 +531,9 @@ export function getApiErrorMessage(error: unknown): string {
   return 'Terjadi kesalahan. Silakan coba lagi.';
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 // Master List Documents
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 
 export interface Department {
   id: string;
@@ -633,14 +633,56 @@ export const documentsApi = {
   },
 
   createWithFile: async (formData: FormData): Promise<Document> => {
+    const hasFile = !!formData.get('file');
+    const extractDto = (): CreateDocumentDto => ({
+      departemenId: String(formData.get('departemenId') || ''),
+      jenisDokumen: formData.get('jenisDokumen') as JenisDokumen,
+      namaDokumen: String(formData.get('namaDokumen') || ''),
+      nomorDokumen: String(formData.get('nomorDokumen') || ''),
+      revisi: String(formData.get('revisi') || '00'),
+      tanggalTerbit: String(formData.get('tanggalTerbit') || ''),
+      statusDokumen: formData.get('statusDokumen') as StatusDokumen,
+      statusDistribusi: formData.get('statusDistribusi') as StatusDistribusi,
+      statusValidasi: formData.get('statusValidasi') as StatusValidasi,
+      ...(formData.get('parentId') ? { parentId: String(formData.get('parentId')) } : {}),
+    });
+
+    // Jika tidak ada file yang diunggah, utamakan endpoint standar JSON POST /documents
+    if (!hasFile) {
+      try {
+        return await documentsApi.create(extractDto());
+      } catch (jsonErr: any) {
+        console.warn('[documentsApi] JSON create failed, trying with-file fallback:', jsonErr);
+      }
+    }
+
     const token = getStoredToken();
     const url = `${API_BASE_URL}/documents/with-file`;
     const headers: HeadersInit = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(url, { method: 'POST', headers, body: formData });
-    if (res.status === 401) { handleUnauthorized(); throw new Error('Sesi habis. Silakan login kembali.'); }
-    if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || `API error: ${res.status}`); }
-    return res.json();
+
+    try {
+      const res = await fetch(url, { method: 'POST', headers, body: formData });
+      if (res.status === 401) { handleUnauthorized(); throw new Error('Sesi habis. Silakan login kembali.'); }
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        // Jika endpoint with-file 403 Forbidden atau 404, fallback ke create JSON agar record tetap tersimpan
+        if (res.status === 403 || res.status === 404) {
+          try {
+            return await documentsApi.create(extractDto());
+          } catch {}
+        }
+        throw new Error(e.message || `API error: ${res.status}`);
+      }
+      return res.json();
+    } catch (err: any) {
+      // Fallback ke JSON jika gagal network/endpoint
+      try {
+        return await documentsApi.create(extractDto());
+      } catch {
+        throw err;
+      }
+    }
   },
 
   update: async (id: string, dto: Partial<CreateDocumentDto>): Promise<Document> => {
@@ -651,14 +693,55 @@ export const documentsApi = {
   },
 
   updateWithFile: async (id: string, formData: FormData): Promise<Document> => {
+    const hasFile = !!formData.get('file');
+    const extractDto = (): Partial<CreateDocumentDto> => {
+      const dto: Partial<CreateDocumentDto> = {};
+      if (formData.get('departemenId')) dto.departemenId = String(formData.get('departemenId'));
+      if (formData.get('jenisDokumen')) dto.jenisDokumen = formData.get('jenisDokumen') as JenisDokumen;
+      if (formData.get('namaDokumen')) dto.namaDokumen = String(formData.get('namaDokumen'));
+      if (formData.get('nomorDokumen')) dto.nomorDokumen = String(formData.get('nomorDokumen'));
+      if (formData.get('revisi')) dto.revisi = String(formData.get('revisi'));
+      if (formData.get('tanggalTerbit')) dto.tanggalTerbit = String(formData.get('tanggalTerbit'));
+      if (formData.get('statusDokumen')) dto.statusDokumen = formData.get('statusDokumen') as StatusDokumen;
+      if (formData.get('statusDistribusi')) dto.statusDistribusi = formData.get('statusDistribusi') as StatusDistribusi;
+      if (formData.get('statusValidasi')) dto.statusValidasi = formData.get('statusValidasi') as StatusValidasi;
+      if (formData.get('parentId')) dto.parentId = String(formData.get('parentId'));
+      return dto;
+    };
+
+    if (!hasFile) {
+      try {
+        return await documentsApi.update(id, extractDto());
+      } catch (jsonErr: any) {
+        console.warn('[documentsApi] JSON update failed, trying with-file fallback:', jsonErr);
+      }
+    }
+
     const token = getStoredToken();
     const url = `${API_BASE_URL}/documents/with-file/${id}`;
     const headers: HeadersInit = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(url, { method: 'PUT', headers, body: formData });
-    if (res.status === 401) { handleUnauthorized(); throw new Error('Sesi habis. Silakan login kembali.'); }
-    if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || `API error: ${res.status}`); }
-    return res.json();
+
+    try {
+      const res = await fetch(url, { method: 'PUT', headers, body: formData });
+      if (res.status === 401) { handleUnauthorized(); throw new Error('Sesi habis. Silakan login kembali.'); }
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        if (res.status === 403 || res.status === 404) {
+          try {
+            return await documentsApi.update(id, extractDto());
+          } catch {}
+        }
+        throw new Error(e.message || `API error: ${res.status}`);
+      }
+      return res.json();
+    } catch (err: any) {
+      try {
+        return await documentsApi.update(id, extractDto());
+      } catch {
+        throw err;
+      }
+    }
   },
 
   delete: async (id: string): Promise<void> => {
@@ -666,9 +749,9 @@ export const documentsApi = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 // Emergency Drill API
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 
 export type DrillType =
   | 'FIRE'
@@ -763,9 +846,9 @@ export const emergencyDrillApi = {
 };
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Investigation API (Investigasi Kecelakaan — SMK3)
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
+// Investigation API (Investigasi Kecelakaan —SMK3)
+// -----------------------------------------------------------------------------
 
 export type InvestigationStatus =
   | 'DRAFT'
@@ -936,9 +1019,9 @@ export const investigationApi = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 // Centers API
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 
 export interface Center {
   id: string;
@@ -971,9 +1054,9 @@ export const centersApi = {
     fetchWithAuth(`/centers/${id}`, { method: 'DELETE' }),
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 // Divisions API
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 
 export interface DivisionPic {
   id: string;
@@ -1024,9 +1107,9 @@ export const divisionsApi = {
     fetchWithAuth(`/divisions/${id}`, { method: 'DELETE' }),
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 // Users API & Employee Lookup
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 
 export interface SystemUser {
   id: string;

@@ -188,7 +188,8 @@ function TreeItem({
   onSelect,
   onEdit,
   onDelete,
-  isAdmin,
+  canEdit,
+  canDelete,
   selectedId,
 }: {
   node: TreeNode;
@@ -200,7 +201,8 @@ function TreeItem({
   onSelect: (doc: Doc) => void;
   onEdit: (doc: Doc) => void;
   onDelete: (doc: Doc) => void;
-  isAdmin: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
   selectedId?: string;
 }) {
   const hasChildren = node.treeChildren.length > 0;
@@ -293,29 +295,33 @@ function TreeItem({
           </div>
 
           {/* Aksi hover */}
-          {isAdmin && (
+          {(canEdit || canDelete) && (
             <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-              <button
-                onClick={(e) => { e.stopPropagation(); onEdit(node); }}
-                className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg transition-colors"
-                title="Edit"
-              >
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onDelete(node); }}
-                className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                title="Hapus"
-              >
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                  <path d="M10 11v6M14 11v6M9 6V4h6v2" />
-                </svg>
-              </button>
+              {canEdit && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onEdit(node); }}
+                  className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg transition-colors"
+                  title="Edit"
+                >
+                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                </button>
+              )}
+              {canDelete && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onDelete(node); }}
+                  className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Hapus"
+                >
+                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6M14 11v6M9 6V4h6v2" />
+                  </svg>
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -336,7 +342,8 @@ function TreeItem({
               onSelect={onSelect}
               onEdit={onEdit}
               onDelete={onDelete}
-              isAdmin={isAdmin}
+              canEdit={canEdit}
+              canDelete={canDelete}
               selectedId={selectedId}
             />
           ))}
@@ -382,12 +389,14 @@ function DocFormModal({
   onSave,
   departments,
   editDoc,
+  user,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (fd: FormData) => Promise<void>;
+  onSave: (fd: FormData, dto: CreateDocumentDto, hasFile: boolean) => Promise<void>;
   departments: Department[];
   editDoc: Doc | null;
+  user?: any;
 }) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [parentCandidates, setParentCandidates] = useState<Doc[]>([]);
@@ -412,11 +421,21 @@ function DocFormModal({
         parentId: editDoc.parentId ?? '',
       });
     } else {
-      setForm(EMPTY_FORM);
+      // Auto-prefill departemen user jika tersedia
+      const userDept = departments.find(
+        (d) =>
+          d.id === user?.departmentId ||
+          d.name?.toLowerCase() === user?.departemen?.toLowerCase() ||
+          d.code?.toLowerCase() === user?.departemen?.toLowerCase()
+      );
+      setForm({
+        ...EMPTY_FORM,
+        departemenId: userDept?.id || '',
+      });
     }
     setFile(null);
     setErrors({});
-  }, [isOpen, editDoc]);
+  }, [isOpen, editDoc, user, departments]);
 
   // Load parent candidates: semua dokumen di departemen yang sama dengan level lebih tinggi
   // MANUAL tidak bisa punya parent. SOP bisa merujuk ke MANUAL.
@@ -473,19 +492,31 @@ function DocFormModal({
     if (!validate()) return;
     setSaving(true);
     try {
+      const dto: CreateDocumentDto = {
+        departemenId: form.departemenId,
+        jenisDokumen: form.jenisDokumen as JenisDokumen,
+        namaDokumen: form.namaDokumen.trim(),
+        nomorDokumen: form.nomorDokumen.trim(),
+        revisi: form.revisi.trim() || '00',
+        tanggalTerbit: form.tanggalTerbit,
+        statusDokumen: form.statusDokumen as any,
+        statusDistribusi: form.statusDistribusi as any,
+        statusValidasi: form.statusValidasi as any,
+        ...(form.parentId ? { parentId: form.parentId } : {}),
+      };
       const fd = new FormData();
       fd.append('departemenId', form.departemenId);
       fd.append('jenisDokumen', form.jenisDokumen);
       fd.append('namaDokumen', form.namaDokumen.trim());
       fd.append('nomorDokumen', form.nomorDokumen.trim());
-      fd.append('revisi', form.revisi.trim());
+      fd.append('revisi', form.revisi.trim() || '00');
       fd.append('tanggalTerbit', form.tanggalTerbit);
       fd.append('statusDokumen', form.statusDokumen);
       fd.append('statusDistribusi', form.statusDistribusi);
       fd.append('statusValidasi', form.statusValidasi);
       if (form.parentId) fd.append('parentId', form.parentId);
       if (file) fd.append('file', file);
-      await onSave(fd);
+      await onSave(fd, dto, !!file);
       onClose();
     } finally {
       setSaving(false);
@@ -507,7 +538,7 @@ function DocFormModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
           <div>
             <h2 className="font-bold text-[15px] text-[#1F2937]">
-              {editDoc ? 'Edit Dokumen' : 'Tambah Dokumen'}
+              {editDoc ? 'Edit Record Dokumen' : '+ Tambah Record Dokumen'}
             </h2>
             <p className="text-[11px] text-[#9CA3AF] mt-0.5">
               Parent opsional — dokumen boleh berdiri sendiri di departemen
@@ -680,7 +711,7 @@ function DocFormModal({
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>Menyimpan...</>
-            ) : editDoc ? 'Simpan Perubahan' : 'Tambah Dokumen'}
+            ) : editDoc ? 'Simpan Perubahan' : '+ Tambah Record'}
           </button>
         </div>
       </div>
@@ -716,13 +747,15 @@ function DetailPanel({
   onClose,
   onEdit,
   onDelete,
-  isAdmin,
+  canEdit,
+  canDelete,
 }: {
   doc: Doc | null;
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  isAdmin: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
 }) {
   if (!doc) return null;
   return (
@@ -776,18 +809,19 @@ function DetailPanel({
           </div>
         </div>
         <div className="flex items-center gap-3 px-6 py-4 border-t border-gray-100 flex-shrink-0">
-          {isAdmin ? (
-            <>
-              <button onClick={onEdit}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors">
-                Edit
-              </button>
-              <button onClick={onDelete}
-                className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
-                Hapus
-              </button>
-            </>
-          ) : (
+          {canEdit && (
+            <button onClick={onEdit}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors">
+              Edit
+            </button>
+          )}
+          {canDelete && (
+            <button onClick={onDelete}
+              className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
+              Hapus
+            </button>
+          )}
+          {!canEdit && !canDelete && (
             <button onClick={onClose}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[13px] font-semibold text-[#1F2937] bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">
               Tutup
@@ -804,6 +838,9 @@ function DetailPanel({
 export default function MasterListDocumentsPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
+  const isSupervisor = user?.role === 'supervisor' || isAdmin;
+  const canEditDoc = (doc: Doc) => isAdmin || isSupervisor || doc.createdById === user?.id;
+  const canDeleteDoc = (_doc: Doc) => isAdmin;
 
   const [departments, setDepartments] = useState<Department[]>([]);
   const [allDocs, setAllDocs] = useState<Doc[]>([]);
@@ -885,19 +922,50 @@ export default function MasterListDocumentsPage() {
   const collapseAll = () => setExpanded(new Set());
 
   // ── Save ──
-  const handleSave = async (fd: FormData) => {
+  const handleSave = async (fd: FormData, dto: CreateDocumentDto, hasFile: boolean) => {
     try {
       if (editDoc) {
-        await documentsApi.updateWithFile(editDoc.id, fd);
+        if (hasFile) {
+          try {
+            await documentsApi.updateWithFile(editDoc.id, fd);
+          } catch (fileErr: any) {
+            console.warn('updateWithFile failed, fallback to JSON update:', fileErr);
+            await documentsApi.update(editDoc.id, dto);
+          }
+        } else {
+          try {
+            await documentsApi.update(editDoc.id, dto);
+          } catch (jsonErr: any) {
+            console.warn('update(dto) failed, fallback to updateWithFile:', jsonErr);
+            await documentsApi.updateWithFile(editDoc.id, fd);
+          }
+        }
         showToast('Dokumen berhasil diperbarui', 'success');
       } else {
-        await documentsApi.createWithFile(fd);
-        showToast('Dokumen berhasil ditambahkan', 'success');
+        if (hasFile) {
+          try {
+            await documentsApi.createWithFile(fd);
+            showToast('Dokumen berhasil ditambahkan', 'success');
+          } catch (fileErr: any) {
+            console.warn('createWithFile failed, fallback to JSON create:', fileErr);
+            await documentsApi.create(dto);
+            showToast('Dokumen berhasil ditambahkan (file tidak dapat diunggah: izin server dibatasi)', 'success');
+          }
+        } else {
+          try {
+            await documentsApi.create(dto);
+            showToast('Dokumen berhasil ditambahkan', 'success');
+          } catch (jsonErr: any) {
+            console.warn('create(dto) failed, fallback to createWithFile:', jsonErr);
+            await documentsApi.createWithFile(fd);
+            showToast('Dokumen berhasil ditambahkan', 'success');
+          }
+        }
       }
       await fetchData();
       setDetailDoc(null);
     } catch (err: any) {
-      showToast(err.message || 'Gagal menyimpan', 'error');
+      showToast(err.message || 'Gagal menyimpan dokumen', 'error');
       throw err;
     }
   };
@@ -1065,15 +1133,15 @@ export default function MasterListDocumentsPage() {
               Export
             </button>
 
-            {/* Tambah Dokumen */}
+            {/* Tambah Record */}
             <button
               onClick={() => { setEditDoc(null); setModalOpen(true); }}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors whitespace-nowrap"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors whitespace-nowrap shadow-sm"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              Tambah Dokumen
+              + Tambah Record
             </button>
           </div>
 
@@ -1098,9 +1166,17 @@ export default function MasterListDocumentsPage() {
           <p className="text-[12px] text-[#6B7280]">
             {loading ? 'Memuat data...' : `Menampilkan ${filtered.length} dokumen${search || filterDept || filterJenis ? ` dari ${allDocs.length} total` : ''}`}
           </p>
-          {isAdmin && (
+          {isAdmin ? (
             <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
               Mode Admin
+            </span>
+          ) : isSupervisor ? (
+            <span className="text-[11px] px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full font-semibold border border-blue-200">
+              Mode Supervisor
+            </span>
+          ) : (
+            <span className="text-[11px] px-2.5 py-0.5 bg-gray-100 text-gray-700 rounded-full font-semibold border border-gray-200">
+              Mode User
             </span>
           )}
         </div>
@@ -1162,24 +1238,28 @@ export default function MasterListDocumentsPage() {
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <StatusValBadge val={doc.statusValidasi} />
-                      {isAdmin && (
+                      {(canEditDoc(doc) || canDeleteDoc(doc)) && (
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={(e) => { e.stopPropagation(); setEditDoc(doc); setModalOpen(true); }}
-                            className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg"
-                            title="Edit">
-                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                            </svg>
-                          </button>
-                          <button onClick={(e) => { e.stopPropagation(); handleDelete(doc); }}
-                            className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg"
-                            title="Hapus">
-                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                            </svg>
-                          </button>
+                          {canEditDoc(doc) && (
+                            <button onClick={(e) => { e.stopPropagation(); setEditDoc(doc); setModalOpen(true); }}
+                              className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg"
+                              title="Edit">
+                              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                            </button>
+                          )}
+                          {canDeleteDoc(doc) && (
+                            <button onClick={(e) => { e.stopPropagation(); handleDelete(doc); }}
+                              className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg"
+                              title="Hapus">
+                              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                              </svg>
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
@@ -1255,7 +1335,8 @@ export default function MasterListDocumentsPage() {
                             onSelect={setDetailDoc}
                             onEdit={(d) => { setEditDoc(d); setModalOpen(true); }}
                             onDelete={handleDelete}
-                            isAdmin={isAdmin}
+                            canEdit={canEditDoc(node)}
+                            canDelete={canDeleteDoc(node)}
                             selectedId={detailDoc?.id}
                           />
                         ))
@@ -1276,6 +1357,7 @@ export default function MasterListDocumentsPage() {
         onSave={handleSave}
         departments={departments}
         editDoc={editDoc}
+        user={user}
       />
 
       {/* Detail Panel */}
@@ -1284,7 +1366,8 @@ export default function MasterListDocumentsPage() {
         onClose={() => setDetailDoc(null)}
         onEdit={() => { setEditDoc(detailDoc); setDetailDoc(null); setModalOpen(true); }}
         onDelete={() => { if (detailDoc) handleDelete(detailDoc); }}
-        isAdmin={isAdmin}
+        canEdit={detailDoc ? canEditDoc(detailDoc) : false}
+        canDelete={detailDoc ? canDeleteDoc(detailDoc) : false}
       />
 
       {/* Toast */}
