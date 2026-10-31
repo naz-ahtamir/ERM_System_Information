@@ -23,77 +23,26 @@ function getStoredToken(): string | null {
 
 const LOCAL_STORAGE_KEY = 'erm_safety_signs_local_data';
 
-// Helper SVG signs for default demo/initial state if DB is empty or backend pending
-export const DEFAULT_SAMPLE_SIGNS: SafetySign[] = [
-  {
-    id: 'sign-default-1',
-    nama: 'Dilarang Merokok / No Smoking',
-    ukuran: '30 x 40 cm',
-    imageUrl: 'https://images.unsplash.com/photo-1584467735871-8e85353a8413?w=800&auto=format&fit=crop&q=80',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sign-default-2',
-    nama: 'Wajib Menggunakan Helm Keselamatan',
-    ukuran: '30 x 40 cm',
-    imageUrl: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=800&auto=format&fit=crop&q=80',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sign-default-3',
-    nama: 'Wajib Menggunakan Sepatu Safety',
-    ukuran: '30 x 40 cm',
-    imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sign-default-4',
-    nama: 'Awas Bahaya Tegangan Tinggi (High Voltage)',
-    ukuran: '40 x 60 cm',
-    imageUrl: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sign-default-5',
-    nama: 'Jalur Evakuasi Darurat (Emergency Exit)',
-    ukuran: '20 x 40 cm',
-    imageUrl: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?w=800&auto=format&fit=crop&q=80',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sign-default-6',
-    nama: 'Titik Kumpul Evakuasi (Assembly Point)',
-    ukuran: '60 x 80 cm',
-    imageUrl: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800&auto=format&fit=crop&q=80',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sign-default-7',
-    nama: 'Lokasi Alat Pemadam Api Ringan (APAR)',
-    ukuran: '30 x 30 cm',
-    imageUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=80',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sign-default-8',
-    nama: 'Wajib Menggunakan Kacamata Pelindung (Safety Glasses)',
-    ukuran: '30 x 40 cm',
-    imageUrl: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80',
-    createdAt: new Date().toISOString(),
-  },
-];
+// Default kosong (tanpa hardcoded mock)
+export const DEFAULT_SAMPLE_SIGNS: SafetySign[] = [];
 
 function getLocalSigns(): SafetySign[] {
-  if (typeof window === 'undefined') return DEFAULT_SAMPLE_SIGNS;
+  if (typeof window === 'undefined') return [];
   const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (!raw) {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_SAMPLE_SIGNS));
-    return DEFAULT_SAMPLE_SIGNS;
+    return [];
   }
   try {
-    return JSON.parse(raw);
+    const parsed: SafetySign[] = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    // Bersihkan record hardcoded demo lama jika masih tersimpan di cache browser
+    const cleaned = parsed.filter((s) => !s.id.startsWith('sign-default-'));
+    if (cleaned.length !== parsed.length) {
+      saveLocalSigns(cleaned);
+    }
+    return cleaned;
   } catch {
-    return DEFAULT_SAMPLE_SIGNS;
+    return [];
   }
 }
 
@@ -115,7 +64,7 @@ export const safetySignApi = {
       const res = await fetch(`${API_BASE_URL}/safety-signs`, { headers });
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           saveLocalSigns(data);
           return data;
         }
@@ -180,7 +129,7 @@ export const safetySignApi = {
       id: `sign-${Date.now()}`,
       nama,
       ukuran,
-      imageUrl: imageUrl || DEFAULT_SAMPLE_SIGNS[0].imageUrl,
+      imageUrl: imageUrl || '',
       createdAt: new Date().toISOString(),
     };
 

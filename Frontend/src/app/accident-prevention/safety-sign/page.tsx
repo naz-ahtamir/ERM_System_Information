@@ -6,11 +6,10 @@ import {
   safetySignApi,
   SafetySign,
   downloadSignImage,
-  DEFAULT_SAMPLE_SIGNS,
 } from '@/lib/safetySignApi';
 
-// Standard common sizes for quick selection chips
-const STANDARD_SIZES = ['20 x 30 cm', '30 x 40 cm', '40 x 60 cm', '60 x 80 cm', 'A4', 'A3'];
+// Standard common sizes for quick selection in modal
+const COMMON_SIZES = ['20 x 30 cm', '30 x 40 cm', '40 x 60 cm', '60 x 80 cm', 'A4', 'A3'];
 
 export default function SafetySignPage() {
   const { user } = useAuth();
@@ -20,7 +19,6 @@ export default function SafetySignPage() {
   const [signs, setSigns] = useState<SafetySign[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selectedSizeFilter, setSelectedSizeFilter] = useState('');
 
   // Modals state
   const [previewSign, setPreviewSign] = useState<SafetySign | null>(null);
@@ -39,7 +37,7 @@ export default function SafetySignPage() {
 
   // Toast
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
-  const showToast = (msg: string, type: 'success' | 'error') => {
+  const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3500);
   };
@@ -49,10 +47,10 @@ export default function SafetySignPage() {
     setLoading(true);
     try {
       const data = await safetySignApi.getAll();
-      setSigns(data);
+      setSigns(Array.isArray(data) ? data : []);
     } catch {
       showToast('Gagal memuat galeri safety sign', 'error');
-      setSigns(DEFAULT_SAMPLE_SIGNS);
+      setSigns([]);
     } finally {
       setLoading(false);
     }
@@ -62,20 +60,17 @@ export default function SafetySignPage() {
     fetchSigns();
   }, []);
 
-  // Filtered signs
+  // Filtered signs by search query
   const filteredSigns = useMemo(() => {
+    if (!search.trim()) return signs;
+    const q = search.toLowerCase().trim();
     return signs.filter((sign) => {
-      const matchSearch =
-        search === '' ||
-        sign.nama.toLowerCase().includes(search.toLowerCase()) ||
-        sign.ukuran.toLowerCase().includes(search.toLowerCase());
-
-      const matchSize =
-        selectedSizeFilter === '' || sign.ukuran.trim() === selectedSizeFilter.trim();
-
-      return matchSearch && matchSize;
+      return (
+        sign.nama.toLowerCase().includes(q) ||
+        sign.ukuran.toLowerCase().includes(q)
+      );
     });
-  }, [signs, search, selectedSizeFilter]);
+  }, [signs, search]);
 
   // Open Add Modal
   const handleOpenAdd = () => {
@@ -122,8 +117,8 @@ export default function SafetySignPage() {
     e.preventDefault();
     const errors: Record<string, string> = {};
 
-    if (!formNama.trim()) errors.nama = 'Nama sign wajib diisi';
-    if (!formUkuran.trim()) errors.ukuran = 'Ukuran sign wajib diisi';
+    if (!formNama.trim()) errors.nama = 'Nama safety sign wajib diisi';
+    if (!formUkuran.trim()) errors.ukuran = 'Ukuran safety sign wajib diisi';
     if (!editingSign && !formFile) errors.file = 'File gambar wajib diunggah';
 
     if (Object.keys(errors).length > 0) {
@@ -142,10 +137,10 @@ export default function SafetySignPage() {
 
       if (editingSign) {
         await safetySignApi.update(editingSign.id, fd);
-        showToast('Safety sign berhasil diperbarui', 'success');
+        showToast('Safety sign berhasil diperbarui');
       } else {
         await safetySignApi.create(fd);
-        showToast('Safety sign berhasil ditambahkan', 'success');
+        showToast('Safety sign berhasil ditambahkan');
       }
 
       setIsFormOpen(false);
@@ -163,7 +158,7 @@ export default function SafetySignPage() {
     setSaving(true);
     try {
       await safetySignApi.delete(deletingSign.id);
-      showToast('Safety sign berhasil dihapus', 'success');
+      showToast('Safety sign berhasil dihapus');
       setDeletingSign(null);
       if (previewSign?.id === deletingSign.id) setPreviewSign(null);
       await fetchSigns();
@@ -174,63 +169,72 @@ export default function SafetySignPage() {
     }
   };
 
-  // Handle Download
+  // Handle Download Single Sign
   const handleDownload = async (sign: SafetySign) => {
     try {
-      showToast(`Mengunduh "${sign.nama}"...`, 'success');
+      showToast(`Mengunduh "${sign.nama}"...`);
       await downloadSignImage(sign.imageUrl, sign.nama, sign.ukuran);
     } catch {
       showToast('Gagal mengunduh gambar', 'error');
     }
   };
 
+  // Handle Export CSV (Matching other forms)
+  const handleExportCSV = () => {
+    if (filteredSigns.length === 0) {
+      showToast('Tidak ada data safety sign untuk diekspor', 'error');
+      return;
+    }
+
+    const headers = ['No', 'Nama Safety Sign', 'Ukuran', 'URL Gambar', 'Tanggal Dibuat'];
+    const rows = filteredSigns.map((s, idx) => [
+      idx + 1,
+      `"${s.nama.replace(/"/g, '""')}"`,
+      `"${s.ukuran.replace(/"/g, '""')}"`,
+      `"${(s.imageUrl || '').replace(/"/g, '""')}"`,
+      `"${s.createdAt ? new Date(s.createdAt).toLocaleDateString('id-ID') : '—'}"`,
+    ]);
+
+    const csvContent =
+      'data:text/csv;charset=utf-8,\uFEFF' +
+      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `Safety_Signs_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Data safety sign berhasil diekspor ke CSV');
+  };
+
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      {/* ── Page Header ── */}
-      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-1.5">
-                Accident Prevention › Safety Sign
-              </p>
-              <h1 className="font-bold text-[#1F2937] text-[clamp(22px,3.5vw,32px)] leading-tight">
-                Galeri Safety Sign
-              </h1>
-              <p className="text-[#6B7280] text-[13px] mt-1">
-                Katalog rambu keselamatan kerja K3 resmi. User dapat melihat dan mengunduh gambar resolusi tinggi.
-              </p>
-            </div>
-
-            {/* Admin Add Button */}
-            {isAdmin && (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleOpenAdd}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] shadow-sm transition-all whitespace-nowrap"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  Tambah Safety Sign
-                </button>
-              </div>
-            )}
-          </div>
+      {/* ── Page Header (Pola Seragam dengan Form Lain) ── */}
+      <div className="bg-white px-6 md:px-10 py-7 border-b border-[#E5E7EB] shadow-xs">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#FF6B1A] mb-1.5">
+            Accident Prevention
+          </p>
+          <h1 className="font-bold text-[#1F2937] text-2xl md:text-3xl tracking-tight leading-tight">
+            Safety Sign
+          </h1>
+          <p className="text-[#6B7280] text-sm mt-1">
+            Pengelolaan katalog rambu keselamatan kerja K3, inventaris safety sign, dan unduhan file gambar resolusi tinggi.
+          </p>
         </div>
       </div>
 
-      {/* ── Main Content Container ── */}
-      <div className="max-w-7xl mx-auto px-6 md:px-10 py-8">
-        {/* ── Search & Filter Toolbar ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+      {/* ── Main Content Container (max-w-6xl Seragam dengan Form Lain) ── */}
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-8">
+        {/* ── Toolbar: Search + Export + + Tambah Record ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
           {/* Search Box */}
           <div className="relative flex-1">
             <svg
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
-              width="16"
-              height="16"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+              width="15"
+              height="15"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -243,13 +247,13 @@ export default function SafetySignPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari nama sign atau ukuran (cth: Dilarang Merokok, 30 x 40 cm)..."
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-[#E5E7EB] rounded-xl focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-colors"
+              placeholder="Cari safety sign..."
+              className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-xl text-[#1F2937] placeholder-gray-400 focus:outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/20 transition-all shadow-xs"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#1F2937]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#1F2937]"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -259,53 +263,47 @@ export default function SafetySignPage() {
             )}
           </div>
 
-          {/* Filter Ukuran Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-            <button
-              onClick={() => setSelectedSizeFilter('')}
-              className={`px-3 py-2 text-[12px] font-semibold rounded-xl border whitespace-nowrap transition-colors ${
-                selectedSizeFilter === ''
-                  ? 'bg-[#1F2937] text-white border-[#1F2937]'
-                  : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-gray-300'
-              }`}
-            >
-              Semua Ukuran
-            </button>
-            {STANDARD_SIZES.map((sz) => (
-              <button
-                key={sz}
-                onClick={() => setSelectedSizeFilter(selectedSizeFilter === sz ? '' : sz)}
-                className={`px-3 py-2 text-[12px] font-semibold rounded-xl border whitespace-nowrap transition-colors ${
-                  selectedSizeFilter === sz
-                    ? 'bg-[#FF6B1A] text-white border-[#FF6B1A]'
-                    : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-gray-300'
-                }`}
-              >
-                {sz}
-              </button>
-            ))}
-          </div>
+          {/* Export Button (Seragam dengan Form Lain) */}
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E7EB] text-[#374151] text-xs font-semibold rounded-xl hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors whitespace-nowrap shadow-xs"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export
+          </button>
+
+          {/* Tombol + Tambah Record (Posisi & Nama Seragam dengan Form Lain) */}
+          <button
+            onClick={handleOpenAdd}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-xs font-semibold rounded-xl hover:bg-[#E85D0F] transition-all whitespace-nowrap shadow-xs hover:shadow"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            + Tambah Record
+          </button>
         </div>
 
-        {/* ── Status Bar ── */}
-        <div className="flex items-center justify-between mb-5 px-1">
-          <p className="text-[12px] text-[#6B7280]">
+        {/* ── Status Info Bar ── */}
+        <div className="flex items-center justify-between mb-4 px-1 flex-wrap gap-2">
+          <p className="text-xs text-[#6B7280]">
             {loading
               ? 'Memuat data rambu...'
-              : `Menampilkan ${filteredSigns.length} rambu safety sign${
-                  search || selectedSizeFilter ? ` dari total ${signs.length}` : ''
-                }`}
+              : `Menampilkan ${filteredSigns.length} record${search ? ` dari total ${signs.length}` : ''}`}
           </p>
-          <div className="flex items-center gap-2">
-            {isAdmin && (
-              <span className="text-[11px] px-2.5 py-0.5 bg-[#FF6B1A]/10 text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
-                Mode Admin (CRUD Aktif)
-              </span>
-            )}
-          </div>
+          {isAdmin && !loading && (
+            <span className="text-[11px] px-2.5 py-0.5 bg-[#FFF1E8] text-[#FF6B1A] rounded-full font-semibold border border-[#FF6B1A]/20">
+              Mode Admin
+            </span>
+          )}
         </div>
 
-        {/* ── Gallery Grid ── */}
+        {/* ── Gallery Grid / Empty State ── */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
@@ -318,31 +316,39 @@ export default function SafetySignPage() {
             ))}
           </div>
         ) : filteredSigns.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center py-16 px-6 text-center shadow-sm">
-            <div className="w-16 h-16 rounded-2xl bg-orange-50 flex items-center justify-center mb-4">
-              <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#FF6B1A" strokeWidth="1.8">
+          <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs p-12 flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#FFF1E8] flex items-center justify-center mb-4 text-[#FF6B1A]">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                 <circle cx="8.5" cy="8.5" r="1.5" />
                 <polyline points="21 15 16 10 5 21" />
               </svg>
             </div>
-            <p className="font-semibold text-[#1F2937] text-[15px] mb-1">
-              {search || selectedSizeFilter ? 'Tidak ada safety sign yang cocok' : 'Belum ada safety sign'}
+            <p className="font-bold text-[#1F2937] text-base mb-1">
+              {search ? 'Tidak ada safety sign yang cocok' : 'Belum Ada Record Safety Sign'}
             </p>
-            <p className="text-[#6B7280] text-[13px] max-w-sm mb-4">
-              {search || selectedSizeFilter
-                ? 'Coba ganti kata kunci pencarian atau bersihkan filter ukuran.'
-                : 'Galeri safety sign saat ini masih kosong. Admin dapat menambahkan safety sign baru.'}
+            <p className="text-[#6B7280] text-xs max-w-sm mb-5">
+              {search
+                ? 'Coba ganti kata kunci pencarian Anda.'
+                : 'Belum ada data rambu safety sign yang tersimpan. Klik tombol "+ Tambah Record" di atas untuk menambahkan rambu baru.'}
             </p>
-            {(search || selectedSizeFilter) && (
+            {search ? (
               <button
-                onClick={() => {
-                  setSearch('');
-                  setSelectedSizeFilter('');
-                }}
-                className="px-4 py-2 text-[12px] font-semibold text-[#FF6B1A] bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors"
+                onClick={() => setSearch('')}
+                className="px-4 py-2 text-xs font-semibold text-[#FF6B1A] bg-[#FFF1E8] hover:bg-orange-100 rounded-xl transition-colors"
               >
-                Reset Filter
+                Reset Pencarian
+              </button>
+            ) : (
+              <button
+                onClick={handleOpenAdd}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-xs font-semibold rounded-xl hover:bg-[#E85D0F] transition-all shadow-xs"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                + Tambah Record Pertama
               </button>
             )}
           </div>
@@ -408,7 +414,7 @@ export default function SafetySignPage() {
 
                   {/* Card Actions */}
                   <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
-                    {/* Download Button (Available for all users) */}
+                    {/* Download Button */}
                     <button
                       onClick={() => handleDownload(sign)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-gray-50 hover:bg-[#FF6B1A] text-[#1F2937] hover:text-white rounded-xl text-[12px] font-semibold border border-gray-200/80 hover:border-[#FF6B1A] transition-all"
@@ -514,7 +520,7 @@ export default function SafetySignPage() {
         </div>
       )}
 
-      {/* ── Admin Add / Edit Modal ── */}
+      {/* ── Modal Tambah / Edit Record ── */}
       {isFormOpen && (
         <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !saving && setIsFormOpen(false)} />
@@ -523,10 +529,10 @@ export default function SafetySignPage() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
               <div>
                 <h2 className="font-bold text-[16px] text-[#1F2937]">
-                  {editingSign ? 'Edit Safety Sign' : 'Tambah Safety Sign'}
+                  {editingSign ? 'Edit Record Safety Sign' : 'Tambah Record Safety Sign'}
                 </h2>
                 <p className="text-[11px] text-[#9CA3AF] mt-0.5">
-                  Unggah file gambar rambu dan tentukan nama serta ukurannya.
+                  Unggah file gambar rambu dan tentukan nama serta ukuran fisiknya.
                 </p>
               </div>
               <button
@@ -545,7 +551,7 @@ export default function SafetySignPage() {
               {/* Gambar Sign Upload */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-[#1F2937] mb-1.5">
-                  Gambar Safety Sign <span className="text-red-500">*</span>
+                  File Gambar Safety Sign <span className="text-red-500">*</span>
                 </label>
                 <input
                   ref={fileInputRef}
@@ -638,10 +644,10 @@ export default function SafetySignPage() {
                 />
                 {formErrors.ukuran && <p className="text-red-500 text-[11px] mt-1">{formErrors.ukuran}</p>}
 
-                {/* Quick Chips */}
+                {/* Quick Chips in Form */}
                 <div className="flex flex-wrap items-center gap-1.5 mt-2">
                   <span className="text-[10px] text-[#9CA3AF] uppercase font-bold mr-1">Pilihan Cepat:</span>
-                  {STANDARD_SIZES.map((sz) => (
+                  {COMMON_SIZES.map((sz) => (
                     <button
                       type="button"
                       key={sz}
@@ -684,7 +690,7 @@ export default function SafetySignPage() {
                   ) : editingSign ? (
                     'Simpan Perubahan'
                   ) : (
-                    'Tambah Sign'
+                    '+ Tambah Record'
                   )}
                 </button>
               </div>
