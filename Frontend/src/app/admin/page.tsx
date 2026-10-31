@@ -32,6 +32,7 @@ interface User {
   centerId?: string | null;
   departmentId?: string | null;
   divisionId?: string | null;
+  perusahaan?: string | null;
 }
 
 type FilterStatus = "all" | "active" | "inactive";
@@ -51,10 +52,12 @@ function EditUserModal({
     jabatan:      user.jabatan      || "",
     departemen:   user.departemen   || "",
     email:        user.email        || "",
+    perusahaan:   user.perusahaan   || "",
     centerId:     user.centerId     || "",
     departmentId: user.departmentId || "",
     divisionId:   user.divisionId   || "",
   });
+  const [loadingDetails, setLoadingDetails] = useState(true);
   const [saving,  setSaving]  = useState(false);
   const [error,   setError]   = useState("");
 
@@ -69,13 +72,45 @@ function EditUserModal({
     divisionsApi.getAll().then(setAllDivs).catch(() => {});
   }, []);
 
+  // Fetch full user detail to ensure centerId, departmentId, divisionId, perusahaan are loaded accurately from DB
+  useEffect(() => {
+    let isMounted = true;
+    setLoadingDetails(true);
+    const token = getStoredToken();
+    fetch(`/api/users/${user.id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (isMounted && data) {
+          setForm((prev) => ({
+            nama:         data.nama         ?? prev.nama,
+            jabatan:      data.jabatan      ?? prev.jabatan,
+            departemen:   data.departemen   ?? prev.departemen,
+            email:        data.email        ?? prev.email,
+            perusahaan:   data.perusahaan   ?? prev.perusahaan,
+            centerId:     data.centerId     ?? prev.centerId,
+            departmentId: data.departmentId ?? prev.departmentId,
+            divisionId:   data.divisionId   ?? prev.divisionId,
+          }));
+        }
+      })
+      .catch((err) => console.error("Gagal memuat detail user:", err))
+      .finally(() => {
+        if (isMounted) setLoadingDetails(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [user.id]);
+
   // Filter berdasarkan pilihan bertingkat
   const filteredDepts = form.centerId
     ? allDepts.filter((d: any) => d.centerId === form.centerId)
     : allDepts;
 
   const filteredDivs = form.departmentId
-    ? allDivs.filter(d => d.departmentId === form.departmentId)
+    ? allDivs.filter((d) => d.departmentId === form.departmentId)
     : allDivs;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,6 +123,7 @@ function EditUserModal({
         jabatan:      form.jabatan,
         departemen:   form.departemen,
         email:        form.email,
+        perusahaan:   form.perusahaan   || null,
         centerId:     form.centerId     || null,
         departmentId: form.departmentId || null,
         divisionId:   form.divisionId   || null,
@@ -109,7 +145,14 @@ function EditUserModal({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] sticky top-0 bg-white z-10">
           <div>
-            <h2 className="font-bold text-[16px] text-[#1F2937]">Edit Profil User</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="font-bold text-[16px] text-[#1F2937]">Edit Profil User</h2>
+              {loadingDetails && (
+                <span className="text-[11px] font-medium text-[#FF6B1A] bg-[#FFF1E8] px-2 py-0.5 rounded-full animate-pulse">
+                  Memuat data...
+                </span>
+              )}
+            </div>
             <p className="text-[12px] text-[#6B7280] mt-0.5">{user.idKaryawan} &middot; {user.nama}</p>
           </div>
           <button onClick={onClose}
@@ -141,6 +184,23 @@ function EditUserModal({
             <label className={labelCls}>Email</label>
             <input type="email" className={inputCls} value={form.email} placeholder="opsional"
               onChange={e => setForm({ ...form, email: e.target.value })} />
+          </div>
+
+          {/* Perusahaan */}
+          <div>
+            <label className={labelCls}>Perusahaan</label>
+            <select
+              className={inputCls}
+              value={form.perusahaan}
+              onChange={e => setForm({ ...form, perusahaan: e.target.value })}
+            >
+              <option value="">— Pilih Perusahaan —</option>
+              {PERUSAHAAN_OPTIONS.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* ── Organisasi — dropdown bertingkat FK ── */}
@@ -364,6 +424,7 @@ export default function AdminPage() {
     centerId:     "",
     departmentId: "",
     divisionId:   "",
+    perusahaan:   "",
   });
 
   // ── Data dropdown untuk form tambah user ──
@@ -495,6 +556,7 @@ export default function AdminPage() {
                   centerId:     newUser.centerId     || null,
                   departmentId: newUser.departmentId || null,
                   divisionId:   newUser.divisionId   || null,
+                  perusahaan:   newUser.perusahaan   || null,
                 }),
               });
             }
@@ -753,6 +815,20 @@ export default function AdminPage() {
                       </select>
                     </div>
 
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">Perusahaan</label>
+                      <select
+                        value={newUser.perusahaan}
+                        onChange={(e) => setNewUser({ ...newUser, perusahaan: e.target.value })}
+                        className="w-full px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[14px] text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] focus:ring-1 focus:ring-[#FF6B1A] transition-colors"
+                      >
+                        <option value="">-- Pilih Perusahaan --</option>
+                        {PERUSAHAAN_OPTIONS.map((p) => (
+                          <option key={p} value={p}>{p}</option>
+                        ))}
+                      </select>
+                    </div>
+
                     {/* ── Dropdown Pusat ── */}
                     <div>
                       <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mb-1.5">Pusat</label>
@@ -866,6 +942,19 @@ export default function AdminPage() {
                   </button>
                 )}
               </div>
+
+              {/* Filter Perusahaan */}
+              <select
+                value={filterPerusahaan}
+                onChange={(e) => setFilterPerusahaan(e.target.value)}
+                aria-label="Filter Perusahaan"
+                className="px-3 py-2 bg-white border border-[#E5E7EB] text-[12px] font-semibold text-[#1F2937] rounded-lg focus:outline-none focus:border-[#FF6B1A] transition-colors"
+              >
+                <option value="ALL">Semua Perusahaan</option>
+                {PERUSAHAAN_OPTIONS.map((p) => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
 
               {/* Filter tabs */}
               <div className="flex rounded-lg border border-[#E5E7EB] overflow-hidden text-[12px] font-semibold">

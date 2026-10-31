@@ -144,6 +144,9 @@ export class AuthService {
             password:         hashedPassword,
             role,
             approved:         true,
+            centerId:         userData.centerId         ?? null,
+            departmentId:     userData.departmentId     ?? null,
+            divisionId:       userData.divisionId       ?? null,
           },
         });
 
@@ -206,6 +209,9 @@ export class AuthService {
         nama:             true,
         jabatan:          true,
         departemen:       true,
+        divisi:           true,
+        pusat:            true,
+        perusahaan:       true,
         email:            true,
         role:             true,
         supervisorId:     true,
@@ -213,6 +219,9 @@ export class AuthService {
         tanggalMulaiKerja: true,
         approved:         true,
         createdAt:        true,
+        centerId:         true,
+        departmentId:     true,
+        divisionId:       true,
       },
       orderBy: { nama: 'asc' },
     });
