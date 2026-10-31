@@ -9,7 +9,6 @@ import {
   MasterPelatihan,
   CreateMasterPelatihanDto,
   formatRupiah,
-  DEFAULT_PELATIHAN_LIST,
 } from '@/lib/trainingApi';
 
 export default function DaftarPelatihanAdminPage() {
@@ -170,16 +169,6 @@ export default function DaftarPelatihanAdminPage() {
       showToast(err.message || 'Gagal menghapus pelatihan', 'error');
     } finally {
       setDeleting(false);
-    }
-  };
-
-  const handleResetDefault = () => {
-    if (confirm('Kembalikan data pelatihan ke 32 daftar standar awal K3?')) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('erm_master_pelatihan_list', JSON.stringify(DEFAULT_PELATIHAN_LIST));
-      }
-      showToast('Data master pelatihan dikembalikan ke standar awal');
-      loadData();
     }
   };
 
@@ -431,17 +420,6 @@ export default function DaftarPelatihanAdminPage() {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2.5 flex-wrap">
-                <button
-                  onClick={handleResetDefault}
-                  title="Kembalikan daftar awal 32 pelatihan standar K3"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-[12px] font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-colors"
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="1 4 1 10 7 10" />
-                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-                  </svg>
-                  Reset Standar
-                </button>
 
                 <button
                   onClick={openAddModal}
