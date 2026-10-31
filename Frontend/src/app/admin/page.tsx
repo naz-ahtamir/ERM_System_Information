@@ -3,8 +3,20 @@
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { getStoredToken, centersApi, departmentsApi, divisionsApi, type Center, type Division } from "@/lib/api";
+
+export const PERUSAHAAN_OPTIONS = [
+  "QMB",
+  "GNM",
+  "ESG",
+  "EIEB",
+  "MEIMING",
+  "QINGMEI",
+  "GEN",
+  "QMD",
+] as const;
+
+export type PerusahaanOption = typeof PERUSAHAAN_OPTIONS[number];
 
 interface User {
   id: string;
@@ -338,6 +350,7 @@ export default function AdminPage() {
   const [assigningSupervisorUser, setAssigningSupervisorUser] = useState<User | null>(null);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterPerusahaan, setFilterPerusahaan] = useState<string>("ALL");
   const [error, setError] = useState("");
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
@@ -416,6 +429,11 @@ export default function AdminPage() {
     if (filterStatus === "active") result = result.filter((u) => u.approved);
     else if (filterStatus === "inactive") result = result.filter((u) => !u.approved);
 
+    // Filter by perusahaan
+    if (filterPerusahaan !== "ALL") {
+      result = result.filter((u) => u.perusahaan === filterPerusahaan);
+    }
+
     // Search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
@@ -424,12 +442,13 @@ export default function AdminPage() {
           u.nama?.toLowerCase().includes(q) ||
           u.idKaryawan?.toLowerCase().includes(q) ||
           u.departemen?.toLowerCase().includes(q) ||
-          u.jabatan?.toLowerCase().includes(q)
+          u.jabatan?.toLowerCase().includes(q) ||
+          u.perusahaan?.toLowerCase().includes(q)
       );
     }
 
     return result;
-  }, [users, filterStatus, searchQuery]);
+  }, [users, filterStatus, searchQuery, filterPerusahaan]);
 
   const activeCount   = users.filter((u) => u.approved).length;
   const inactiveCount = users.filter((u) => !u.approved).length;
@@ -461,7 +480,7 @@ export default function AdminPage() {
       // Step 2: Jika ada divisionId dipilih, fetch user yang baru dibuat
       // lalu PATCH divisionId/departmentId/centerId — karena bulk-create-users
       // tidak menyimpan FK fields tersebut
-      if (newUser.divisionId || newUser.departmentId || newUser.centerId) {
+      if (newUser.divisionId || newUser.departmentId || newUser.centerId || newUser.perusahaan) {
         try {
           // Ambil daftar user terbaru untuk dapat id UUID dari user baru
           const usersRes = await fetch("/api/users", { headers: authHeaders });
@@ -487,7 +506,7 @@ export default function AdminPage() {
         }
       }
 
-      setNewUser({ idKaryawan: "", nama: "", jabatan: "", departemen: "", password: "", role: "user", centerId: "", departmentId: "", divisionId: "" });
+      setNewUser({ idKaryawan: "", nama: "", jabatan: "", departemen: "", perusahaan: "", password: "", role: "user", centerId: "", departmentId: "", divisionId: "" });
       setShowAddForm(false);
       fetchUsers();
       showToast("User berhasil dibuat");
@@ -635,60 +654,18 @@ export default function AdminPage() {
         />
       )}
 
-      {/* Page Header */}
-      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
+      {/* Page Header (Seragam dengan Form Lain: Tanpa Breadcrumbs & Tombol Duplikat) */}
+      <div className="bg-white px-6 md:px-10 py-7 border-b border-[#E5E7EB] shadow-xs">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-2 text-[12px] text-[#6B7280] mb-4 flex-wrap">
-            <Link href="/" className="hover:text-[#FF6B1A] transition-colors flex items-center gap-1">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-              Home
-            </Link>
-            <span>/</span>
-            <Link href="/dashboard" className="hover:text-[#FF6B1A] transition-colors">Dashboard</Link>
-            <span>/</span>
-            <span className="text-[#FF6B1A] font-medium">Admin Panel</span>
-          </div>
-
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">Admin Panel</div>
-              <h1 className="font-bold text-[#1F2937] text-[clamp(24px,4vw,36px)] leading-tight">
-                User Management
-              </h1>
-              <p className="text-[#6B7280] text-[13px] mt-1">
-                Kelola pengguna dan persetujuan akun sistem SMK3
-              </p>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <Link href="/admin/org-structure" className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="7" width="20" height="14" rx="2" />
-                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-                </svg>
-                Struktur Organisasi &amp; PIC
-              </Link>
-              <Link href="/admin/daftar-pelatihan" className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                </svg>
-                Daftar Pelatihan
-              </Link>
-              <Link href="/admin/master-apd" className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#374151] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2a5 5 0 0 1 5 5v2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2V7a5 5 0 0 1 5-5z" />
-                  <circle cx="12" cy="7" r="3" />
-                </svg>
-                Master Jenis APD
-              </Link>
-              <Link href="/dashboard" className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] text-[#1F2937] text-[12px] font-medium rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
-                Dashboard
-              </Link>
-            </div>
-          </div>
+          <p className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#FF6B1A] mb-1.5">
+            Admin Panel
+          </p>
+          <h1 className="text-xl md:text-2xl font-bold text-[#1F2937]">
+            User Management
+          </h1>
+          <p className="text-[#6B7280] text-[13px] mt-1.5 max-w-3xl">
+            Kelola pengguna dan persetujuan akun sistem SMK3
+          </p>
         </div>
       </div>
 
@@ -919,7 +896,7 @@ export default function AdminPage() {
                   <table className="w-full text-[13px]">
                     <thead>
                       <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
-                        {["Nama", "ID Karyawan", "Jabatan", "Departemen", "Supervisor", "Role", "Status", "Aksi"].map((h) => (
+                        {["Nama", "ID Karyawan", "Perusahaan", "Jabatan", "Departemen", "Supervisor", "Role", "Status", "Aksi"].map((h) => (
                           <th key={h} className="text-left py-3 px-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wider">
                             {h}
                           </th>
@@ -935,6 +912,15 @@ export default function AdminPage() {
                         <tr key={u.id} className={`hover:bg-[#FAFAFA] transition-colors ${!u.approved ? "opacity-60" : ""}`}>
                           <td className="py-3 px-3 font-medium text-[#1F2937]">{u.nama}</td>
                           <td className="py-3 px-3 text-[#6B7280] font-mono text-[12px]">{u.idKaryawan}</td>
+                          <td className="py-3 px-3">
+                            {u.perusahaan ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FFF1E8] text-[#FF6B1A] border border-[#FF6B1A]/20">
+                                {u.perusahaan}
+                              </span>
+                            ) : (
+                              <span className="text-[#9CA3AF] text-[12px] italic">—</span>
+                            )}
+                          </td>
                           <td className="py-3 px-3 text-[#6B7280]">{u.jabatan || "—"}</td>
                           <td className="py-3 px-3 text-[#6B7280]">{u.departemen || "—"}</td>
                           {/* Kolom Supervisor */}
@@ -1035,56 +1021,6 @@ export default function AdminPage() {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Quick links — menu admin lainnya */}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link href="/admin/org-structure"
-              className="flex items-center gap-4 p-4 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#FF6B1A] hover:shadow-xs transition-all group">
-              <div className="w-10 h-10 rounded-xl bg-[#FFF1E8] flex items-center justify-center flex-shrink-0 group-hover:bg-[#FF6B1A] transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF6B1A" strokeWidth="2" className="group-hover:stroke-white transition-colors">
-                  <rect x="2" y="7" width="20" height="14" rx="2"/>
-                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-                  <line x1="12" y1="12" x2="12" y2="16"/>
-                  <line x1="10" y1="14" x2="14" y2="14"/>
-                </svg>
-              </div>
-              <div>
-                <p className="font-bold text-[14px] text-[#1F2937] group-hover:text-[#FF6B1A] transition-colors">Struktur Organisasi</p>
-                <p className="text-[12px] text-[#6B7280] mt-0.5">Kelola Pusat, Departemen, Divisi &amp; PIC</p>
-              </div>
-              <svg className="ml-auto text-[#9CA3AF] group-hover:text-[#FF6B1A] transition-colors flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="m9 18 6-6-6-6"/>
-              </svg>
-            </Link>
-
-            <Link href="/admin/master-data"
-              className="flex items-center gap-4 p-4 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#FF6B1A] hover:shadow-xs transition-all group">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600 transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" className="group-hover:stroke-white transition-colors">
-                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-                </svg>
-              </div>
-              <div>
-                <p className="font-bold text-[14px] text-[#1F2937] group-hover:text-[#FF6B1A] transition-colors">Master Data</p>
-                <p className="text-[12px] text-[#6B7280] mt-0.5">Kelola data referensi sistem</p>
-              </div>
-              <svg className="ml-auto text-[#9CA3AF] group-hover:text-[#FF6B1A] transition-colors flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="m9 18 6-6-6-6"/>
-              </svg>
-            </Link>
-          </div>
-
-          {/* Bottom navigation */}
-          <div className="mt-6 flex items-center gap-3 flex-wrap">
-            <Link href="/dashboard" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E5E7EB] text-[13px] text-[#1F2937] font-semibold rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-colors shadow-xs">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m12 19-7-7 7-7" /><path d="M19 12H5" />
-              </svg>
-              Kembali ke Dashboard
-            </Link>
           </div>
         </div>
       </section>
