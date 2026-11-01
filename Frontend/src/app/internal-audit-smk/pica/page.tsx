@@ -2976,7 +2976,7 @@ export default function PicaListPage() {
                     <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide">PIC</th>
                     <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap">Deadline</th>
                     <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap">Status</th>
-                    <th className="text-center px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide">Aksi</th>
+                    <th className="text-center px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap min-w-[120px]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#FAFAFA]">
@@ -3042,7 +3042,7 @@ export default function PicaListPage() {
                         <td className="px-4 py-3 whitespace-nowrap">
                           <StatusPill status={record.statusPerbaikan} isTacc={isTacc} />
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3 whitespace-nowrap text-center">
                           <div className="flex items-center justify-center gap-1">
 
                             {/* Lihat Detail — untuk semua role & semua status */}
@@ -3081,8 +3081,8 @@ export default function PicaListPage() {
                               </button>
                             )}
 
-                            {/* Edit — admin: boleh edit kapan saja termasuk status CLSD atau INPG atau OPEN */}
-                            {isAdmin && (
+                            {/* Edit — admin: untuk status OPEN dan CLSD (di-hide saat INPG agar kolom aksi rapi) */}
+                            {isAdmin && record.statusPerbaikan !== 'INPG' && (
                               <button onClick={() => setEditRecord(record)}
                                 className={`p-1.5 rounded-lg transition-colors ${
                                   record.statusPerbaikan === 'CLSD'
