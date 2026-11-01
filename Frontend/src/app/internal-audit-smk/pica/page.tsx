@@ -1693,6 +1693,7 @@ interface PicaDetailModalProps {
   onSubmitPerbaikan: (record: PicaRecord) => void;
   onApproval: (record: PicaRecord) => void;
   onReopen: (record: PicaRecord) => void;
+  onDelete?: (id: string) => void;
 }
 
 function PicaDetailModal({
@@ -1704,6 +1705,7 @@ function PicaDetailModal({
   onSubmitPerbaikan,
   onApproval,
   onReopen,
+  onDelete,
 }: PicaDetailModalProps) {
   if (!isOpen || !record) return null;
 
@@ -1953,12 +1955,32 @@ function PicaDetailModal({
 
         {/* Modal Footer */}
         <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-[#E5E7EB] bg-[#FAFAFA] flex-shrink-0">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-white border border-[#E5E7EB] rounded-xl hover:bg-gray-100 transition-colors"
-          >
-            Tutup
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-white border border-[#E5E7EB] rounded-xl hover:bg-gray-100 transition-colors"
+            >
+              Tutup
+            </button>
+            {isAdmin && onDelete && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onDelete(record.id);
+                }}
+                className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/60 rounded-xl transition-colors"
+                title="Hapus record ini secara permanen"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="m19 6-.867 14.142A2 2 0 0 1 16.138 22H7.862a2 2 0 0 1-1.995-1.858L5 6"/>
+                  <path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+                Hapus Record
+              </button>
+            )}
+          </div>
 
           <div className="flex items-center gap-2.5">
             {/* Action Admin: Buka kembali temuan jika CLSD */}
@@ -2201,7 +2223,8 @@ type FilterTab = 'ALL' | 'OPEN' | 'INPG' | 'CLSD' | 'TACC';
 
 export default function PicaListPage() {
   const { user, isLoading: authLoading } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const role = user?.role?.toLowerCase();
+  const isAdmin = role === 'admin';
   const searchParams = useSearchParams();
 
   const [records,    setRecords]    = useState<PicaRecord[]>([]);
@@ -2967,16 +2990,16 @@ export default function PicaListPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-[13px]">
+              <table className="w-full text-[13px] min-w-[950px]">
                 <thead>
                   <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
-                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap">ID / Tanggal</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide">Temuan Masalah</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide">Lokasi</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide">PIC</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap">Deadline</th>
-                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap">Status</th>
-                    <th className="text-center px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap min-w-[120px]">Aksi</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap w-[120px]">ID / Tanggal</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide min-w-[220px]">Temuan Masalah</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide w-[140px]">Lokasi</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap w-[120px]">PIC</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap w-[120px]">Deadline</th>
+                    <th className="text-left px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap w-[110px]">Status</th>
+                    <th className="text-center px-4 py-3 font-semibold text-[#6B7280] text-[11px] uppercase tracking-wide whitespace-nowrap w-[130px] min-w-[130px]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#FAFAFA]">
@@ -3042,8 +3065,8 @@ export default function PicaListPage() {
                         <td className="px-4 py-3 whitespace-nowrap">
                           <StatusPill status={record.statusPerbaikan} isTacc={isTacc} />
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-center">
-                          <div className="flex items-center justify-center gap-1">
+                        <td className="px-4 py-3 whitespace-nowrap text-center w-[130px] min-w-[130px]">
+                          <div className="flex items-center justify-center gap-1.5">
 
                             {/* Lihat Detail — untuk semua role & semua status */}
                             <button
@@ -3101,10 +3124,10 @@ export default function PicaListPage() {
                             {isAdmin && (
                               <button onClick={() => handleDelete(record.id)}
                                 disabled={deletingId === record.id}
-                                className="p-1.5 rounded-lg text-[#6B7280] hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                                className="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors disabled:opacity-50"
                                 title="Hapus Record">
                                 {deletingId === record.id ? (
-                                  <div className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                                  <div className="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
                                 ) : (
                                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <polyline points="3 6 5 6 21 6"/>
@@ -3177,6 +3200,7 @@ export default function PicaListPage() {
         onSubmitPerbaikan={(rec) => { setDetailRecord(null); setSubmitRecord(rec); }}
         onApproval={(rec) => { setDetailRecord(null); setApprovalRecord(rec); }}
         onReopen={handleReopenRecord}
+        onDelete={(id) => handleDelete(id)}
       />
 
       {/* ── Export Modal ── */}
