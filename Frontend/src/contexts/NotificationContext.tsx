@@ -227,8 +227,18 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     try {
       const data = await fetchNotifications();
       if (Array.isArray(data)) {
-        setNotifications(data);
-        console.debug(`[NotifCtx] refreshNotifications: set ${data.length} notif`);
+        // Filter notifikasi:
+        // Notifikasi untuk sertifikat (scomp-license) HANYA boleh muncul jika expired atau akan expired ('license_expired' / 'license_expiring_soon').
+        // Abaikan notifikasi temuan hazard otomatis ('finding_submitted' / 'approval_required') untuk sertifikat.
+        const filtered = data.filter((n) => {
+          const isLicenseRecord = n.finding?.subElementId === 'scomp-license';
+          if (isLicenseRecord) {
+            return n.type === 'license_expired' || n.type === 'license_expiring_soon';
+          }
+          return true;
+        });
+        setNotifications(filtered);
+        console.debug(`[NotifCtx] refreshNotifications: set ${filtered.length} notif (filtered from ${data.length})`);
       } else {
         console.warn('[NotifCtx] refreshNotifications: data bukan array, tidak update state');
       }
@@ -345,6 +355,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   // ── Notification state methods ────────────────────────────────────────────
 
   const addNotification = useCallback((notification: Notification) => {
+    const isLicenseRecord = notification.finding?.subElementId === 'scomp-license';
+    if (isLicenseRecord && notification.type !== 'license_expired' && notification.type !== 'license_expiring_soon') {
+      return; // abaikan notifikasi temuan hazard otomatis untuk sertifikat
+    }
     setNotifications((prev) => [notification, ...prev]);
   }, []);
 

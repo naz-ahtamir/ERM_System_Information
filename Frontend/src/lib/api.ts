@@ -189,7 +189,11 @@ export const findingsApi = {
         if (value) params.append(key, value);
       });
     }
-    return fetchWithAuth(`/smk3-data?${params.toString()}`);
+    const res = await fetchWithAuth<any[]>(`/smk3-data?${params.toString()}`);
+    // Filter keluar record sertifikat karyawan (scomp-license) agar tidak tercampur sebagai temuan/finding
+    return Array.isArray(res)
+      ? res.filter((item: any) => item.subElementId !== 'scomp-license')
+      : [];
   },
 
   getById: async (id: string): Promise<any> => {

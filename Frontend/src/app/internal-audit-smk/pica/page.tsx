@@ -663,6 +663,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
   const [hirarki,              setHirarki]              = useState<HiraruchiPengendalian[]>([]);
   const [rekomendasi,          setRekomendasi]          = useState('');
   const [perbaikanFiles,       setPerbaikanFiles]       = useState<File[]>([]);
+  const [targetStatus,         setTargetStatus]         = useState<StatusPerbaikan>('OPEN');
 
   // ── State untuk hapus file existing (temuan + perbaikan) ───────────────
   const [deletingIds,           setDeletingIds]           = useState<Set<string>>(new Set());
@@ -685,6 +686,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
         setBatasAkhir(record.batasAkhir);
         setHirarki(record.hierarkiPengendalian as HiraruchiPengendalian[]);
         setRekomendasi(record.rekomendasiPerbaikan || '');
+        setTargetStatus(record.statusPerbaikan);
         setTemuanFiles([]);
         setPerbaikanFiles([]);
         setDeletingIds(new Set());
@@ -697,6 +699,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
         setTanggalTemuan(new Date().toISOString().split('T')[0]);
         setJenisTemuan(''); setBatasAkhir('');
         setHirarki([]); setRekomendasi(''); setPerbaikanFiles([]);
+        setTargetStatus('OPEN');
         setDeletingIds(new Set());
         setExistingTemuanFiles([]);
         setExistingPerbaikanFiles([]);
@@ -788,7 +791,16 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
           toast.success('Temuan berhasil dibuat!');
         }
       } else {
-        // Edit: id sudah ada di record
+        // Edit mode (mendukung status OPEN, INPG, dan CLSD)
+        const originalStatus = record!.statusPerbaikan;
+        const needsStatusToggle = originalStatus !== 'OPEN';
+
+        // Backend NestJS: Hanya record berstatus OPEN yang dapat diedit via PUT /api/pica/:id
+        // Jika status DB saat ini bukan OPEN (misalnya CLSD atau INPG), ubah sementara ke OPEN
+        if (needsStatusToggle) {
+          await picaApi.updateStatus(record!.id, 'OPEN');
+        }
+
         temuanFiles.forEach((f) => fd.append('dokumentasiTemuan', f));
         await picaApi.update(record!.id, fd, true);
 
@@ -799,6 +811,16 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
             id: record!.id, action: 'submit_perbaikan',
             formData: buktifd, oleh: user?.nama || 'Admin', keterangan: rekomendasi,
           });
+        }
+
+        // Kembalikan status jika user memilih tetap CLSD atau INPG
+        if (targetStatus !== 'OPEN') {
+          await picaApi.updateStatus(record!.id, targetStatus);
+        }
+
+        if (originalStatus === 'CLSD' && targetStatus === 'OPEN') {
+          toast.success('Data temuan disimpan dan status dibuka kembali (OPEN)!');
+        } else if (perbaikanFiles.length > 0) {
           toast.success('Data tersimpan dan bukti perbaikan disubmit!');
         } else {
           toast.success('Data temuan berhasil disimpan');
@@ -823,9 +845,19 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
 
         {/* Modal header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] flex-shrink-0">
-          <h2 className="font-bold text-[15px] text-[#1F2937]">
-            {isEdit ? 'Edit Temuan PICA' : 'Tambah Record'}
-          </h2>
+          <div>
+            <h2 className="font-bold text-[15px] text-[#1F2937]">
+              {isEdit ? `Edit Temuan PICA${record?.statusPerbaikan === 'CLSD' ? ' (CLOSED)' : ''}` : 'Tambah Record'}
+            </h2>
+            {isEdit && record && (
+              <p className="text-[11px] text-[#9CA3AF] mt-0.5">
+                ID: {record.id.slice(0, 18)}… · Status saat ini:{' '}
+                <strong className={record.statusPerbaikan === 'CLSD' ? 'text-green-600' : record.statusPerbaikan === 'INPG' ? 'text-amber-600' : 'text-blue-600'}>
+                  {record.statusPerbaikan} {record.catatanTACC ? '(TACC)' : ''}
+                </strong>
+              </p>
+            )}
+          </div>
           <button onClick={onClose} className="text-[#6B7280] hover:text-[#1F2937] p-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -835,6 +867,89 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
 
         {/* Modal body */}
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+
+          {/* ── TACC Banner: Tampilkan catatan penolakan jika record TACC ── */}
+          {isEdit && record?.catatanTACC && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+              <div className="p-1.5 bg-red-100 rounded-lg text-red-600 flex-shrink-0 mt-0.5">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <circle cx="12" cy="12" r="10"/><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-[12px] font-bold text-red-800">Catatan Penolakan (TACC)</p>
+                  <span className="text-[10px] font-semibold bg-red-200/80 text-red-800 px-2 py-0.5 rounded-full">
+                    Revisi Diperlukan
+                  </span>
+                </div>
+                <p className="text-[13px] text-red-700 mt-1.5 leading-relaxed bg-white/80 p-2.5 rounded-lg border border-red-200/60 font-medium whitespace-pre-wrap">
+                  {record.catatanTACC}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ── Mode CLSD Banner & Status Selector ── */}
+          {isEdit && record?.statusPerbaikan === 'CLSD' && (
+            <div className="space-y-3">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+                <div className="p-1.5 bg-amber-100 rounded-lg text-amber-600 flex-shrink-0 mt-0.5">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-[12px] font-bold text-amber-800">Record Berstatus CLOSED (CLSD)</p>
+                  <p className="text-[12px] text-amber-700 mt-0.5 leading-relaxed">
+                    Record ini sebelumnya telah selesai/ditutup. Anda dapat mengoreksi data atau memilih untuk membuka kembali status temuan ke OPEN jika ingin dilakukan perbaikan ulang oleh PIC.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-[#FAFAFA] p-3.5 rounded-xl border border-[#E5E7EB]">
+                <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-2">
+                  Status Record Setelah Disimpan
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setTargetStatus('CLSD')}
+                    className={`p-3 rounded-xl border-2 text-left transition-all ${
+                      targetStatus === 'CLSD'
+                        ? 'border-green-500 bg-green-50 text-green-900 shadow-sm'
+                        : 'border-[#E5E7EB] bg-white text-[#6B7280] hover:border-green-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-[13px]">
+                      {targetStatus === 'CLSD' && <span className="text-green-600 font-extrabold">✓</span>}
+                      Tetap Selesai (CLSD)
+                    </div>
+                    <div className="text-[11px] text-[#6B7280] mt-0.5">
+                      Simpan perbaikan data tanpa mengubah status temuan
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTargetStatus('OPEN')}
+                    className={`p-3 rounded-xl border-2 text-left transition-all ${
+                      targetStatus === 'OPEN'
+                        ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-sm'
+                        : 'border-[#E5E7EB] bg-white text-[#6B7280] hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-[13px]">
+                      {targetStatus === 'OPEN' && <span className="text-blue-600 font-extrabold">✓</span>}
+                      Buka Kembali (OPEN)
+                    </div>
+                    <div className="text-[11px] text-[#6B7280] mt-0.5">
+                      Ubah status ke OPEN agar PIC dapat merevisi perbaikan
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ── Bagian 1: Informasi Temuan ── */}
           <FormSection title="Informasi Temuan" icon={iconInfo}>
@@ -1047,7 +1162,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, record, user }: CreateEdi
           <button onClick={handleSubmit} disabled={saving}
             className="flex items-center gap-2 px-5 py-2 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-60">
             {saving && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
-            {saving ? 'Menyimpan...' : perbaikanFiles.length > 0 ? 'Simpan & Submit Perbaikan' : isEdit ? 'Simpan Perubahan' : 'Buat Temuan'}
+            {saving ? 'Menyimpan...' : perbaikanFiles.length > 0 ? 'Simpan & Submit Perbaikan' : isEdit ? (record?.statusPerbaikan === 'CLSD' && targetStatus === 'OPEN' ? 'Simpan & Buka Kembali (OPEN)' : record?.statusPerbaikan === 'CLSD' ? 'Simpan Perubahan (CLSD)' : 'Simpan Perubahan') : 'Buat Temuan'}
           </button>
         </div>
       </div>
@@ -1454,6 +1569,14 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
             </div>
           </div>
 
+          {/* TACC sebelumnya jika ada */}
+          {record.catatanTACC && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-[12px] text-red-700">
+              <p className="font-bold mb-0.5">Catatan Penolakan (TACC) Sebelumnya:</p>
+              <p className="whitespace-pre-wrap">{record.catatanTACC}</p>
+            </div>
+          )}
+
           {/* Bukti perbaikan */}
           <div>
             <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-2">Bukti Perbaikan yang Disubmit</p>
@@ -1558,7 +1681,346 @@ function ApprovalModal({ isOpen, onClose, onSuccess, record, user }: ApprovalMod
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MODAL: Export PICA (date range picker + format selector)
+// MODAL: Detail Record PICA (Full view for all users & admin)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface PicaDetailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  record: PicaRecord | null;
+  isAdmin: boolean;
+  onEdit: (record: PicaRecord) => void;
+  onSubmitPerbaikan: (record: PicaRecord) => void;
+  onApproval: (record: PicaRecord) => void;
+  onReopen: (record: PicaRecord) => void;
+}
+
+function PicaDetailModal({
+  isOpen,
+  onClose,
+  record,
+  isAdmin,
+  onEdit,
+  onSubmitPerbaikan,
+  onApproval,
+  onReopen,
+}: PicaDetailModalProps) {
+  if (!isOpen || !record) return null;
+
+  const isTacc = record.statusPerbaikan === 'OPEN' && !!record.catatanTACC;
+  const isClosed = record.statusPerbaikan === 'CLSD';
+  const isInpg = record.statusPerbaikan === 'INPG';
+  const sisa = sisaHariDeadline(record.batasAkhir);
+
+  const { label: kategoriLabel, bg: kategoriBg, text: kategoriText } =
+    KATEGORI_TEMUAN_LABELS[record.kategori] ?? { label: record.kategori, bg: 'bg-gray-100', text: 'text-gray-700' };
+
+  // Cari review TACC dan ACC terakhir jika ada
+  const lastTacc = record.riwayatApproval?.slice().reverse().find((r) => r.action === 'TACC');
+  const lastAcc = record.riwayatApproval?.slice().reverse().find((r) => r.action === 'ACC');
+
+  return (
+    <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden">
+
+        {/* Modal Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E7EB] bg-white flex-shrink-0">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${kategoriBg} ${kategoriText}`}>
+              {kategoriLabel}
+            </span>
+            <StatusPill status={record.statusPerbaikan} isTacc={isTacc} />
+            <span className="font-mono text-[11px] text-[#9CA3AF]">
+              ID: {record.id.slice(0, 18)}…
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-[#6B7280] hover:text-[#1F2937] p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal Body */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+          {/* ── TACC Banner (JIKA TACC / ADA CATATAN TACC) ── */}
+          {isTacc && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl space-y-2">
+              <div className="flex items-start gap-2.5">
+                <div className="p-1.5 bg-red-100 rounded-lg text-red-600 flex-shrink-0 mt-0.5">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <circle cx="12" cy="12" r="10"/><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-[13px] font-bold text-red-800">Perbaikan Ditolak (TACC) — Revisi Diperlukan</p>
+                    {lastTacc && (
+                      <span className="text-[11px] text-red-600 bg-red-100/80 px-2 py-0.5 rounded-full">
+                        Oleh: {lastTacc.oleh} ({formatTanggalPica(lastTacc.tanggal)})
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 p-3 bg-white/90 border border-red-200 rounded-lg text-[13px] text-red-700 leading-relaxed font-medium whitespace-pre-wrap">
+                    {record.catatanTACC}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Closed Banner (JIKA CLSD) ── */}
+          {isClosed && (
+            <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3">
+              <div className="p-1.5 bg-green-100 rounded-lg text-green-600 flex-shrink-0 mt-0.5">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-[13px] font-bold text-green-800">Temuan Telah Selesai &amp; Ditutup (CLSD)</p>
+                <p className="text-[12px] text-green-700 mt-0.5">
+                  Tanggal Selesai: <strong>{record.tanggalPerbaikan ? formatTanggalPica(record.tanggalPerbaikan) : '—'}</strong>
+                  {lastAcc && <span> · Disetujui oleh: <strong>{lastAcc.oleh}</strong></span>}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ═══ BAGIAN 1: Rincian Temuan ═══ */}
+          <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+            <div className="bg-[#FAFAFA] border-b border-[#E5E7EB] px-5 py-3 flex items-center gap-2.5">
+              <span className="text-[#FF6B1A]">{iconInfo}</span>
+              <h2 className="text-[14px] font-semibold text-[#1F2937]">Informasi Temuan Audit</h2>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-1">Temuan Masalah</p>
+                <p className="text-[14px] text-[#1F2937] font-semibold leading-relaxed whitespace-pre-wrap">
+                  {record.temuanMasalah}
+                </p>
+              </div>
+
+              {/* Grid detail */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Tgl Temuan</p>
+                  <p className="text-[12px] text-[#1F2937] font-semibold">{formatTanggalPica(record.tanggalTemuan)}</p>
+                </div>
+                <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Jenis Temuan</p>
+                  <p className="text-[12px] text-[#1F2937] font-semibold truncate">{record.jenisTemuan || '—'}</p>
+                </div>
+                <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Lokasi / Divisi</p>
+                  <p className="text-[12px] text-[#1F2937] font-semibold truncate" title={record.lokasiDivisiNama || record.lokasiDivisiId}>
+                    {record.lokasiDivisiNama || record.lokasiDivisiId || '—'}
+                  </p>
+                </div>
+                <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">PIC</p>
+                  <p className="text-[12px] text-[#1F2937] font-semibold truncate" title={record.picNama}>
+                    {record.picNama || '—'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Batas Akhir & Kriteria */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="bg-[#FAFAFA] rounded-xl p-3 border border-[#E5E7EB]">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-0.5">Batas Akhir Perbaikan</p>
+                  <p className={`text-[13px] font-bold ${sisaHariColor(sisa)}`}>
+                    {formatTanggalPica(record.batasAkhir)}
+                    {sisa !== null && !isClosed && (
+                      <span className="text-[11px] font-normal ml-2">
+                        ({sisa < 0 ? `Terlambat ${Math.abs(sisa)} hari` : `Sisa ${sisa} hari`})
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <div className="bg-orange-50/70 rounded-xl p-3 border border-orange-100">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-orange-600 mb-0.5">Kriteria SMK3</p>
+                  <div className="flex items-start gap-2">
+                    <span className="flex-shrink-0 bg-[#FF6B1A] text-white font-mono font-bold text-[10px] px-1.5 py-0.5 rounded">
+                      {record.kriteriaId || '—'}
+                    </span>
+                    <span className="text-[12px] text-[#4B5563] leading-snug line-clamp-2">
+                      {record.kriteriaDeskripsi || '—'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dokumentasi Temuan Teks & Foto */}
+              {(record.dokumentasiTemuanTeks || record.dokumentasiTemuanFiles?.length > 0) && (
+                <div className="pt-2 border-t border-[#E5E7EB]">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-1.5">
+                    Dokumentasi Kondisi Temuan (Before)
+                  </p>
+                  {record.dokumentasiTemuanTeks && (
+                    <p className="text-[13px] text-[#4B5563] mb-2 leading-relaxed whitespace-pre-wrap">
+                      {record.dokumentasiTemuanTeks}
+                    </p>
+                  )}
+                  {record.dokumentasiTemuanFiles?.length > 0 && (
+                    <FileList files={record.dokumentasiTemuanFiles} />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ═══ BAGIAN 2: Tindakan Perbaikan ═══ */}
+          <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+            <div className="bg-[#FAFAFA] border-b border-[#E5E7EB] px-5 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="text-green-600">{iconPerbaikan}</span>
+                <h2 className="text-[14px] font-semibold text-[#1F2937]">Tindakan Perbaikan (After)</h2>
+              </div>
+              {record.tanggalPerbaikan && (
+                <span className="text-[11px] text-green-700 bg-green-50 border border-green-200 px-2.5 py-0.5 rounded-full font-medium">
+                  Selesai: {formatTanggalPica(record.tanggalPerbaikan)}
+                </span>
+              )}
+            </div>
+            <div className="p-5 space-y-4">
+              {/* Hirarki */}
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-1.5">Hirarki Pengendalian</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {record.hierarkiPengendalian?.length > 0 ? (
+                    record.hierarkiPengendalian.map((h) => (
+                      <span key={h} className="text-[11px] bg-orange-50 text-orange-700 border border-orange-200 px-2.5 py-1 rounded-lg font-medium">
+                        {h}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-[12px] text-[#9CA3AF] italic">Belum ditentukan</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Rekomendasi / Tindakan */}
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-1">
+                  Rekomendasi &amp; Keterangan Perbaikan
+                </p>
+                <p className="text-[13px] text-[#1F2937] leading-relaxed bg-[#FAFAFA] p-3 rounded-xl border border-[#E5E7EB] whitespace-pre-wrap">
+                  {record.rekomendasiPerbaikan || 'Belum ada keterangan perbaikan.'}
+                </p>
+              </div>
+
+              {/* Bukti perbaikan files */}
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#9CA3AF] mb-1.5">
+                  Bukti Perbaikan ({record.dokumentasiPerbaikanFiles?.length || 0} file)
+                </p>
+                {record.dokumentasiPerbaikanFiles?.length > 0 ? (
+                  <FileList files={record.dokumentasiPerbaikanFiles} />
+                ) : (
+                  <p className="text-[12px] text-[#9CA3AF] italic bg-[#FAFAFA] p-3 rounded-xl border border-[#E5E7EB]">
+                    Belum ada file bukti perbaikan yang diupload.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ BAGIAN 3: Riwayat Review ═══ */}
+          {record.riwayatApproval?.length > 0 && (
+            <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+              <div className="bg-[#FAFAFA] border-b border-[#E5E7EB] px-5 py-3 flex items-center gap-2.5">
+                <span className="text-[#FF6B1A]">{iconHistory}</span>
+                <h2 className="text-[14px] font-semibold text-[#1F2937]">Riwayat Review &amp; Approval</h2>
+              </div>
+              <div className="p-5">
+                <RiwayatTimeline riwayat={record.riwayatApproval} />
+              </div>
+            </div>
+          )}
+
+          {/* Metadata pembuat */}
+          <div className="text-[11px] text-[#9CA3AF] flex items-center justify-between px-1">
+            <span>Dibuat oleh: <strong className="text-[#6B7280]">{record.createdBy || 'Admin'}</strong></span>
+            <span>Dibuat pada: {new Date(record.createdAt).toLocaleString('id-ID')}</span>
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-[#E5E7EB] bg-[#FAFAFA] flex-shrink-0">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-[13px] font-semibold text-[#1F2937] bg-white border border-[#E5E7EB] rounded-xl hover:bg-gray-100 transition-colors"
+          >
+            Tutup
+          </button>
+
+          <div className="flex items-center gap-2.5">
+            {/* Action Admin: Buka kembali temuan jika CLSD */}
+            {isAdmin && isClosed && (
+              <button
+                onClick={() => onReopen(record)}
+                className="flex items-center gap-1.5 px-3.5 py-2 text-[12px] font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+                Buka Kembali (Reopen)
+              </button>
+            )}
+
+            {/* Action Admin: Approval jika INPG */}
+            {isAdmin && isInpg && (
+              <button
+                onClick={() => { onClose(); onApproval(record); }}
+                className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-purple-600 rounded-xl hover:bg-purple-700 transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                Review / Approval
+              </button>
+            )}
+
+            {/* Action User: Submit Perbaikan jika OPEN */}
+            {!isAdmin && record.statusPerbaikan === 'OPEN' && (
+              <button
+                onClick={() => { onClose(); onSubmitPerbaikan(record); }}
+                className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                {isTacc ? 'Submit Revisi Perbaikan' : 'Submit Bukti Perbaikan'}
+              </button>
+            )}
+
+            {/* Action Admin: Edit Record — selalu tersedia untuk admin di semua status */}
+            {isAdmin && (
+              <button
+                onClick={() => { onClose(); onEdit(record); }}
+                className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Edit Record {isClosed ? '(CLSD)' : ''}
+              </button>
+            )}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
 // ═══════════════════════════════════════════════════════════════════════════════
 
 interface PicaExportModalProps {
@@ -1753,6 +2215,7 @@ export default function PicaListPage() {
   const [editRecord,        setEditRecord]         = useState<PicaRecord | null>(null);
   const [submitRecord,      setSubmitRecord]       = useState<PicaRecord | null>(null);
   const [approvalRecord,    setApprovalRecord]     = useState<PicaRecord | null>(null);
+  const [detailRecord,      setDetailRecord]       = useState<PicaRecord | null>(null);
 
   const fetchData = useCallback(async () => {
     // Tunggu sampai auth selesai resolve — cegah fetch sebelum divisionId tersedia
@@ -1791,6 +2254,7 @@ export default function PicaListPage() {
 
       console.log('[PICA] records loaded:', result.length);
       setRecords(result);
+      setDetailRecord((prev) => prev ? (result.find((r) => r.id === prev.id) || prev) : null);
     } catch {
       toast.error('Gagal memuat data PICA');
     } finally {
@@ -1827,6 +2291,9 @@ export default function PicaListPage() {
       setSubmitRecord(target);
     } else if (isAdmin && target.statusPerbaikan === 'OPEN') {
       setEditRecord(target);
+    } else {
+      // Untuk status CLSD atau role lain, buka detail modal
+      setDetailRecord(target);
     }
 
     // Scroll ke baris record di tabel
@@ -1835,6 +2302,21 @@ export default function PicaListPage() {
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
   }, [searchParams, records, loading, isAdmin]);
+
+  // ── Handler buka kembali temuan (reopen) ──
+  const handleReopenRecord = async (record: PicaRecord) => {
+    if (!confirm(`Buka kembali temuan PICA "${record.temuanMasalah.slice(0, 50)}..." ke status OPEN?\n\nStatus akan berubah menjadi OPEN agar PIC dapat merevisi perbaikan.`)) {
+      return;
+    }
+    try {
+      await picaApi.updateStatus(record.id, 'OPEN', `Dibuka kembali oleh ${user?.nama || 'Admin'}`);
+      toast.success('Record temuan berhasil dibuka kembali ke status OPEN');
+      setDetailRecord(null);
+      refreshData();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Gagal membuka kembali record');
+    }
+  };
 
   // ── Filter & search ──
   const filtered = records.filter((r) => {
@@ -2506,6 +2988,7 @@ export default function PicaListPage() {
                     const canApprove = isAdmin && record.statusPerbaikan === 'INPG';
                     return (
                       <tr key={record.id}
+                        id={`pica-row-${record.id}`}
                         className={`hover:bg-[#FAFAFA] transition-colors ${
                           isTacc ? 'bg-red-50/40 border-l-2 border-l-red-400' : terlambat ? 'bg-red-50/30' : ''
                         }`}>
@@ -2514,17 +2997,30 @@ export default function PicaListPage() {
                           <div className="text-[11px] text-[#6B7280] mt-0.5">{formatTanggalPica(record.tanggalTemuan)}</div>
                         </td>
                         <td className="px-4 py-3 max-w-[260px]">
-                          <div className="font-medium text-[#1F2937] line-clamp-2 leading-snug">{record.temuanMasalah}</div>
+                          <button
+                            type="button"
+                            onClick={() => setDetailRecord(record)}
+                            className="text-left font-medium text-[#1F2937] hover:text-[#FF6B1A] line-clamp-2 leading-snug transition-colors"
+                            title="Klik untuk lihat rincian temuan"
+                          >
+                            {record.temuanMasalah}
+                          </button>
                           {record.kriteriaDeskripsi && (
                             <div className="text-[11px] text-[#9CA3AF] mt-0.5 line-clamp-1">Kriteria {record.kriteriaId}</div>
                           )}
                           {isTacc && (
-                            <div className="mt-1 flex items-center gap-1 text-[11px] text-red-600">
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <button
+                              type="button"
+                              onClick={() => setDetailRecord(record)}
+                              title={`Catatan Penolakan TACC:\n${record.catatanTACC}\n\nKlik untuk lihat detail lengkap`}
+                              className="mt-1 flex items-center gap-1.5 text-[11px] text-red-600 hover:text-red-800 bg-red-100/70 hover:bg-red-100 px-2 py-0.5 rounded transition-colors text-left max-w-full"
+                            >
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="flex-shrink-0">
                                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                               </svg>
-                              <span className="line-clamp-1 italic">{record.catatanTACC}</span>
-                            </div>
+                              <span className="font-semibold flex-shrink-0">TACC:</span>
+                              <span className="truncate italic">{record.catatanTACC}</span>
+                            </button>
                           )}
                         </td>
                         <td className="px-4 py-3 max-w-[140px]">
@@ -2549,11 +3045,24 @@ export default function PicaListPage() {
                         <td className="px-4 py-3">
                           <div className="flex items-center justify-center gap-1">
 
+                            {/* Lihat Detail — untuk semua role & semua status */}
+                            <button
+                              type="button"
+                              onClick={() => setDetailRecord(record)}
+                              className="p-1.5 rounded-lg text-[#6B7280] hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                              title="Lihat Detail Record & Riwayat"
+                            >
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                              </svg>
+                            </button>
+
                             {/* Submit perbaikan — user, status OPEN */}
                             {canSubmit && (
                               <button onClick={() => setSubmitRecord(record)}
                                 className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FAFAFA] transition-colors"
-                                title="Submit Perbaikan">
+                                title={isTacc ? "Submit Revisi Perbaikan (TACC)" : "Submit Perbaikan"}>
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <path d="M9 11l3 3L22 4"/>
                                   <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
@@ -2572,11 +3081,15 @@ export default function PicaListPage() {
                               </button>
                             )}
 
-                            {/* Edit — admin, status OPEN */}
-                            {isAdmin && record.statusPerbaikan === 'OPEN' && (
+                            {/* Edit — admin: boleh edit kapan saja termasuk status CLSD atau INPG atau OPEN */}
+                            {isAdmin && (
                               <button onClick={() => setEditRecord(record)}
-                                className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FAFAFA] transition-colors"
-                                title="Edit Record">
+                                className={`p-1.5 rounded-lg transition-colors ${
+                                  record.statusPerbaikan === 'CLSD'
+                                    ? 'text-green-600 hover:text-green-800 hover:bg-green-50'
+                                    : 'text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FAFAFA]'
+                                }`}
+                                title={record.statusPerbaikan === 'CLSD' ? 'Edit Record (Status CLSD)' : 'Edit Record'}>
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -2653,6 +3166,18 @@ export default function PicaListPage() {
           user={user}
         />
       )}
+
+      {/* ── Detail Modal ── */}
+      <PicaDetailModal
+        isOpen={!!detailRecord}
+        onClose={() => setDetailRecord(null)}
+        record={detailRecord}
+        isAdmin={isAdmin}
+        onEdit={(rec) => { setDetailRecord(null); setEditRecord(rec); }}
+        onSubmitPerbaikan={(rec) => { setDetailRecord(null); setSubmitRecord(rec); }}
+        onApproval={(rec) => { setDetailRecord(null); setApprovalRecord(rec); }}
+        onReopen={handleReopenRecord}
+      />
 
       {/* ── Export Modal ── */}
       <PicaExportModal
