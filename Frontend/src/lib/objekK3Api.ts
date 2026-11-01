@@ -30,7 +30,7 @@ async function authFetch<T>(endpoint: string, init: RequestInit = {}): Promise<T
 
 // ── Enums & Constants ──────────────────────────────────────────────────────
 
-export type Perusahaan = 'QMB' | 'ESG' | 'MEIMING' | 'GEN' | 'QINGMEI' | 'GNM';
+export type Perusahaan = 'QMB' | 'GNM' | 'ESG' | 'EIEB' | 'MEIMING' | 'QINGMEI' | 'GEN' | 'QMD';
 
 export type KategoriObjek =
   | 'PESAWAT_UAP_DAN_BEJANA_TEKAN'
@@ -47,11 +47,13 @@ export type StatusAman = 'AMAN' | 'PROSES_RIKSA_UJI' | 'PROSES_PERPANJANG' | 'BE
 
 export const PERUSAHAAN_OPTIONS: { label: string; value: Perusahaan }[] = [
   { label: 'QMB', value: 'QMB' },
-  { label: 'ESG', value: 'ESG' },
-  { label: 'MEIMING', value: 'MEIMING' },
-  { label: 'GEN', value: 'GEN' },
-  { label: 'QINGMEI', value: 'QINGMEI' },
   { label: 'GNM', value: 'GNM' },
+  { label: 'ESG', value: 'ESG' },
+  { label: 'EIEB', value: 'EIEB' },
+  { label: 'MEIMING', value: 'MEIMING' },
+  { label: 'QINGMEI', value: 'QINGMEI' },
+  { label: 'GEN', value: 'GEN' },
+  { label: 'QMD', value: 'QMD' },
 ];
 
 export const KATEGORI_OPTIONS: { label: string; value: KategoriObjek }[] = [
@@ -103,6 +105,41 @@ export interface RiwayatPemeriksaan {
   hasil: string;
   catatan?: string | null;
   fileLaporan?: string | null;
+  createdAt: string;
+}
+
+export interface RiwayatRiksaUji {
+  id: string;
+  objekK3Id: string;
+  // LHU (Laporan Hasil Riksa Uji)
+  noLHU: string;
+  tanggalTerbitLHU: string;
+  fileLHU?: string | null;
+  namaFileLHU?: string | null;
+  // SILO (Surat Izin Layak Operasi)
+  noSILO: string;
+  tanggalTerbitSILO: string;
+  tanggalExpiredSILO: string;
+  fileSILO?: string | null;
+  namaFileSILO?: string | null;
+  // Metadata
+  statusKelayakan: StatusKelayakan;
+  lembagaPenguji?: string | null;
+  catatan?: string | null;
+  createdAt: string;
+}
+
+export interface RiwayatMaintenance {
+  id: string;
+  objekK3Id: string;
+  tanggalRencana: string;
+  tanggalAktual?: string | null;
+  status: 'RENCANA' | 'SEDANG_DIKERJAKAN' | 'SELESAI' | 'TERTUNDA';
+  rincian: string;
+  pelaksana?: string | null;
+  fileBukti?: string | null;
+  namaFileBukti?: string | null;
+  catatan?: string | null;
   createdAt: string;
 }
 

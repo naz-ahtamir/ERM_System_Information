@@ -1570,6 +1570,19 @@ export default function LicenseCertificationPage() {
     }
   };
 
+  const handleOpenRecord = (rec: LicenseRecord) => {
+    const files = (rec as any).files as Array<{ fileUrl: string }> | undefined;
+    const certFile = files?.[0];
+    if (certFile?.fileUrl) {
+      const url = fileUrl(certFile.fileUrl);
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      // Jika belum ada file, tampilkan detail modal dan info
+      setDetailRecord(rec);
+      showToast('Record ini belum memiliki lampiran file sertifikat', 'error');
+    }
+  };
+
   const handleOpenEdit = () => {
     setDetailRecord(null);
     setEditRecord(detailRecord);
@@ -1773,26 +1786,39 @@ export default function LicenseCertificationPage() {
                   {filtered.map((rec, idx) => {
                     const d = rec.data;
                     const files = (rec as any).files as Array<{ fileUrl: string }> | undefined;
-                    const hasFile = files && files.length > 0;
+                    const certFile = files?.[0];
+                    const hasFile = !!certFile?.fileUrl;
                     const expStatus = getExpiryStatus(d.masaBerlaku);
 
                     return (
                       <tr
                         key={rec.id}
-                        className={`hover:bg-[#FAFAFA] transition-colors ${
+                        className={`hover:bg-[#FFF8F4]/50 transition-colors ${
                           expStatus === 'expired' ? 'bg-red-50/40' : expStatus === 'soon' ? 'bg-yellow-50/40' : ''
                         }`}
                       >
                         {/* # */}
                         <td className="py-3 px-4 text-[#9CA3AF]">{idx + 1}</td>
 
-                        {/* Nama / ID */}
+                        {/* Nama / ID — Klik langsung membuka file sertifikat */}
                         <td className="py-3 px-4">
                           <button
-                            onClick={() => setDetailRecord(rec)}
-                            className="text-left"
+                            onClick={() => handleOpenRecord(rec)}
+                            className="text-left group cursor-pointer"
+                            title={hasFile ? "Klik untuk langsung buka file sertifikat" : "Lihat detail record"}
                           >
-                            <p className="font-semibold text-[13px] text-[#1F2937] hover:text-[#FF6B1A] transition-colors">{d.nama || '—'}</p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="font-semibold text-[13px] text-[#1F2937] group-hover:text-[#FF6B1A] group-hover:underline transition-colors">
+                                {d.nama || '—'}
+                              </p>
+                              {hasFile && (
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#FF6B1A] opacity-70 group-hover:opacity-100 transition-opacity shrink-0">
+                                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                  <polyline points="15 3 21 3 21 9"></polyline>
+                                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                              )}
+                            </div>
                             <p className="text-[11px] text-[#9CA3AF]">{d.idKaryawan}</p>
                             {/* Lembaga badge inline */}
                             <span className={`mt-0.5 inline-block px-1.5 py-0.5 rounded-full text-[9px] font-bold ${
@@ -1809,17 +1835,33 @@ export default function LicenseCertificationPage() {
                           <span className="truncate block text-[11px] text-[#9CA3AF]">{d.perusahaan || ''}</span>
                         </td>
 
-                        {/* Jenis Sertifikat */}
+                        {/* Jenis Sertifikat — Klik langsung membuka file sertifikat */}
                         <td className="py-3 px-4 hidden lg:table-cell max-w-[200px]">
-                          <span className="truncate block text-[12px] text-[#1F2937]">{d.jenisSertifikat || '—'}</span>
+                          <button
+                            onClick={() => handleOpenRecord(rec)}
+                            className="text-left group block w-full cursor-pointer"
+                            title={hasFile ? "Klik untuk langsung buka file sertifikat" : "Lihat detail record"}
+                          >
+                            <span className="truncate block text-[12px] text-[#1F2937] group-hover:text-[#FF6B1A] group-hover:underline transition-colors font-medium">
+                              {d.jenisSertifikat || '—'}
+                            </span>
+                          </button>
                         </td>
 
-                        {/* No. Sertifikat */}
+                        {/* No. Sertifikat — Klik langsung membuka file sertifikat */}
                         <td className="py-3 px-4 hidden md:table-cell">
-                          <span className="font-mono text-[12px] text-[#6B7280]">{d.noSertifikat || '—'}</span>
-                          {hasFile && (
-                            <span title="Ada file sertifikat" className="ml-1.5 inline-block w-1.5 h-1.5 rounded-full bg-green-400" />
-                          )}
+                          <button
+                            onClick={() => handleOpenRecord(rec)}
+                            className="text-left group inline-flex items-center gap-1.5 cursor-pointer"
+                            title={hasFile ? "Klik untuk langsung buka file sertifikat" : "Lihat detail record"}
+                          >
+                            <span className="font-mono text-[12px] text-[#6B7280] group-hover:text-[#FF6B1A] transition-colors">{d.noSertifikat || '—'}</span>
+                            {hasFile ? (
+                              <span title="File sertifikat tersedia — klik untuk buka" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 border border-green-200 group-hover:bg-green-200 transition-colors">
+                                📄 File
+                              </span>
+                            ) : null}
+                          </button>
                         </td>
 
                         {/* Masa Berlaku */}
@@ -1839,11 +1881,25 @@ export default function LicenseCertificationPage() {
                         {/* Aksi */}
                         <td className="py-3 px-4">
                           <div className="flex items-center justify-end gap-1.5">
+                            {/* Buka file langsung (jika ada file) */}
+                            {hasFile && (
+                              <button
+                                onClick={() => handleOpenRecord(rec)}
+                                className="p-1.5 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                                title="Buka file sertifikat"
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                  <polyline points="15 3 21 3 21 9"></polyline>
+                                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                              </button>
+                            )}
                             {/* View detail */}
                             <button
                               onClick={() => setDetailRecord(rec)}
                               className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-[#FAFAFA] rounded-lg transition-colors"
-                              title="Lihat detail"
+                              title="Lihat rincian metadata"
                             >
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
