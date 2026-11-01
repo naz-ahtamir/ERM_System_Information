@@ -37,6 +37,17 @@ const CATEGORY = 'scomp-license';
 
 const LEMBAGA_OPTIONS = ['Kemnaker', 'BNSP'] as const;
 
+export const PERUSAHAAN_OPTIONS = [
+  'QMB',
+  'GNM',
+  'ESG',
+  'EIEB',
+  'MEIMING',
+  'QINGMEI',
+  'GEN',
+  'QMD',
+] as const;
+
 const JENIS_SERTIFIKAT = [
   // Operator Alat Berat
   'SIO Crane — Operator Crane',
@@ -194,12 +205,28 @@ interface FormModalProps {
   isAdmin?: boolean;
 }
 
-function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifikat, currentUser, canViewAll = true, trainingList, isAdmin = false }: FormModalProps) {
+function FormModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialValues,
+  existingNoSertifikat,
+  currentUser,
+  canViewAll = true,
+  trainingList,
+  isAdmin = false,
+}: FormModalProps) {
   const isEdit = !!initialValues;
 
-  // idKaryawan lookup state
+  // Profile fields & lookup state
   const [idKaryawanInput, setIdKaryawanInput] = useState('');
-  const [lookupUser, setLookupUser] = useState<UserLookup | null>(null);
+  const [nama, setNama] = useState('');
+  const [jabatan, setJabatan] = useState('');
+  const [departemen, setDepartemen] = useState('');
+  const [divisi, setDivisi] = useState('');
+  const [perusahaan, setPerusahaan] = useState('');
+
+  const [isManualInput, setIsManualInput] = useState(false);
   const [lookupStatus, setLookupStatus] = useState<'idle' | 'loading' | 'found' | 'not_found'>('idle');
   const lookupTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -213,28 +240,27 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
   const [file, setFile] = useState<File | null>(null);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Reset & populate saat modal dibuka
   useEffect(() => {
     if (!isOpen) return;
     setErrors({});
+    setSubmitError('');
     setFile(null);
-    setLookupStatus('idle');
+    setIsManualInput(false);
 
     if (isEdit && initialValues) {
       const d = initialValues.data;
       setIdKaryawanInput(d.idKaryawan ?? '');
-      setLookupUser({
-        id: '',
-        idKaryawan: d.idKaryawan ?? '',
-        nama: d.nama ?? '',
-        jabatan: d.jabatan ?? '',
-        departemen: d.departemen ?? '',
-        divisi: d.divisi ?? '',
-        perusahaan: d.perusahaan ?? '',
-      });
+      setNama(d.nama ?? '');
+      setJabatan(d.jabatan ?? '');
+      setDepartemen(d.departemen ?? '');
+      setDivisi(d.divisi ?? '');
+      setPerusahaan(d.perusahaan ?? '');
       setLookupStatus('found');
+
       setNoSertifikat(d.noSertifikat ?? '');
       setLembaga(d.lembagaSertifikasi ?? '');
       setJenis(d.jenisSertifikat ?? '');
@@ -252,31 +278,55 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
       // Jika user biasa (bukan Admin dan bukan Divisi Perencanaan), auto-isi data user sendiri
       if (!canViewAll && currentUser?.idKaryawan) {
         setIdKaryawanInput(currentUser.idKaryawan);
-        setLookupUser({
-          id: currentUser.id || '',
-          idKaryawan: currentUser.idKaryawan,
-          nama: currentUser.nama || '',
-          jabatan: currentUser.jabatan || '',
-          departemen: currentUser.departemen || '',
-          divisi: currentUser.divisi || '',
-          perusahaan: currentUser.perusahaan || '',
-        });
+        setNama(currentUser.nama || '');
+        setJabatan(currentUser.jabatan || '');
+        setDepartemen(currentUser.departemen || '');
+        setDivisi(currentUser.divisi || '');
+        setPerusahaan(currentUser.perusahaan || '');
         setLookupStatus('found');
       } else {
         setIdKaryawanInput('');
-        setLookupUser(null);
+        setNama('');
+        setJabatan('');
+        setDepartemen('');
+        setDivisi('');
+        setPerusahaan('');
+        setLookupStatus('idle');
       }
     }
   }, [isOpen, isEdit, initialValues, canViewAll, currentUser]);
 
-  // Debounced lookup saat idKaryawan berubah (hanya saat buat baru)
+  // Handler jika Admin ingin cepat menggunakan akunnya sendiri
+  const handleUseMyAccount = () => {
+    if (!currentUser) return;
+    setIdKaryawanInput(currentUser.idKaryawan || '');
+    setNama(currentUser.nama || '');
+    setJabatan(currentUser.jabatan || '');
+    setDepartemen(currentUser.departemen || '');
+    setDivisi(currentUser.divisi || '');
+    setPerusahaan(currentUser.perusahaan || '');
+    setLookupStatus('found');
+    setIsManualInput(false);
+  };
+
+  // Debounced lookup saat idKaryawan berubah (hanya untuk buat baru dan saat canViewAll)
   useEffect(() => {
     if (isEdit) return;
+    if (isManualInput) return;
+    // Jika user biasa yang sudah auto-fill akunnya sendiri, jangan timpa
+    if (!canViewAll && currentUser?.idKaryawan && idKaryawanInput === currentUser.idKaryawan) {
+      return;
+    }
+
     if (lookupTimer.current) clearTimeout(lookupTimer.current);
 
     const trimmed = idKaryawanInput.trim();
     if (!trimmed) {
-      setLookupUser(null);
+      setNama('');
+      setJabatan('');
+      setDepartemen('');
+      setDivisi('');
+      setPerusahaan('');
       setLookupStatus('idle');
       return;
     }
@@ -285,35 +335,76 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
     lookupTimer.current = setTimeout(async () => {
       try {
         const token = getToken();
+        // 1. Coba lookup via /api/auth/users/by-id-karyawan/:id
         const res = await fetch(
           `${API_BASE_URL}/auth/users/by-id-karyawan/${encodeURIComponent(trimmed)}`,
-          { headers: { Authorization: `Bearer ${token}` } },
+          { headers: token ? { Authorization: `Bearer ${token}` } : {} },
         );
         if (res.ok) {
           const data = await res.json();
-          if (data) {
-            setLookupUser(data);
+          if (data && (data.idKaryawan || data.nama)) {
+            setNama(data.nama || '');
+            setJabatan(data.jabatan || '');
+            setDepartemen(data.departemen || '');
+            setDivisi(data.divisi || '');
+            setPerusahaan(data.perusahaan || '');
             setLookupStatus('found');
-          } else {
-            setLookupUser(null);
-            setLookupStatus('not_found');
+            return;
           }
-        } else {
-          setLookupUser(null);
-          setLookupStatus('not_found');
         }
+
+        // 2. Fallback: Cari di daftar user (/api/auth/users) jika by-id-karyawan tidak mengembalikan hasil
+        const fallbackRes = await fetch(`${API_BASE_URL}/auth/users`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (fallbackRes.ok) {
+          const users = await fallbackRes.json();
+          if (Array.isArray(users)) {
+            const found = users.find(
+              (u: any) => u.idKaryawan?.trim().toLowerCase() === trimmed.toLowerCase()
+            );
+            if (found) {
+              setNama(found.nama || '');
+              setJabatan(found.jabatan || '');
+              setDepartemen(found.departemen || '');
+              setDivisi(found.divisi || '');
+              setPerusahaan(found.perusahaan || '');
+              setLookupStatus('found');
+              return;
+            }
+          }
+        }
+
+        // Tidak ditemukan
+        setNama('');
+        setJabatan('');
+        setDepartemen('');
+        setDivisi('');
+        setPerusahaan('');
+        setLookupStatus('not_found');
       } catch {
-        setLookupUser(null);
         setLookupStatus('not_found');
       }
-    }, 600);
+    }, 500);
 
-    return () => { if (lookupTimer.current) clearTimeout(lookupTimer.current); };
-  }, [idKaryawanInput, isEdit]);
+    return () => {
+      if (lookupTimer.current) clearTimeout(lookupTimer.current);
+    };
+  }, [idKaryawanInput, isEdit, isManualInput, canViewAll, currentUser]);
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!isEdit && lookupStatus !== 'found') e.idKaryawan = 'ID Karyawan tidak ditemukan dalam sistem';
+    if (!idKaryawanInput.trim()) {
+      e.idKaryawan = 'ID Karyawan wajib diisi';
+    } else if (!isEdit && !isManualInput && lookupStatus !== 'found') {
+      e.idKaryawan = 'ID Karyawan tidak ditemukan dalam sistem. Anda dapat menggunakan opsi Input Manual di bawah.';
+    }
+
+    if (isManualInput) {
+      if (!nama.trim()) e.nama = 'Nama lengkap wajib diisi';
+      if (!departemen.trim()) e.departemen = 'Departemen wajib diisi';
+    }
+
     if (!noSertifikat.trim()) e.noSertifikat = 'No. Sertifikat wajib diisi';
     if (!isEdit) {
       const dup = existingNoSertifikat.includes(noSertifikat.trim());
@@ -322,30 +413,34 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
       const dup = existingNoSertifikat.includes(noSertifikat.trim());
       if (dup) e.noSertifikat = 'No. Sertifikat sudah terdaftar';
     }
+
     if (!lembaga) e.lembaga = 'Lembaga Sertifikasi wajib dipilih';
     if (!jenis) e.jenis = 'Jenis Sertifikat wajib dipilih';
     if (!tanggalPelatihan) e.tanggalPelatihan = 'Tanggal Pelatihan wajib diisi';
     if (!akhirPelatihan) e.akhirPelatihan = 'Akhir Pelatihan wajib diisi';
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError('');
     if (!validate()) return;
     setSaving(true);
     try {
       const fd = new FormData();
-      // title auto-generate
-      fd.append('title', `${lookupUser?.nama ?? ''} — ${jenis}`);
+      // title auto-generate: "Nama — Jenis Sertifikat"
+      const ownerName = nama.trim() || idKaryawanInput.trim();
+      fd.append('title', `${ownerName} — ${jenis}`);
       fd.append('subElementId', CATEGORY);
       const data = {
-        idKaryawan: lookupUser?.idKaryawan ?? idKaryawanInput,
-        nama: lookupUser?.nama ?? '',
-        jabatan: lookupUser?.jabatan ?? '',
-        departemen: lookupUser?.departemen ?? '',
-        divisi: lookupUser?.divisi ?? '',
-        perusahaan: lookupUser?.perusahaan ?? '',
+        idKaryawan: idKaryawanInput.trim(),
+        nama: nama.trim(),
+        jabatan: jabatan.trim(),
+        departemen: departemen.trim(),
+        divisi: divisi.trim(),
+        perusahaan: perusahaan.trim(),
         noSertifikat: noSertifikat.trim(),
         lembagaSertifikasi: lembaga,
         jenisSertifikat: jenis,
@@ -354,17 +449,23 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
         masaBerlaku: masaBerlaku || undefined,
       };
       fd.append('data', JSON.stringify(data));
-      if (file) fd.append('fileSertifikat', file);
+      // PENTING: Backend Multer FileFieldsInterceptor mengharapkan field 'file', BUKAN 'fileSertifikat'
+      if (file) {
+        fd.append('file', file);
+      }
       await onSubmit(fd);
       onClose();
-    } catch {
-      // error dihandle parent
+    } catch (err: any) {
+      console.error('Gagal submit record sertifikat:', err);
+      setSubmitError(err?.message || 'Gagal menyimpan record. Silakan periksa koneksi atau input Anda.');
     } finally {
       setSaving(false);
     }
   };
 
   if (!isOpen) return null;
+
+  const isSubmitDisabled = saving || (!isEdit && !isManualInput && lookupStatus !== 'found');
 
   return (
     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
@@ -391,11 +492,33 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
         {/* Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
 
+          {/* Alert Error jika submit gagal */}
+          {submitError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-[13px] flex items-start gap-2">
+              <svg className="w-4 h-4 shrink-0 text-red-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span>{submitError}</span>
+            </div>
+          )}
+
           {/* ── ID Karyawan lookup ── */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937] mb-1.5">
-              ID Karyawan <span className="text-red-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-[#1F2937]">
+                ID Karyawan <span className="text-red-500">*</span>
+              </label>
+              {canViewAll && currentUser?.idKaryawan && !isEdit && !isManualInput && (
+                <button
+                  type="button"
+                  onClick={handleUseMyAccount}
+                  className="text-[10px] text-[#FF6B1A] font-semibold hover:underline"
+                >
+                  + Gunakan Akun Saya ({currentUser.idKaryawan})
+                </button>
+              )}
+            </div>
+
             {isEdit ? (
               <div className="w-full px-3.5 py-2.5 text-[14px] border border-[#E5E7EB] rounded-xl bg-[#FAFAFA] text-[#6B7280]">
                 {idKaryawanInput}
@@ -412,12 +535,15 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
                 <input
                   type="text"
                   value={idKaryawanInput}
-                  onChange={(e) => setIdKaryawanInput(e.target.value)}
+                  onChange={(e) => {
+                    setIdKaryawanInput(e.target.value);
+                    if (isManualInput) setIsManualInput(false);
+                  }}
                   placeholder="Masukkan ID Karyawan..."
                   className={`w-full px-3.5 py-2.5 pr-10 text-[14px] border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/30 focus:border-[#FF6B1A] transition-colors ${
                     errors.idKaryawan ? 'border-red-400 bg-red-50' :
                     lookupStatus === 'found' ? 'border-green-400 bg-green-50' :
-                    lookupStatus === 'not_found' ? 'border-red-400 bg-red-50' :
+                    lookupStatus === 'not_found' ? 'border-amber-400 bg-amber-50' :
                     'border-[#E5E7EB]'
                   }`}
                 />
@@ -435,29 +561,123 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
                     </svg>
                   )}
                   {lookupStatus === 'not_found' && (
-                    <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                    <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                     </svg>
                   )}
                 </div>
               </div>
             )}
-            {lookupStatus === 'not_found' && !isEdit && (
-              <p className="text-red-500 text-[11px] mt-1">ID Karyawan tidak ditemukan dalam sistem</p>
+
+            {/* Opsi input manual jika ID tidak ditemukan */}
+            {lookupStatus === 'not_found' && !isEdit && !isManualInput && (
+              <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[12px] text-amber-900 flex items-center justify-between flex-wrap gap-2">
+                <span>ID tidak terdaftar di sistem pengguna.</span>
+                <button
+                  type="button"
+                  onClick={() => { setIsManualInput(true); setLookupStatus('found'); }}
+                  className="px-2.5 py-1 bg-amber-600 text-white font-semibold rounded-lg text-[11px] hover:bg-amber-700 transition-colors shadow-xs"
+                >
+                  Input Data Manual
+                </button>
+              </div>
             )}
+
+            {isManualInput && (
+              <div className="mt-2 flex items-center justify-between bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg text-[11px] text-blue-700">
+                <span>Mode Input Manual aktif</span>
+                <button
+                  type="button"
+                  onClick={() => { setIsManualInput(false); setLookupStatus('idle'); }}
+                  className="text-blue-800 font-bold hover:underline"
+                >
+                  Batal manual
+                </button>
+              </div>
+            )}
+
             {errors.idKaryawan && <p className="text-red-500 text-[11px] mt-1">{errors.idKaryawan}</p>}
           </div>
 
-          {/* ── Auto-fill fields ── */}
-          <div className="grid grid-cols-2 gap-3">
-            <ReadonlyField label="Nama" value={lookupUser?.nama ?? ''} />
-            <ReadonlyField label="Jabatan" value={lookupUser?.jabatan ?? ''} />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <ReadonlyField label="Departemen" value={lookupUser?.departemen ?? ''} />
-            <ReadonlyField label="Divisi" value={lookupUser?.divisi ?? ''} />
-          </div>
-          <ReadonlyField label="Perusahaan" value={lookupUser?.perusahaan ?? ''} />
+          {/* ── Identitas User (Readonly jika ditemukan, Editable jika mode manual / edit) ── */}
+          {isManualInput ? (
+            <div className="space-y-3 p-3.5 bg-[#F9FAFB] rounded-xl border border-[#E5E7EB]">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#FF6B1A]">
+                Input Manual Identitas Karyawan
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-[#1F2937] mb-1">Nama Lengkap *</label>
+                  <input
+                    type="text"
+                    value={nama}
+                    onChange={(e) => setNama(e.target.value)}
+                    placeholder="Nama lengkap..."
+                    className="w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-lg bg-white focus:outline-none focus:border-[#FF6B1A]"
+                  />
+                  {errors.nama && <p className="text-red-500 text-[10px] mt-0.5">{errors.nama}</p>}
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#1F2937] mb-1">Jabatan</label>
+                  <input
+                    type="text"
+                    value={jabatan}
+                    onChange={(e) => setJabatan(e.target.value)}
+                    placeholder="Jabatan / posisi..."
+                    className="w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-lg bg-white focus:outline-none focus:border-[#FF6B1A]"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-[#1F2937] mb-1">Departemen *</label>
+                  <input
+                    type="text"
+                    value={departemen}
+                    onChange={(e) => setDepartemen(e.target.value)}
+                    placeholder="Departemen..."
+                    className="w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-lg bg-white focus:outline-none focus:border-[#FF6B1A]"
+                  />
+                  {errors.departemen && <p className="text-red-500 text-[10px] mt-0.5">{errors.departemen}</p>}
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#1F2937] mb-1">Divisi</label>
+                  <input
+                    type="text"
+                    value={divisi}
+                    onChange={(e) => setDivisi(e.target.value)}
+                    placeholder="Divisi..."
+                    className="w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-lg bg-white focus:outline-none focus:border-[#FF6B1A]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-[#1F2937] mb-1">Perusahaan</label>
+                <select
+                  value={perusahaan}
+                  onChange={(e) => setPerusahaan(e.target.value)}
+                  className="w-full px-3 py-2 text-[13px] border border-[#E5E7EB] rounded-lg bg-white focus:outline-none focus:border-[#FF6B1A]"
+                >
+                  <option value="">-- Pilih Perusahaan --</option>
+                  {PERUSAHAAN_OPTIONS.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <ReadonlyField label="Nama" value={nama} />
+                <ReadonlyField label="Jabatan" value={jabatan} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <ReadonlyField label="Departemen" value={departemen} />
+                <ReadonlyField label="Divisi" value={divisi} />
+              </div>
+              <ReadonlyField label="Perusahaan" value={perusahaan} />
+            </>
+          )}
 
           {/* ── Divider ── */}
           <div className="border-t border-[#E5E7EB] pt-1" />
@@ -645,7 +865,7 @@ function FormModal({ isOpen, onClose, onSubmit, initialValues, existingNoSertifi
           <button
             type="submit"
             onClick={handleSubmit}
-            disabled={saving || (!isEdit && lookupStatus !== 'found')}
+            disabled={isSubmitDisabled}
             className="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-[#FF6B1A] rounded-xl hover:bg-[#E85D0F] transition-colors disabled:opacity-50"
           >
             {saving ? (
@@ -1300,24 +1520,54 @@ export default function LicenseCertificationPage() {
   // ── Existing noSertifikat for dupe check ──────────────────────────────────
   const existingNoSertifikat = records.map((r) => r.data.noSertifikat).filter(Boolean);
 
+  // ── Toast notification state ──────────────────────────────────────────────
+  const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
+
+  useEffect(() => {
+    if (toast) {
+      const t = setTimeout(() => setToast(null), 3500);
+      return () => clearTimeout(t);
+    }
+  }, [toast]);
+
+  const showToast = (msg: string, type: 'success' | 'error' = 'success') =>
+    setToast({ msg, type });
+
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleCreate = async (fd: FormData) => {
-    await recordsApi.createWithFile(CATEGORY, fd);
-    await fetchRecords();
+    try {
+      await recordsApi.createWithFile(CATEGORY, fd);
+      await fetchRecords();
+      showToast('Record sertifikat berhasil ditambahkan', 'success');
+    } catch (err: any) {
+      showToast(err?.message || 'Gagal menambahkan record', 'error');
+      throw err;
+    }
   };
 
   const handleUpdate = async (fd: FormData) => {
     if (!editRecord) return;
-    await recordsApi.updateWithFile(editRecord.id, fd);
-    await fetchRecords();
+    try {
+      await recordsApi.updateWithFile(editRecord.id, fd);
+      await fetchRecords();
+      showToast('Record sertifikat berhasil diperbarui', 'success');
+    } catch (err: any) {
+      showToast(err?.message || 'Gagal memperbarui record', 'error');
+      throw err;
+    }
   };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    await recordsApi.delete(deleteTarget.id);
-    setDeleteTarget(null);
-    setDetailRecord(null);
-    await fetchRecords();
+    try {
+      await recordsApi.delete(deleteTarget.id);
+      setDeleteTarget(null);
+      setDetailRecord(null);
+      await fetchRecords();
+      showToast('Record berhasil dihapus', 'success');
+    } catch (err: any) {
+      showToast(err?.message || 'Gagal menghapus record', 'error');
+    }
   };
 
   const handleOpenEdit = () => {
@@ -1673,6 +1923,17 @@ export default function LicenseCertificationPage() {
         onClose={() => setShowExport(false)}
         records={filtered}
       />
+
+      {/* ── Toast Floating Alert ── */}
+      {toast && (
+        <div
+          className={`fixed top-5 right-5 z-[9999] px-5 py-3 rounded-xl shadow-lg text-[13px] font-semibold text-white transition-all ${
+            toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
+          }`}
+        >
+          {toast.type === 'success' ? '✓ ' : '✕ '}{toast.msg}
+        </div>
+      )}
     </div>
   );
 }
