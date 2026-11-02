@@ -496,9 +496,10 @@ interface DetailModalProps {
   onClose: () => void;
   onEditMaster: () => void;
   isAdmin: boolean;
+  canAdd: boolean;
 }
 
-function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) {
+function DetailModal({ obj, onClose, onEditMaster, isAdmin, canAdd }: DetailModalProps) {
   const [activeTab, setActiveTab] = useState<'profile' | 'riksaUji' | 'maintenance'>('profile');
 
   // Riksa Uji states
@@ -1082,7 +1083,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                     Pencatatan riwayat berkala Laporan Hasil Uji (LHU) dan Surat Izin Layak Operasi (SILO)
                   </p>
                 </div>
-                {isAdmin && (
+                {canAdd && (
                   <button
                     onClick={() => {
                       if (showRiksaUjiForm) {
@@ -1432,7 +1433,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                     Jadwal rencana vs tanggal aktual pelaksanaan pemeliharaan beserta rincian tindakannya
                   </p>
                 </div>
-                {isAdmin && (
+                {canAdd && (
                   <button
                     onClick={() => {
                       if (showMaintForm) {
@@ -1849,7 +1850,9 @@ export default function EquipmentSafetyPage() {
 
 function EquipmentSafetyPageInner() {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin' || user?.role === 'supervisor';
+  const role = user?.role?.toLowerCase();
+  const isAdmin = role === 'admin';
+  const canAdd = !!user;
   const searchParams = useSearchParams();
 
   const [items, setItems] = useState<ObjekK3[]>([]);
@@ -2106,7 +2109,7 @@ function EquipmentSafetyPageInner() {
             </button>
 
             {/* Tombol Tambah Objek K3 (Cukup 1 tanda + dari icon) */}
-            {isAdmin && (
+            {canAdd && (
               <button
                 type="button"
                 onClick={() => { setEditingMaster(null); setShowMasterForm(true); }}
@@ -2198,7 +2201,7 @@ function EquipmentSafetyPageInner() {
                 ? 'Silakan ubah filter atau kata kunci pencarian Anda'
                 : 'Daftarkan objek K3 pertama untuk mulai mengelola riksa uji dan catatan maintenance.'}
             </p>
-            {isAdmin && !search && (
+            {canAdd && !search && (
               <button
                 onClick={() => { setEditingMaster(null); setShowMasterForm(true); }}
                 className="flex items-center gap-2 px-4 py-2 bg-[#FF6B1A] text-white text-[12px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors"
@@ -2363,6 +2366,7 @@ function EquipmentSafetyPageInner() {
             setShowMasterForm(true);
           }}
           isAdmin={isAdmin}
+          canAdd={canAdd}
         />
       )}
 
