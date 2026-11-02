@@ -111,15 +111,15 @@ export interface RiwayatPemeriksaan {
 export interface RiwayatRiksaUji {
   id: string;
   objekK3Id: string;
-  // LHU (Laporan Hasil Riksa Uji)
-  noLHU: string;
-  tanggalTerbitLHU: string;
+  // LHU (Laporan Hasil Riksa Uji) — Opsional
+  noLHU?: string | null;
+  tanggalTerbitLHU?: string | null;
   fileLHU?: string | null;
   namaFileLHU?: string | null;
-  // SILO (Surat Izin Layak Operasi)
-  noSILO: string;
-  tanggalTerbitSILO: string;
-  tanggalExpiredSILO: string;
+  // SILO (Surat Izin Layak Operasi) — Opsional
+  noSILO?: string | null;
+  tanggalTerbitSILO?: string | null;
+  tanggalExpiredSILO?: string | null;
   fileSILO?: string | null;
   namaFileSILO?: string | null;
   // Metadata

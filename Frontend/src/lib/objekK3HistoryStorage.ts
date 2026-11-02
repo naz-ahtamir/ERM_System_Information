@@ -127,6 +127,27 @@ export function saveRiksaUji(
   return newRecord;
 }
 
+export function updateRiksaUji(
+  objekK3Id: string,
+  recordId: string,
+  updates: Partial<Omit<RiwayatRiksaUji, 'id' | 'objekK3Id' | 'createdAt'>>,
+): RiwayatRiksaUji | null {
+  if (typeof window === 'undefined') return null;
+  const key = `${RIKSA_UJI_PREFIX}${objekK3Id}`;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const list: RiwayatRiksaUji[] = JSON.parse(raw);
+    const idx = list.findIndex((r) => r.id === recordId);
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...updates };
+      localStorage.setItem(key, JSON.stringify(list));
+      return list[idx];
+    }
+  } catch (_) {}
+  return null;
+}
+
 export function deleteRiksaUji(objekK3Id: string, recordId: string): void {
   if (typeof window === 'undefined') return;
   const key = `${RIKSA_UJI_PREFIX}${objekK3Id}`;
@@ -223,6 +244,27 @@ export function updateMaintenanceStatus(
       localStorage.setItem(key, JSON.stringify(list));
     }
   } catch (_) {}
+}
+
+export function updateMaintenance(
+  objekK3Id: string,
+  recordId: string,
+  updates: Partial<Omit<RiwayatMaintenance, 'id' | 'objekK3Id' | 'createdAt'>>,
+): RiwayatMaintenance | null {
+  if (typeof window === 'undefined') return null;
+  const key = `${MAINTENANCE_PREFIX}${objekK3Id}`;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const list: RiwayatMaintenance[] = JSON.parse(raw);
+    const idx = list.findIndex((m) => m.id === recordId);
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...updates };
+      localStorage.setItem(key, JSON.stringify(list));
+      return list[idx];
+    }
+  } catch (_) {}
+  return null;
 }
 
 export function deleteMaintenance(objekK3Id: string, recordId: string): void {

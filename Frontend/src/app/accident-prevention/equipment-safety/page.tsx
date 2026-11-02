@@ -23,9 +23,11 @@ import {
 import {
   getRiksaUjiList,
   saveRiksaUji,
+  updateRiksaUji,
   deleteRiksaUji,
   getMaintenanceList,
   saveMaintenance,
+  updateMaintenance,
   updateMaintenanceStatus,
   deleteMaintenance,
   fileToBase64,
@@ -502,6 +504,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
   // Riksa Uji states
   const [riksaUjiList, setRiksaUjiList] = useState<RiwayatRiksaUji[]>([]);
   const [showRiksaUjiForm, setShowRiksaUjiForm] = useState(false);
+  const [editingRiksaUjiId, setEditingRiksaUjiId] = useState<string | null>(null);
   const [riksaUjiSubmitting, setRiksaUjiSubmitting] = useState(false);
   const [riksaUjiError, setRiksaUjiError] = useState('');
   const [riksaUjiForm, setRiksaUjiForm] = useState({
@@ -520,6 +523,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
   // Maintenance states
   const [maintenanceList, setMaintenanceList] = useState<RiwayatMaintenance[]>([]);
   const [showMaintForm, setShowMaintForm] = useState(false);
+  const [editingMaintId, setEditingMaintId] = useState<string | null>(null);
   const [maintSubmitting, setMaintSubmitting] = useState(false);
   const [maintError, setMaintError] = useState('');
   const [maintForm, setMaintForm] = useState({
@@ -538,17 +542,42 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
     setMaintenanceList(getMaintenanceList(obj));
   }, [obj]);
 
-  // Riksa Uji Submit Handler
+  const handleStartEditRiksaUji = (ru: RiwayatRiksaUji) => {
+    setEditingRiksaUjiId(ru.id);
+    setRiksaUjiForm({
+      noLHU: ru.noLHU || '',
+      tanggalTerbitLHU: ru.tanggalTerbitLHU || '',
+      noSILO: ru.noSILO || '',
+      tanggalTerbitSILO: ru.tanggalTerbitSILO || '',
+      tanggalExpiredSILO: ru.tanggalExpiredSILO || '',
+      statusKelayakan: ru.statusKelayakan,
+      lembagaPenguji: ru.lembagaPenguji || '',
+      catatan: ru.catatan || '',
+    });
+    setRiksaUjiError('');
+    setShowRiksaUjiForm(true);
+  };
+
+  const handleCancelRiksaUjiForm = () => {
+    setShowRiksaUjiForm(false);
+    setEditingRiksaUjiId(null);
+    setRiksaUjiForm({
+      noLHU: '',
+      tanggalTerbitLHU: '',
+      noSILO: '',
+      tanggalTerbitSILO: '',
+      tanggalExpiredSILO: '',
+      statusKelayakan: 'LAYAK',
+      lembagaPenguji: 'PJK3 Kemnaker',
+      catatan: '',
+    });
+    if (fileLHURef.current) fileLHURef.current.value = '';
+    if (fileSILORef.current) fileSILORef.current.value = '';
+  };
+
+  // Riksa Uji Submit Handler (LHU & SILO sekarang opsional)
   const handleSaveRiksaUji = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!riksaUjiForm.noLHU.trim() || !riksaUjiForm.tanggalTerbitLHU) {
-      setRiksaUjiError('Nomor LHU dan Tanggal Terbit LHU wajib diisi!');
-      return;
-    }
-    if (!riksaUjiForm.noSILO.trim() || !riksaUjiForm.tanggalTerbitSILO || !riksaUjiForm.tanggalExpiredSILO) {
-      setRiksaUjiError('Nomor SILO, Tanggal Terbit, dan Tanggal Expired SILO wajib diisi!');
-      return;
-    }
 
     setRiksaUjiSubmitting(true);
     setRiksaUjiError('');
@@ -572,35 +601,44 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
         namaFileSILO = res.name;
       }
 
-      const saved = saveRiksaUji(obj.id, {
-        noLHU: riksaUjiForm.noLHU.trim(),
-        tanggalTerbitLHU: riksaUjiForm.tanggalTerbitLHU,
-        fileLHU: fileLHUData,
-        namaFileLHU,
-        noSILO: riksaUjiForm.noSILO.trim(),
-        tanggalTerbitSILO: riksaUjiForm.tanggalTerbitSILO,
-        tanggalExpiredSILO: riksaUjiForm.tanggalExpiredSILO,
-        fileSILO: fileSILOData,
-        namaFileSILO,
-        statusKelayakan: riksaUjiForm.statusKelayakan,
-        lembagaPenguji: riksaUjiForm.lembagaPenguji.trim() || 'PJK3 Kemnaker',
-        catatan: riksaUjiForm.catatan.trim() || null,
-      });
+      if (editingRiksaUjiId) {
+        const existing = riksaUjiList.find((r) => r.id === editingRiksaUjiId);
+        const updated = updateRiksaUji(obj.id, editingRiksaUjiId, {
+          noLHU: riksaUjiForm.noLHU.trim() || null,
+          tanggalTerbitLHU: riksaUjiForm.tanggalTerbitLHU || null,
+          fileLHU: fileLHUData || existing?.fileLHU || null,
+          namaFileLHU: namaFileLHU || existing?.namaFileLHU || null,
+          noSILO: riksaUjiForm.noSILO.trim() || null,
+          tanggalTerbitSILO: riksaUjiForm.tanggalTerbitSILO || null,
+          tanggalExpiredSILO: riksaUjiForm.tanggalExpiredSILO || null,
+          fileSILO: fileSILOData || existing?.fileSILO || null,
+          namaFileSILO: namaFileSILO || existing?.namaFileSILO || null,
+          statusKelayakan: riksaUjiForm.statusKelayakan,
+          lembagaPenguji: riksaUjiForm.lembagaPenguji.trim() || 'PJK3 Kemnaker',
+          catatan: riksaUjiForm.catatan.trim() || null,
+        });
+        if (updated) {
+          setRiksaUjiList((prev) => prev.map((r) => (r.id === editingRiksaUjiId ? updated : r)));
+        }
+      } else {
+        const saved = saveRiksaUji(obj.id, {
+          noLHU: riksaUjiForm.noLHU.trim() || null,
+          tanggalTerbitLHU: riksaUjiForm.tanggalTerbitLHU || null,
+          fileLHU: fileLHUData,
+          namaFileLHU,
+          noSILO: riksaUjiForm.noSILO.trim() || null,
+          tanggalTerbitSILO: riksaUjiForm.tanggalTerbitSILO || null,
+          tanggalExpiredSILO: riksaUjiForm.tanggalExpiredSILO || null,
+          fileSILO: fileSILOData,
+          namaFileSILO,
+          statusKelayakan: riksaUjiForm.statusKelayakan,
+          lembagaPenguji: riksaUjiForm.lembagaPenguji.trim() || 'PJK3 Kemnaker',
+          catatan: riksaUjiForm.catatan.trim() || null,
+        });
+        setRiksaUjiList((prev) => [saved, ...prev]);
+      }
 
-      setRiksaUjiList((prev) => [saved, ...prev]);
-      setShowRiksaUjiForm(false);
-      setRiksaUjiForm({
-        noLHU: '',
-        tanggalTerbitLHU: '',
-        noSILO: '',
-        tanggalTerbitSILO: '',
-        tanggalExpiredSILO: '',
-        statusKelayakan: 'LAYAK',
-        lembagaPenguji: 'PJK3 Kemnaker',
-        catatan: '',
-      });
-      if (fileLHURef.current) fileLHURef.current.value = '';
-      if (fileSILORef.current) fileSILORef.current.value = '';
+      handleCancelRiksaUjiForm();
     } catch (err: any) {
       setRiksaUjiError(err.message ?? 'Gagal menyimpan catatan riksa uji');
     } finally {
@@ -612,6 +650,34 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
     if (!confirm('Hapus catatan riksa uji ini?')) return;
     deleteRiksaUji(obj.id, ruId);
     setRiksaUjiList((prev) => prev.filter((r) => r.id !== ruId));
+  };
+
+  const handleStartEditMaintenance = (maint: RiwayatMaintenance) => {
+    setEditingMaintId(maint.id);
+    setMaintForm({
+      tanggalRencana: maint.tanggalRencana || '',
+      tanggalAktual: maint.tanggalAktual || '',
+      status: maint.status,
+      rincian: maint.rincian || '',
+      pelaksana: maint.pelaksana || '',
+      catatan: maint.catatan || '',
+    });
+    setMaintError('');
+    setShowMaintForm(true);
+  };
+
+  const handleCancelMaintForm = () => {
+    setShowMaintForm(false);
+    setEditingMaintId(null);
+    setMaintForm({
+      tanggalRencana: '',
+      tanggalAktual: '',
+      status: 'RENCANA',
+      rincian: '',
+      pelaksana: '',
+      catatan: '',
+    });
+    if (fileMaintRef.current) fileMaintRef.current.value = '';
   };
 
   // Maintenance Submit Handler
@@ -639,28 +705,36 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
         namaFileBukti = res.name;
       }
 
-      const saved = saveMaintenance(obj.id, {
-        tanggalRencana: maintForm.tanggalRencana,
-        tanggalAktual: maintForm.tanggalAktual || null,
-        status: maintForm.status,
-        rincian: maintForm.rincian.trim(),
-        pelaksana: maintForm.pelaksana.trim() || null,
-        fileBukti: fileBuktiData,
-        namaFileBukti,
-        catatan: maintForm.catatan.trim() || null,
-      });
+      if (editingMaintId) {
+        const existing = maintenanceList.find((m) => m.id === editingMaintId);
+        const updated = updateMaintenance(obj.id, editingMaintId, {
+          tanggalRencana: maintForm.tanggalRencana,
+          tanggalAktual: maintForm.tanggalAktual || null,
+          status: maintForm.status,
+          rincian: maintForm.rincian.trim(),
+          pelaksana: maintForm.pelaksana.trim() || null,
+          fileBukti: fileBuktiData || existing?.fileBukti || null,
+          namaFileBukti: namaFileBukti || existing?.namaFileBukti || null,
+          catatan: maintForm.catatan.trim() || null,
+        });
+        if (updated) {
+          setMaintenanceList((prev) => prev.map((m) => (m.id === editingMaintId ? updated : m)));
+        }
+      } else {
+        const saved = saveMaintenance(obj.id, {
+          tanggalRencana: maintForm.tanggalRencana,
+          tanggalAktual: maintForm.tanggalAktual || null,
+          status: maintForm.status,
+          rincian: maintForm.rincian.trim(),
+          pelaksana: maintForm.pelaksana.trim() || null,
+          fileBukti: fileBuktiData,
+          namaFileBukti,
+          catatan: maintForm.catatan.trim() || null,
+        });
+        setMaintenanceList((prev) => [saved, ...prev]);
+      }
 
-      setMaintenanceList((prev) => [saved, ...prev]);
-      setShowMaintForm(false);
-      setMaintForm({
-        tanggalRencana: '',
-        tanggalAktual: '',
-        status: 'RENCANA',
-        rincian: '',
-        pelaksana: '',
-        catatan: '',
-      });
-      if (fileMaintRef.current) fileMaintRef.current.value = '';
+      handleCancelMaintForm();
     } catch (err: any) {
       setMaintError(err.message ?? 'Gagal menyimpan catatan maintenance');
     } finally {
@@ -974,6 +1048,23 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                 </div>
               </div>
 
+              {/* Tombol Aksi Edit Profil untuk Admin */}
+              {isAdmin && (
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={onEditMaster}
+                    className="flex items-center gap-2 px-4 py-2 text-[12px] font-semibold text-white bg-[#1F2937] hover:bg-[#374151] rounded-xl shadow-xs transition-colors"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit Profil & Identitas Objek K3
+                  </button>
+                </div>
+              )}
+
             </div>
           )}
 
@@ -993,23 +1084,31 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                 </div>
                 {isAdmin && (
                   <button
-                    onClick={() => setShowRiksaUjiForm((v) => !v)}
+                    onClick={() => {
+                      if (showRiksaUjiForm) {
+                        handleCancelRiksaUjiForm();
+                      } else {
+                        setShowRiksaUjiForm(true);
+                      }
+                    }}
                     className="flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold text-white bg-[#FF6B1A] hover:bg-[#E85D0F] rounded-xl shadow-xs transition-colors"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
-                    {showRiksaUjiForm ? 'Tutup Formulir' : '+ Tambah Catatan Riksa Uji'}
+                    {showRiksaUjiForm ? 'Tutup Formulir' : 'Tambah Catatan Riksa Uji'}
                   </button>
                 )}
               </div>
 
-              {/* Sub-Form Tambah Riksa Uji */}
+              {/* Sub-Form Tambah / Edit Riksa Uji */}
               {showRiksaUjiForm && (
                 <form onSubmit={handleSaveRiksaUji} className="bg-[#FFF8F4]/40 border-2 border-[#FF6B1A]/30 rounded-2xl p-5 space-y-4">
                   <div className="flex items-center justify-between border-b border-orange-200 pb-2">
-                    <h4 className="font-bold text-[14px] text-[#FF6B1A]">Form Input Catatan Riksa Uji Baru</h4>
-                    <span className="text-[11px] text-gray-500">LHU & SILO</span>
+                    <h4 className="font-bold text-[14px] text-[#FF6B1A]">
+                      {editingRiksaUjiId ? 'Edit Catatan Riksa Uji' : 'Form Input Catatan Riksa Uji Baru'}
+                    </h4>
+                    <span className="text-[11px] text-gray-500 font-medium">LHU & SILO (Opsional)</span>
                   </div>
 
                   {riksaUjiError && (
@@ -1026,24 +1125,22 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                     </h5>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
-                        <label className={labelCls}>Nomor LHU *</label>
+                        <label className={labelCls}>Nomor LHU (Opsional)</label>
                         <input
                           type="text"
                           value={riksaUjiForm.noLHU}
                           onChange={(e) => setRiksaUjiForm((p) => ({ ...p, noLHU: e.target.value }))}
                           placeholder="Contoh: LHU/PJK3/2026/089"
                           className={inputCls}
-                          required
                         />
                       </div>
                       <div>
-                        <label className={labelCls}>Tanggal Terbit LHU *</label>
+                        <label className={labelCls}>Tanggal Terbit LHU (Opsional)</label>
                         <input
                           type="date"
                           value={riksaUjiForm.tanggalTerbitLHU}
                           onChange={(e) => setRiksaUjiForm((p) => ({ ...p, tanggalTerbitLHU: e.target.value }))}
                           className={inputCls}
-                          required
                         />
                       </div>
                       <div>
@@ -1066,34 +1163,31 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                     </h5>
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                       <div>
-                        <label className={labelCls}>Nomor SILO / Suket *</label>
+                        <label className={labelCls}>Nomor SILO / Suket (Opsional)</label>
                         <input
                           type="text"
                           value={riksaUjiForm.noSILO}
                           onChange={(e) => setRiksaUjiForm((p) => ({ ...p, noSILO: e.target.value }))}
                           placeholder="Contoh: 566/SKT-PAA/DISNAKER/2026"
                           className={inputCls}
-                          required
                         />
                       </div>
                       <div>
-                        <label className={labelCls}>Tanggal Terbit SILO *</label>
+                        <label className={labelCls}>Tanggal Terbit SILO (Opsional)</label>
                         <input
                           type="date"
                           value={riksaUjiForm.tanggalTerbitSILO}
                           onChange={(e) => setRiksaUjiForm((p) => ({ ...p, tanggalTerbitSILO: e.target.value }))}
                           className={inputCls}
-                          required
                         />
                       </div>
                       <div>
-                        <label className={labelCls}>Tanggal Expired SILO *</label>
+                        <label className={labelCls}>Tanggal Expired SILO (Opsional)</label>
                         <input
                           type="date"
                           value={riksaUjiForm.tanggalExpiredSILO}
                           onChange={(e) => setRiksaUjiForm((p) => ({ ...p, tanggalExpiredSILO: e.target.value }))}
                           className={inputCls}
-                          required
                         />
                       </div>
                       <div>
@@ -1147,7 +1241,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                   <div className="flex justify-end gap-2 pt-2 border-t border-orange-200">
                     <button
                       type="button"
-                      onClick={() => setShowRiksaUjiForm(false)}
+                      onClick={handleCancelRiksaUjiForm}
                       className="px-3.5 py-1.5 text-[12px] font-semibold bg-gray-100 hover:bg-gray-200 text-[#1F2937] rounded-xl transition-colors"
                     >
                       Batal
@@ -1157,7 +1251,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                       disabled={riksaUjiSubmitting}
                       className="px-4 py-1.5 text-[12px] font-semibold text-white bg-[#FF6B1A] hover:bg-[#E85D0F] rounded-xl transition-colors disabled:opacity-60"
                     >
-                      {riksaUjiSubmitting ? 'Menyimpan...' : 'Simpan Catatan Riksa Uji'}
+                      {riksaUjiSubmitting ? 'Menyimpan...' : editingRiksaUjiId ? 'Simpan Perubahan' : 'Simpan Catatan Riksa Uji'}
                     </button>
                   </div>
                 </form>
@@ -1174,7 +1268,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                   </div>
                   <p className="font-semibold text-[14px] text-[#1F2937] mb-1">Belum ada catatan riksa uji</p>
                   <p className="text-[12px] text-[#6B7280] max-w-sm mx-auto mb-3">
-                    Klik tombol "+ Tambah Catatan Riksa Uji" di atas untuk mendokumentasikan nomor & file LHU dan SILO.
+                    Klik tombol "Tambah Catatan Riksa Uji" di atas untuk mendokumentasikan nomor & file LHU dan SILO.
                   </p>
                 </div>
               ) : (
@@ -1215,16 +1309,28 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                           </div>
 
                           {isAdmin && (
-                            <button
-                              onClick={() => handleDeleteRiksaUji(ru.id)}
-                              className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition-colors"
-                              title="Hapus catatan riksa uji"
-                            >
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="3 6 5 6 21 6"/>
-                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                              </svg>
-                            </button>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => handleStartEditRiksaUji(ru)}
+                                className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-lg transition-colors"
+                                title="Edit catatan riksa uji ini"
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteRiksaUji(ru.id)}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition-colors"
+                                title="Hapus catatan riksa uji"
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <polyline points="3 6 5 6 21 6"/>
+                                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                </svg>
+                              </button>
+                            </div>
                           )}
                         </div>
 
@@ -1241,7 +1347,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                               {ru.fileLHU ? (
                                 <button
                                   type="button"
-                                  onClick={() => openDocument(ru.fileLHU, `LHU - ${ru.noLHU}`)}
+                                  onClick={() => openDocument(ru.fileLHU, `LHU - ${ru.noLHU || 'Dokumen'}`)}
                                   className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
                                 >
                                   📄 Buka File LHU
@@ -1250,9 +1356,13 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                                 <span className="text-[11px] text-gray-400 italic">Tanpa file</span>
                               )}
                             </div>
-                            <p className="font-mono text-[13px] font-semibold text-[#1F2937]">{ru.noLHU}</p>
+                            {ru.noLHU ? (
+                              <p className="font-mono text-[13px] font-semibold text-[#1F2937]">{ru.noLHU}</p>
+                            ) : (
+                              <p className="font-mono text-[13px] text-gray-400 italic">Belum ada nomor LHU</p>
+                            )}
                             <p className="text-[11px] text-gray-500 mt-0.5">
-                              Terbit: <span className="text-gray-700 font-medium">{formatTanggal(ru.tanggalTerbitLHU)}</span>
+                              Terbit: <span className="text-gray-700 font-medium">{ru.tanggalTerbitLHU ? formatTanggal(ru.tanggalTerbitLHU) : '—'}</span>
                             </p>
                           </div>
 
@@ -1266,7 +1376,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                               {ru.fileSILO ? (
                                 <button
                                   type="button"
-                                  onClick={() => openDocument(ru.fileSILO, `SILO - ${ru.noSILO}`)}
+                                  onClick={() => openDocument(ru.fileSILO, `SILO - ${ru.noSILO || 'Dokumen'}`)}
                                   className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
                                 >
                                   📄 Buka File SILO
@@ -1275,10 +1385,14 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                                 <span className="text-[11px] text-gray-400 italic">Tanpa file</span>
                               )}
                             </div>
-                            <p className="font-mono text-[13px] font-semibold text-[#1F2937]">{ru.noSILO}</p>
+                            {ru.noSILO ? (
+                              <p className="font-mono text-[13px] font-semibold text-[#1F2937]">{ru.noSILO}</p>
+                            ) : (
+                              <p className="font-mono text-[13px] text-gray-400 italic">Belum ada nomor SILO</p>
+                            )}
                             <div className="flex items-center justify-between text-[11px] text-gray-500 mt-0.5">
                               <span>
-                                Berlaku: <span className="text-gray-700 font-medium">{formatTanggal(ru.tanggalTerbitSILO)}</span> s/d <span className="text-gray-700 font-medium">{formatTanggal(ru.tanggalExpiredSILO)}</span>
+                                Berlaku: <span className="text-gray-700 font-medium">{ru.tanggalTerbitSILO ? formatTanggal(ru.tanggalTerbitSILO) : '—'}</span> s/d <span className="text-gray-700 font-medium">{ru.tanggalExpiredSILO ? formatTanggal(ru.tanggalExpiredSILO) : '—'}</span>
                               </span>
                               {sisaHari != null && (
                                 <span className={`font-bold ${sisaHariColor(sisaHari)}`}>
@@ -1320,23 +1434,31 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                 </div>
                 {isAdmin && (
                   <button
-                    onClick={() => setShowMaintForm((v) => !v)}
+                    onClick={() => {
+                      if (showMaintForm) {
+                        handleCancelMaintForm();
+                      } else {
+                        setShowMaintForm(true);
+                      }
+                    }}
                     className="flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold text-white bg-[#FF6B1A] hover:bg-[#E85D0F] rounded-xl shadow-xs transition-colors"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
-                    {showMaintForm ? 'Tutup Formulir' : '+ Catat / Jadwalkan Maintenance'}
+                    {showMaintForm ? 'Tutup Formulir' : 'Catat / Jadwalkan Maintenance'}
                   </button>
                 )}
               </div>
 
-              {/* Sub-Form Tambah Maintenance */}
+              {/* Sub-Form Tambah / Edit Maintenance */}
               {showMaintForm && (
                 <form onSubmit={handleSaveMaintenance} className="bg-[#FFF8F4]/40 border-2 border-[#FF6B1A]/30 rounded-2xl p-5 space-y-4">
                   <div className="flex items-center justify-between border-b border-orange-200 pb-2">
-                    <h4 className="font-bold text-[14px] text-[#FF6B1A]">Form Catat / Jadwalkan Maintenance</h4>
-                    <span className="text-[11px] text-gray-500">Pemeliharaan Rutin</span>
+                    <h4 className="font-bold text-[14px] text-[#FF6B1A]">
+                      {editingMaintId ? 'Edit Catatan Maintenance' : 'Form Catat / Jadwalkan Maintenance'}
+                    </h4>
+                    <span className="text-[11px] text-gray-500 font-medium">Pemeliharaan Rutin</span>
                   </div>
 
                   {maintError && (
@@ -1418,7 +1540,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                   <div className="flex justify-end gap-2 pt-2 border-t border-orange-200">
                     <button
                       type="button"
-                      onClick={() => setShowMaintForm(false)}
+                      onClick={handleCancelMaintForm}
                       className="px-3.5 py-1.5 text-[12px] font-semibold bg-gray-100 hover:bg-gray-200 text-[#1F2937] rounded-xl transition-colors"
                     >
                       Batal
@@ -1428,7 +1550,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                       disabled={maintSubmitting}
                       className="px-4 py-1.5 text-[12px] font-semibold text-white bg-[#FF6B1A] hover:bg-[#E85D0F] rounded-xl transition-colors disabled:opacity-60"
                     >
-                      {maintSubmitting ? 'Menyimpan...' : 'Simpan Catatan Maintenance'}
+                      {maintSubmitting ? 'Menyimpan...' : editingMaintId ? 'Simpan Perubahan' : 'Simpan Catatan Maintenance'}
                     </button>
                   </div>
                 </form>
@@ -1444,7 +1566,7 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                   </div>
                   <p className="font-semibold text-[14px] text-[#1F2937] mb-1">Belum ada catatan maintenance</p>
                   <p className="text-[12px] text-[#6B7280] max-w-sm mx-auto mb-3">
-                    Jadwalkan atau catat pemeliharaan alat dengan mengklik tombol "+ Catat / Jadwalkan Maintenance".
+                    Jadwalkan atau catat pemeliharaan alat dengan mengklik tombol "Catat / Jadwalkan Maintenance".
                   </p>
                 </div>
               ) : (
@@ -1486,16 +1608,28 @@ function DetailModal({ obj, onClose, onEditMaster, isAdmin }: DetailModalProps) 
                               </button>
                             )}
                             {isAdmin && (
-                              <button
-                                onClick={() => handleDeleteMaintenance(maint.id)}
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition-colors"
-                                title="Hapus catatan maintenance"
-                              >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <polyline points="3 6 5 6 21 6"/>
-                                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                </svg>
-                              </button>
+                              <>
+                                <button
+                                  onClick={() => handleStartEditMaintenance(maint)}
+                                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1.5 rounded-lg transition-colors"
+                                  title="Edit catatan maintenance ini"
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteMaintenance(maint.id)}
+                                  className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition-colors"
+                                  title="Hapus catatan maintenance"
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                  </svg>
+                                </button>
+                              </>
                             )}
                           </div>
                         </div>
@@ -1792,44 +1926,116 @@ function EquipmentSafetyPageInner() {
   const setFilter = (k: keyof ObjekK3Filters, v: string) =>
     setFilters((p) => ({ ...p, [k]: v || undefined }));
 
+  // Export CSV Handler
+  const handleExportCSV = () => {
+    if (items.length === 0) {
+      alert('Tidak ada data untuk diekspor');
+      return;
+    }
+
+    const headers = [
+      'No',
+      'Nama Alat / Objek K3',
+      'No Seri / Tagging',
+      'Kategori',
+      'Perusahaan',
+      'Departemen',
+      'Lokasi',
+      'Jumlah (Unit)',
+      'Kapasitas',
+      'Satuan',
+      'Tahun Pemasangan',
+      'Kondisi Pemasangan',
+      'Status Kelaikan',
+      'No SILO Terkini',
+      'Tanggal Terbit SILO',
+      'Tanggal Expired SILO',
+      'Sisa Hari SILO',
+      'No LHU Terkini',
+      'Tanggal Terbit LHU',
+      'Total Catatan Riksa Uji',
+      'Total Catatan Maintenance',
+      'Catatan',
+    ];
+
+    const escapeCsv = (val: any) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = items.map((obj, idx) => {
+      const riksaList = getRiksaUjiList(obj);
+      const maintList = getMaintenanceList(obj);
+      const latestRiksa = riksaList[0];
+      const sisaHari = latestRiksa?.tanggalExpiredSILO
+        ? calculateSisaHari(latestRiksa.tanggalExpiredSILO)
+        : obj.sisaHari;
+      const currentKelayakan = latestRiksa?.statusKelayakan || obj.statusKelayakan;
+
+      return [
+        idx + 1,
+        escapeCsv(obj.namaAlat),
+        escapeCsv(obj.noSeri),
+        escapeCsv(kategoriLabel(obj.kategori)),
+        escapeCsv(obj.perusahaan),
+        escapeCsv(obj.departemen?.name || ''),
+        escapeCsv(obj.lokasi),
+        obj.jumlah ?? 1,
+        obj.kapasitas != null ? obj.kapasitas : '',
+        escapeCsv(obj.satuan || ''),
+        escapeCsv(obj.tahunPemasangan || ''),
+        escapeCsv(obj.kondisiPemasangan || ''),
+        escapeCsv(currentKelayakan || 'Belum Diuji'),
+        escapeCsv(latestRiksa?.noSILO || obj.noSuket || ''),
+        escapeCsv(latestRiksa?.tanggalTerbitSILO || ''),
+        escapeCsv(latestRiksa?.tanggalExpiredSILO || obj.tanggalBerlaku || ''),
+        sisaHari != null ? sisaHari : '',
+        escapeCsv(latestRiksa?.noLHU || obj.noLHU || ''),
+        escapeCsv(latestRiksa?.tanggalTerbitLHU || ''),
+        riksaList.length,
+        maintList.length,
+        escapeCsv(obj.catatan || ''),
+      ].join(',');
+    });
+
+    const csvContent =
+      'data:text/csv;charset=utf-8,\uFEFF' +
+      [headers.join(','), ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute(
+      'download',
+      `Data_Objek_K3_Equipment_Safety_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       
-      {/* ── HEADER ── */}
-      <div className="bg-white px-6 md:px-10 py-8 border-b border-[#E5E7EB]">
+      {/* ── Page Header (Sesuai Standar Halaman Lain) ── */}
+      <div className="bg-white px-6 md:px-10 py-7 border-b border-[#E5E7EB] shadow-xs">
         <div className="max-w-7xl mx-auto">
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FF6B1A] mb-2">
+          <p className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#FF6B1A] mb-1.5">
             Accident Prevention
           </p>
-          <div className="flex items-end justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="font-bold text-[#1F2937] text-[clamp(22px,4vw,36px)] leading-tight">
-                Manajemen Objek K3
-              </h1>
-              <p className="text-[#6B7280] text-[13px] mt-1.5 max-w-3xl">
-                Kelola daftar objek K3 (peralatan wajib sertifikasi), lengkap dengan catatan riksa uji berkala (LHU & SILO) dan riwayat pelaksanaan maintenance.
-              </p>
-            </div>
-
-            {isAdmin && (
-              <button
-                onClick={() => { setEditingMaster(null); setShowMasterForm(true); }}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] shadow-sm transition-colors"
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                + Tambah Objek K3
-              </button>
-            )}
-          </div>
+          <h1 className="text-xl md:text-2xl font-bold text-[#1F2937]">
+            Equipment Safety (Objek K3)
+          </h1>
+          <p className="text-[#6B7280] text-[13px] mt-1.5 max-w-3xl">
+            Kelola daftar objek K3 (peralatan wajib sertifikasi), lengkap dengan catatan riksa uji berkala (LHU & SILO) dan riwayat pelaksanaan maintenance.
+          </p>
         </div>
       </div>
 
       {/* ── BODY ── */}
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-8">
         
-        {/* Search & Filters */}
+        {/* Search, Action Buttons & Filters */}
         <div className="bg-white p-4 rounded-2xl border border-[#E5E7EB] shadow-xs mb-6 space-y-3">
           <div className="flex flex-col sm:flex-row items-center gap-3">
             {/* Search Box */}
@@ -1853,8 +2059,8 @@ function EquipmentSafetyPageInner() {
               )}
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-[#FAFAFA] border border-[#E5E7EB] p-1 rounded-xl self-end sm:self-auto">
+            {/* View Mode Toggle (Pertahankan Kartu & Tabel) */}
+            <div className="flex items-center gap-1 bg-[#FAFAFA] border border-[#E5E7EB] p-1 rounded-xl self-end sm:self-auto shrink-0">
               <button
                 type="button"
                 onClick={() => setViewMode('card')}
@@ -1867,7 +2073,7 @@ function EquipmentSafetyPageInner() {
                   <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                   <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
                 </svg>
-                <span className="hidden md:inline">Kartu</span>
+                <span className="hidden sm:inline">Kartu</span>
               </button>
               <button
                 type="button"
@@ -1880,13 +2086,42 @@ function EquipmentSafetyPageInner() {
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
                 </svg>
-                <span className="hidden md:inline">Tabel</span>
+                <span className="hidden sm:inline">Tabel</span>
               </button>
             </div>
+
+            {/* Tombol Export Data */}
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              title="Download data format CSV Excel"
+              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-[#E5E7EB] text-[#1F2937] text-[13px] font-semibold rounded-xl hover:border-emerald-500 hover:text-emerald-700 transition-colors shadow-xs whitespace-nowrap shrink-0"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>Export Data</span>
+            </button>
+
+            {/* Tombol Tambah Objek K3 (Cukup 1 tanda + dari icon) */}
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => { setEditingMaster(null); setShowMasterForm(true); }}
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#FF6B1A] text-white text-[13px] font-semibold rounded-xl hover:bg-[#E85D0F] shadow-xs transition-colors whitespace-nowrap shrink-0"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                <span>Tambah Objek K3</span>
+              </button>
+            )}
           </div>
 
           {/* Filter Dropdowns */}
-          <div className="flex flex-wrap gap-2.5 pt-1 border-t border-[#E5E7EB]">
+          <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-[#E5E7EB]">
             <select
               value={filters.kategori ?? ''}
               onChange={(e) => setFilter('kategori', e.target.value)}
@@ -1919,6 +2154,19 @@ function EquipmentSafetyPageInner() {
               <option value="TIDAK_LAYAK">Tidak Layak</option>
               <option value="PERLU_PERBAIKAN">Perlu Perbaikan</option>
             </select>
+
+            {(filters.kategori || filters.perusahaan || filters.statusKelayakan || search) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFilters({});
+                  setSearch('');
+                }}
+                className="py-2 px-3 text-[12px] font-medium text-gray-500 hover:text-red-600 transition-colors"
+              >
+                Reset Filter
+              </button>
+            )}
           </div>
         </div>
 
@@ -1953,9 +2201,12 @@ function EquipmentSafetyPageInner() {
             {isAdmin && !search && (
               <button
                 onClick={() => { setEditingMaster(null); setShowMasterForm(true); }}
-                className="px-4 py-2 bg-[#FF6B1A] text-white text-[12px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-[#FF6B1A] text-white text-[12px] font-semibold rounded-xl hover:bg-[#E85D0F] transition-colors"
               >
-                + Tambah Objek K3
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Tambah Objek K3
               </button>
             )}
           </div>
