@@ -104,6 +104,14 @@ const LEVEL_ICON: Record<JenisDokumen, React.ReactNode> = {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+
+function resolveDocFileUrl(path?: string | null): string {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  return `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+}
+
 function fmt(iso: string) {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -185,7 +193,8 @@ function TreeItem({
   parentLines,
   expanded,
   onToggle,
-  onSelect,
+  onOpenDetail,
+  onRecordClick,
   onEdit,
   onDelete,
   canEdit,
@@ -198,7 +207,8 @@ function TreeItem({
   parentLines: boolean[]; // array panduan garis vertikal dari ancestor
   expanded: Set<string>;
   onToggle: (id: string) => void;
-  onSelect: (doc: Doc) => void;
+  onOpenDetail: (doc: Doc) => void;
+  onRecordClick: (doc: Doc) => void;
   onEdit: (doc: Doc) => void;
   onDelete: (doc: Doc) => void;
   canEdit: boolean;
@@ -220,7 +230,8 @@ function TreeItem({
             ? 'bg-orange-50 ring-1 ring-[#FF6B1A]/30'
             : 'hover:bg-gray-50'
         }`}
-        onClick={() => onSelect(node)}
+        onClick={() => onRecordClick(node)}
+        title={node.fileUrl ? 'Klik untuk langsung membuka file dokumen' : 'Dokumen belum memiliki file lampiran — klik untuk lihat detail'}
       >
         {/* ── Connector lines kiri ── */}
         <div className="flex flex-shrink-0" style={{ width: `${level * 28}px` }}>
@@ -282,6 +293,13 @@ function TreeItem({
             <span className={`text-[13px] font-semibold truncate ${isSelected ? 'text-[#FF6B1A]' : 'text-[#1F2937]'}`}>
               {node.namaDokumen}
             </span>
+            {node.fileUrl && (
+              <span title="File dokumen tersedia (klik record untuk membuka)" className="inline-flex items-center text-[#FF6B1A] flex-shrink-0">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </span>
+            )}
           </div>
 
           {/* Meta — nomor, revisi, status */}
@@ -295,35 +313,43 @@ function TreeItem({
           </div>
 
           {/* Aksi hover */}
-          {(canEdit || canDelete) && (
-            <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-              {canEdit && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); onEdit(node); }}
-                  className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg transition-colors"
-                  title="Edit"
-                >
-                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                  </svg>
-                </button>
-              )}
-              {canDelete && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); onDelete(node); }}
-                  className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Hapus"
-                >
-                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                    <path d="M10 11v6M14 11v6M9 6V4h6v2" />
-                  </svg>
-                </button>
-              )}
-            </div>
-          )}
+          <div className="flex-shrink-0 flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity ml-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); onOpenDetail(node); }}
+              className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg transition-colors"
+              title="Lihat Detail Dokumen"
+            >
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+            {canEdit && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onEdit(node); }}
+                className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg transition-colors"
+                title="Edit"
+              >
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              </button>
+            )}
+            {canDelete && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(node); }}
+                className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                title="Hapus"
+              >
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6M14 11v6M9 6V4h6v2" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -339,7 +365,8 @@ function TreeItem({
               parentLines={[...parentLines, !isLast]}
               expanded={expanded}
               onToggle={onToggle}
-              onSelect={onSelect}
+              onOpenDetail={onOpenDetail}
+              onRecordClick={onRecordClick}
               onEdit={onEdit}
               onDelete={onDelete}
               canEdit={canEdit}
@@ -688,7 +715,7 @@ function DocFormModal({
                       className="text-[#9CA3AF] hover:text-red-500">✕</button>
                   </div>
                 ) : editDoc?.fileUrl ? (
-                  <a href={editDoc.fileUrl} target="_blank" rel="noopener noreferrer"
+                  <a href={resolveDocFileUrl(editDoc.fileUrl)} target="_blank" rel="noopener noreferrer"
                     className="text-[12px] text-[#FF6B1A] hover:underline">File saat ini</a>
                 ) : (
                   <span className="text-[12px] text-[#9CA3AF]">Belum ada file</span>
@@ -795,7 +822,19 @@ function DetailPanel({
               {
                 label: 'File',
                 value: doc.fileUrl
-                  ? <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#FF6B1A] hover:underline text-[13px]">Lihat File</a>
+                  ? (
+                    <a
+                      href={resolveDocFileUrl(doc.fileUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#FF6B1A] hover:underline text-[13px] inline-flex items-center gap-1.5 font-medium"
+                    >
+                      Buka File
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                  )
                   : <span className="text-[#9CA3AF]">Tidak ada</span>,
               },
               { label: 'Dibuat Oleh', value: doc.createdBy?.nama ?? '—' },
@@ -980,6 +1019,17 @@ export default function MasterListDocumentsPage() {
       await fetchData();
     } catch (err: any) {
       showToast(err.message || 'Gagal menghapus', 'error');
+    }
+  };
+
+  // ── Buka File / Detail saat record di-klik ──
+  const handleRecordClick = (doc: Doc) => {
+    const url = resolveDocFileUrl(doc.fileUrl);
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      setDetailDoc(doc);
+      showToast('Dokumen belum memiliki file lampiran', 'error');
     }
   };
 
@@ -1205,7 +1255,8 @@ export default function MasterListDocumentsPage() {
                 return (
                   <div key={doc.id}
                     className={`group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${detailDoc?.id === doc.id ? 'bg-orange-50 ring-1 ring-[#FF6B1A]/20' : 'hover:bg-gray-50'}`}
-                    onClick={() => setDetailDoc(doc)}
+                    onClick={() => handleRecordClick(doc)}
+                    title={doc.fileUrl ? 'Klik untuk langsung membuka file dokumen' : 'Dokumen belum memiliki file lampiran — klik untuk lihat detail'}
                   >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${c.bg} ${c.text}`}>
                       {LEVEL_ICON[doc.jenisDokumen]}
@@ -1214,6 +1265,13 @@ export default function MasterListDocumentsPage() {
                       <div className="flex items-center gap-2 mb-0.5">
                         <JenisBadge jenis={doc.jenisDokumen} size="sm" />
                         <span className="text-[13px] font-semibold text-[#1F2937] truncate">{doc.namaDokumen}</span>
+                        {doc.fileUrl && (
+                          <span title="File dokumen tersedia (klik record untuk membuka)" className="inline-flex items-center text-[#FF6B1A] flex-shrink-0">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2 text-[11px] text-[#9CA3AF]">
                         <span className="font-mono">{doc.nomorDokumen}</span>
@@ -1226,30 +1284,38 @@ export default function MasterListDocumentsPage() {
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <StatusValBadge val={doc.statusValidasi} />
-                      {(canEditDoc(doc) || canDeleteDoc(doc)) && (
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {canEditDoc(doc) && (
-                            <button onClick={(e) => { e.stopPropagation(); setEditDoc(doc); setModalOpen(true); }}
-                              className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg"
-                              title="Edit">
-                              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                              </svg>
-                            </button>
-                          )}
-                          {canDeleteDoc(doc) && (
-                            <button onClick={(e) => { e.stopPropagation(); handleDelete(doc); }}
-                              className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg"
-                              title="Hapus">
-                              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                      )}
+                      <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDetailDoc(doc); }}
+                          className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg"
+                          title="Lihat Detail Dokumen"
+                        >
+                          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        </button>
+                        {canEditDoc(doc) && (
+                          <button onClick={(e) => { e.stopPropagation(); setEditDoc(doc); setModalOpen(true); }}
+                            className="p-1.5 text-[#6B7280] hover:text-[#FF6B1A] hover:bg-orange-50 rounded-lg"
+                            title="Edit">
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                          </button>
+                        )}
+                        {canDeleteDoc(doc) && (
+                          <button onClick={(e) => { e.stopPropagation(); handleDelete(doc); }}
+                            className="p-1.5 text-[#6B7280] hover:text-red-500 hover:bg-red-50 rounded-lg"
+                            title="Hapus">
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -1320,7 +1386,8 @@ export default function MasterListDocumentsPage() {
                             parentLines={[]}
                             expanded={expanded}
                             onToggle={toggleExpand}
-                            onSelect={setDetailDoc}
+                            onOpenDetail={setDetailDoc}
+                            onRecordClick={handleRecordClick}
                             onEdit={(d) => { setEditDoc(d); setModalOpen(true); }}
                             onDelete={handleDelete}
                             canEdit={canEditDoc(node)}
