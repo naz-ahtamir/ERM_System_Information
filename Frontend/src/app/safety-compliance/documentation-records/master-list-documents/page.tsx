@@ -231,7 +231,6 @@ function TreeItem({
             : 'hover:bg-gray-50'
         }`}
         onClick={() => onRecordClick(node)}
-        title={node.fileUrl ? 'Klik untuk langsung membuka file dokumen' : 'Dokumen belum memiliki file lampiran — klik untuk lihat detail'}
       >
         {/* ── Connector lines kiri ── */}
         <div className="flex flex-shrink-0" style={{ width: `${level * 28}px` }}>
@@ -293,13 +292,6 @@ function TreeItem({
             <span className={`text-[13px] font-semibold truncate ${isSelected ? 'text-[#FF6B1A]' : 'text-[#1F2937]'}`}>
               {node.namaDokumen}
             </span>
-            {node.fileUrl && (
-              <span title="File dokumen tersedia (klik record untuk membuka)" className="inline-flex items-center text-[#FF6B1A] flex-shrink-0">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </span>
-            )}
           </div>
 
           {/* Meta — nomor, revisi, status */}
@@ -1029,7 +1021,6 @@ export default function MasterListDocumentsPage() {
       window.open(url, '_blank', 'noopener,noreferrer');
     } else {
       setDetailDoc(doc);
-      showToast('Dokumen belum memiliki file lampiran', 'error');
     }
   };
 
@@ -1256,7 +1247,6 @@ export default function MasterListDocumentsPage() {
                   <div key={doc.id}
                     className={`group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${detailDoc?.id === doc.id ? 'bg-orange-50 ring-1 ring-[#FF6B1A]/20' : 'hover:bg-gray-50'}`}
                     onClick={() => handleRecordClick(doc)}
-                    title={doc.fileUrl ? 'Klik untuk langsung membuka file dokumen' : 'Dokumen belum memiliki file lampiran — klik untuk lihat detail'}
                   >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${c.bg} ${c.text}`}>
                       {LEVEL_ICON[doc.jenisDokumen]}
@@ -1265,13 +1255,6 @@ export default function MasterListDocumentsPage() {
                       <div className="flex items-center gap-2 mb-0.5">
                         <JenisBadge jenis={doc.jenisDokumen} size="sm" />
                         <span className="text-[13px] font-semibold text-[#1F2937] truncate">{doc.namaDokumen}</span>
-                        {doc.fileUrl && (
-                          <span title="File dokumen tersedia (klik record untuk membuka)" className="inline-flex items-center text-[#FF6B1A] flex-shrink-0">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                              <path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </span>
-                        )}
                       </div>
                       <div className="flex items-center gap-2 text-[11px] text-[#9CA3AF]">
                         <span className="font-mono">{doc.nomorDokumen}</span>
